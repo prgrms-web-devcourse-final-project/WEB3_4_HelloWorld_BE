@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.pt.classtime;
+package org.helloworld.gymmate.domain.pt.classtime.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,8 +26,11 @@ public class ClassTime {
 	private Long classTimeId;
 
 	@Column(name = "time", nullable = false)
-	private int time;
+	private Integer time;
 
 	@Column(name = "day_of_week", nullable = false)
-	private int dayOfWeek;
+	private Integer dayOfWeek;
+
+	@Column(name = "trainer_id", nullable = false)
+	private Long trainerId;
 }
