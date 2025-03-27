@@ -1,0 +1,24 @@
+# k6 테스트용 환경 설정
+server:
+  url: http://localhost:8081/
+
+spring:
+  datasource:
+    url: jdbc:mysql://gymmate-mysql-k6:3306/gymmate_k6_db
+    username: k6_gymmate_user
+    password: k6_gymmate_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+
+  data:
+    redis:
+      host: gymmate-k6-redis
+      port: 6379

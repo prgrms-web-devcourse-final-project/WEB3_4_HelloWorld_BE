@@ -1,0 +1,114 @@
+services:
+  mysql:
+    container_name: gymmate-k6-mysql
+    image: mysql:latest
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=gymmate_k6_db
+      - MYSQL_USER=k6_gymmate_user
+      - MYSQL_PASSWORD=k6_gymmate_password
+    ports:
+      - "3307:3306"
+    networks:
+      - k6-gymmate-net
+
+  redis:
+    container_name: gymmate-k6-redis
+    image: redis:latest
+    restart: always
+    ports:
+      - "6380:6379"
+    networks:
+      - k6-gymmate-net
+
+  backend:
+    container_name: gymmate-k6-backend
+    build:
+      context: ../..
+      dockerfile: docker/Dockerfile
+    image: gymmate-backend
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=k6  # application-k6.yml 사용
+      - SPRING_DATASOURCE_URL=jdbc:mysql://gymmate-k6-mysql:3306/gymmate_k6_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      - SPRING_DATASOURCE_USERNAME=k6_user
+      - SPRING_DATASOURCE_PASSWORD=k6_password
+      - REDIS_HOST=gymmate-k6-redis
+      - REDIS_PORT=6379
+    ports:
+      - "8081:8080"
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - k6-gymmate-net
+
+  influxdb:
+    container_name: gymmate-k6-influxdb
+    image: influxdb:1.8
+    restart: always
+    environment:
+      - INFLUXDB_ADMIN_USER=influx_admin
+      - INFLUXDB_ADMIN_PASSWORD=influx_pw
+      - INFLUXDB_DB=gymmate_k6_influx
+      - INFLUXDB_USER=influx_admin
+      - INFLUXDB_PASSWORD=influx_pw
+      - INFLUXDB_HTTP_BIND_ADDRESS=:8086
+    ports:
+      - "8087:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    networks:
+      - k6-gymmate-net
+
+  grafana:
+    container_name: gymmate-k6-grafana
+    image: grafana/grafana:latest
+    restart: always
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=grafana_admin
+      - GF_SERVER_HTTP_PORT=3001
+    ports:
+      - "3002:3001"
+    depends_on:
+      - influxdb
+    networks:
+      - k6-gymmate-net
+
+  k6:
+    container_name: gymmate-k6
+    image: grafana/k6:latest
+    entrypoint: [ "sleep", "infinity" ]  # 무한 대기
+    volumes:
+      - ../../src/test/k6:/scripts
+    working_dir: /scripts
+    environment:
+      - API_BASE_URL=http://gymmate-k6-backend:8080
+      - DB_HOST=gymmate-k6-mysql
+      - DB_PORT=3306
+      - DB_USER=k6_user
+      - DB_PASSWORD=k6_password
+      - DB_NAME=gymmate_k6_db
+      - REDIS_HOST=gymmate-k6-redis
+      - REDIS_PORT=6379
+      - INFLUXDB_URL=http://gymmate-k6-influxdb:8086
+      - INFLUXDB_USER=influx_admin
+      - INFLUXDB_PASSWORD=influx_pw
+    depends_on:
+      - backend
+      - influxdb
+      - grafana
+    networks:
+      - k6-gymmate-net
+
+networks:
+  k6-gymmate-net:
+    driver: bridge
+
+volumes:
+  influxdb_data:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
