@@ -28,7 +28,7 @@ public class ClassTimeController {
 	public ResponseEntity<Map<String,Long>> createClassTime(
 		@RequestBody @Valid ClassTimeRequest request
 	){
-		// userDetail 넘겨줘야 함
+		// TODO : userDetail 넘겨줘야 함
 		ClassTime classTime = classTimeService.createClassTime(request);
 		return ResponseEntity.ok(
 			Map.of("classTimeId",classTime.getClassTimeId()));
