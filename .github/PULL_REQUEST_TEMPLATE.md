@@ -1,4 +1,3 @@
----
 name: PR template
 about: PR 작성 시 해당 템플릿 사용
 title: ''
