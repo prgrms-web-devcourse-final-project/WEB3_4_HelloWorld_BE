@@ -1,15 +1,15 @@
-package org.helloworld.gymmate.domain.user.service;
+package org.helloworld.gymmate.domain.user.trainer.service;
 
-import org.helloworld.gymmate.domain.user.dto.OwnerRegisterRequest;
-import org.helloworld.gymmate.domain.user.dto.TrainerModifyRequest;
-import org.helloworld.gymmate.domain.user.dto.TrainerRegisterRequest;
 import org.helloworld.gymmate.domain.user.enumerate.SocialProviderType;
-import org.helloworld.gymmate.domain.user.mapper.GymMateTrainerMapper;
 import org.helloworld.gymmate.domain.user.mapper.SocialProviderMapper;
-import org.helloworld.gymmate.domain.user.model.GymmateTrainer;
 import org.helloworld.gymmate.domain.user.model.SocialProvider;
-import org.helloworld.gymmate.domain.user.repository.GymMateTrainerRepository;
 import org.helloworld.gymmate.domain.user.repository.SocialProviderRepository;
+import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
+import org.helloworld.gymmate.domain.user.trainer.mapper.GymMateTrainerMapper;
+import org.helloworld.gymmate.domain.user.trainer.model.GymmateTrainer;
+import org.helloworld.gymmate.domain.user.trainer.repository.GymMateTrainerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

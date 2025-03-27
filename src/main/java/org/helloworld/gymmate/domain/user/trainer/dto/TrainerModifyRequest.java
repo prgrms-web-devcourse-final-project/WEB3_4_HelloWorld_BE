@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.user.dto;
+package org.helloworld.gymmate.domain.user.trainer.dto;
 
 public record TrainerModifyRequest(
 	String trainerName,

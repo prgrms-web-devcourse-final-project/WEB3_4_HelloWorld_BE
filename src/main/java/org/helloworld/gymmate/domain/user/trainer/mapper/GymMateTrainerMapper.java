@@ -1,7 +1,7 @@
-package org.helloworld.gymmate.domain.user.mapper;
+package org.helloworld.gymmate.domain.user.trainer.mapper;
 
-import org.helloworld.gymmate.domain.user.model.GymmateTrainer;
 import org.helloworld.gymmate.domain.user.model.SocialProvider;
+import org.helloworld.gymmate.domain.user.trainer.model.GymmateTrainer;
 
 public class GymMateTrainerMapper {
 

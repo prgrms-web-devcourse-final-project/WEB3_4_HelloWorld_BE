@@ -1,12 +1,13 @@
-package org.helloworld.gymmate.domain.user.model;
+package org.helloworld.gymmate.domain.user.trainer.model;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import org.helloworld.gymmate.domain.user.dto.OwnerRegisterRequest;
-import org.helloworld.gymmate.domain.user.dto.TrainerModifyRequest;
-import org.helloworld.gymmate.domain.user.dto.TrainerRegisterRequest;
 import org.helloworld.gymmate.domain.user.enumerate.GenderType;
+import org.helloworld.gymmate.domain.user.model.SocialProvider;
+import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
