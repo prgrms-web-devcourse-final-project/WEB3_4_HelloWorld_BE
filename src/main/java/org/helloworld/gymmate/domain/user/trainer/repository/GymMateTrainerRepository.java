@@ -1,6 +1,6 @@
-package org.helloworld.gymmate.domain.user.repository;
+package org.helloworld.gymmate.domain.user.trainer.repository;
 
-import org.helloworld.gymmate.domain.user.model.GymmateTrainer;
+import org.helloworld.gymmate.domain.user.trainer.model.GymmateTrainer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

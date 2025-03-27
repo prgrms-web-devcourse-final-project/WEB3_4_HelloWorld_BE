@@ -7,10 +7,12 @@ import org.helloworld.gymmate.domain.pt.classtime.dto.ClassTimesResponse;
 import org.helloworld.gymmate.domain.pt.classtime.entity.ClassTime;
 import org.helloworld.gymmate.domain.pt.classtime.service.ClassTimeService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -30,6 +32,16 @@ public class ClassTimeController {
 		ClassTime classTime = classTimeService.createClassTime(request);
 		return ResponseEntity.ok(
 			Map.of("classTimeId",classTime.getClassTimeId()));
+	}
+
+	@DeleteMapping
+	public ResponseEntity<Void> deleteClassTime(
+		@RequestParam("dayOfWeek") Integer dayOfWeek,
+		@RequestParam("time") Integer time
+	){
+		// TODO : userDetail 넘겨줘야 함
+		classTimeService.deleteClassTime(dayOfWeek,time);
+		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping

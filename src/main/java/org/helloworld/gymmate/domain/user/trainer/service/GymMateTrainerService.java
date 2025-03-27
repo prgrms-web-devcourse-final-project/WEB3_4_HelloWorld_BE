@@ -1,14 +1,15 @@
-package org.helloworld.gymmate.domain.user.service;
+package org.helloworld.gymmate.domain.user.trainer.service;
 
-import org.helloworld.gymmate.domain.user.dto.OwnerRegisterRequest;
-import org.helloworld.gymmate.domain.user.dto.TrainerRegisterRequest;
 import org.helloworld.gymmate.domain.user.enumerate.SocialProviderType;
-import org.helloworld.gymmate.domain.user.mapper.GymMateTrainerMapper;
 import org.helloworld.gymmate.domain.user.mapper.SocialProviderMapper;
-import org.helloworld.gymmate.domain.user.model.GymmateTrainer;
 import org.helloworld.gymmate.domain.user.model.SocialProvider;
-import org.helloworld.gymmate.domain.user.repository.GymMateTrainerRepository;
 import org.helloworld.gymmate.domain.user.repository.SocialProviderRepository;
+import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
+import org.helloworld.gymmate.domain.user.trainer.mapper.GymMateTrainerMapper;
+import org.helloworld.gymmate.domain.user.trainer.model.GymmateTrainer;
+import org.helloworld.gymmate.domain.user.trainer.repository.GymMateTrainerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +28,7 @@ public class GymMateTrainerService {
 		socialProviderRepository.flush();
 
 		GymmateTrainer trainer = GymMateTrainerMapper.toTrainer(socialProvider);
-		trainerRepository.save(trainer);
-
-		return trainer.getTrainerId();
+		return trainerRepository.save(trainer).getTrainerId();
 	}
 
 	@Transactional
@@ -39,9 +38,7 @@ public class GymMateTrainerService {
 		socialProviderRepository.flush();
 
 		GymmateTrainer owner = GymMateTrainerMapper.toOwner(socialProvider);
-		trainerRepository.save(owner);
-
-		return owner.getTrainerId();
+		return trainerRepository.save(owner).getTrainerId();
 	}
 
 	// 추가 정보 등록 (직원)
@@ -63,4 +60,11 @@ public class GymMateTrainerService {
 	public boolean check(GymmateTrainer gymmateTrainer) {
 		return gymmateTrainer.getAdditionalInfoCompleted();
 	}
+
+	// 직원 및 사장 개인정보 수정
+	public Long modifyTrainerInfo(GymmateTrainer gymmateTrainer, TrainerModifyRequest modifyRequest) {
+		gymmateTrainer.modifyTrainerInfo(modifyRequest);
+		return trainerRepository.save(gymmateTrainer).getTrainerId();
+	}
+
 }

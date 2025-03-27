@@ -3,17 +3,16 @@ package org.helloworld.gymmate.security.oauth2;
 import java.io.IOException;
 import java.util.Optional;
 
+import org.helloworld.gymmate.common.cookie.CookieManager;
 import org.helloworld.gymmate.common.enums.TokenType;
-import org.helloworld.gymmate.domain.user.service.GymmateUserService;
+import org.helloworld.gymmate.domain.user.member.service.GymmateUserService;
 import org.helloworld.gymmate.security.policy.ExpirationPolicy;
 import org.helloworld.gymmate.security.token.JwtManager;
-import org.helloworld.gymmate.common.cookie.CookieManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

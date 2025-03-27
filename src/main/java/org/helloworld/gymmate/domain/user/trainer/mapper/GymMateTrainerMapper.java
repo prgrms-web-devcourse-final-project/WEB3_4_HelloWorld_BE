@@ -1,7 +1,7 @@
-package org.helloworld.gymmate.domain.user.mapper;
+package org.helloworld.gymmate.domain.user.trainer.mapper;
 
-import org.helloworld.gymmate.domain.user.model.GymmateTrainer;
 import org.helloworld.gymmate.domain.user.model.SocialProvider;
+import org.helloworld.gymmate.domain.user.trainer.model.GymmateTrainer;
 
 public class GymMateTrainerMapper {
 
@@ -10,7 +10,6 @@ public class GymMateTrainerMapper {
 			.socialProvider(socialProvider)
 			.isOwner(false)
 			.isCheck(false)
-			.businessNumber(null)
 			.score(0.0)
 			.gymId(1L)
 			.cash(100000000L)
