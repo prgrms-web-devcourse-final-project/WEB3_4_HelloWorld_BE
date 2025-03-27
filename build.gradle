@@ -49,7 +49,6 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.2'
     // Swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
-
 }
 
 tasks.named('test') {
