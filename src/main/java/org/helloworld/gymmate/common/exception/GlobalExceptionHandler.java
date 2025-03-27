@@ -36,9 +36,9 @@ public class GlobalExceptionHandler {
 			.sorted(Comparator.comparing((String::toString)))
 			.collect(Collectors.joining("\n"));
 
-		return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus())
-			.body(new ErrorDetails(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus(),
-				ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+		return ResponseEntity.status(ErrorCode.INVALID_PARAMETER.getHttpStatus())
+			.body(new ErrorDetails(ErrorCode.INVALID_PARAMETER.getHttpStatus(),
+				ErrorCode.INVALID_PARAMETER.getErrorCode(),
 				message));
 	}
 }
