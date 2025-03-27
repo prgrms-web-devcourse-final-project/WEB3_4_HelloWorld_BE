@@ -4,25 +4,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.helloworld.gymmate.domain.pt.classtime.dto.ClassTimeRequest;
-import org.helloworld.gymmate.domain.pt.classtime.entity.ClassTime;
+import org.helloworld.gymmate.domain.pt.classtime.dto.ClasstimeRequest;
+import org.helloworld.gymmate.domain.pt.classtime.entity.Classtime;
 
-public class ClassTimeMapper {
+public class ClasstimeMapper {
 
-	public static ClassTime toEntity(ClassTimeRequest request, Long trainerId){
-		return ClassTime.builder()
+	public static Classtime toEntity(ClasstimeRequest request, Long trainerId){
+		return Classtime.builder()
 			.time(request.time())
 			.dayOfWeek(request.dayOfWeek())
 			.trainerId(trainerId)
 			.build();
 	}
 
-	public static Map<Integer, List<String>> toClassTimesResponse(
-		List<ClassTime> classTimes
+	public static Map<Integer, List<String>> toClasstimesResponse(
+		List<Classtime> classtimes
 	){
-		return classTimes.stream()
+		return classtimes.stream()
 			.collect(Collectors.groupingBy(
-				ClassTime::getDayOfWeek,
+				Classtime::getDayOfWeek,
 				Collectors.mapping(ct -> convertToTimeFormat(ct.getTime()), Collectors.toList())
 			));
 	}

@@ -2,10 +2,10 @@ package org.helloworld.gymmate.domain.pt.classtime.controller;
 
 import java.util.Map;
 
-import org.helloworld.gymmate.domain.pt.classtime.dto.ClassTimeRequest;
-import org.helloworld.gymmate.domain.pt.classtime.dto.ClassTimesResponse;
-import org.helloworld.gymmate.domain.pt.classtime.entity.ClassTime;
-import org.helloworld.gymmate.domain.pt.classtime.service.ClassTimeService;
+import org.helloworld.gymmate.domain.pt.classtime.dto.ClasstimeRequest;
+import org.helloworld.gymmate.domain.pt.classtime.dto.ClasstimesResponse;
+import org.helloworld.gymmate.domain.pt.classtime.entity.Classtime;
+import org.helloworld.gymmate.domain.pt.classtime.service.ClasstimeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,15 +21,15 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/classtime")
 @RequiredArgsConstructor
-public class ClassTimeController {
-	private final ClassTimeService classTimeService;
+public class ClasstimeController {
+	private final ClasstimeService classtimeService;
 
 	@PostMapping
 	public ResponseEntity<Map<String,Long>> createClassTime(
-		@RequestBody @Valid ClassTimeRequest request
+		@RequestBody @Valid ClasstimeRequest request
 	){
 		// TODO : userDetail 넘겨줘야 함
-		ClassTime classTime = classTimeService.createClassTime(request);
+		Classtime classTime = classtimeService.createClassTime(request);
 		return ResponseEntity.ok(
 			Map.of("classTimeId",classTime.getClassTimeId()));
 	}
@@ -40,15 +40,15 @@ public class ClassTimeController {
 		@RequestParam("time") Integer time
 	){
 		// TODO : userDetail 넘겨줘야 함
-		classTimeService.deleteClassTime(dayOfWeek,time);
+		classtimeService.deleteClassTime(dayOfWeek,time);
 		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping
-	public ResponseEntity<ClassTimesResponse> getClassTimes(){
+	public ResponseEntity<ClasstimesResponse> getClassTimes(){
 		// TODO : userDetail 넘겨줘야 함
 		return ResponseEntity.ok(
-			classTimeService.getAvailableTimes()
+			classtimeService.getAvailableTimes()
 		);
 	}
 
