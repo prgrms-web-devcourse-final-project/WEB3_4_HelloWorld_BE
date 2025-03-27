@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import org.helloworld.gymmate.domain.user.dto.OwnerRegisterRequest;
+import org.helloworld.gymmate.domain.user.dto.TrainerModifyRequest;
 import org.helloworld.gymmate.domain.user.dto.TrainerRegisterRequest;
 import org.helloworld.gymmate.domain.user.enumerate.GenderType;
 
@@ -35,7 +36,7 @@ public class GymmateTrainer {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+	@Column(name = "trainer_id")
 	private Long trainerId;
 
 	@Column(name = "traine_name")
@@ -71,6 +72,12 @@ public class GymmateTrainer {
 
 	private Long gymId;
 
+	private String intro;
+
+	private String career;
+
+	private String field;
+
 	private Boolean additionalInfoCompleted; // 추가 정보 입력 여부
 
 	private LocalDate date;
@@ -98,5 +105,17 @@ public class GymmateTrainer {
 		this.businessNumber = request.businessNumber();
 		this.date = LocalDate.parse(request.date(), DateTimeFormatter.ISO_DATE);
 		this.additionalInfoCompleted = true;
+	}
+
+	public void modifyTrainerInfo(TrainerModifyRequest request) {
+		this.trainerName = request.trainerName();
+		this.phoneNumber = request.phoneNumber();
+		this.email = request.email();
+		this.bank = request.bank();
+		this.account = request.account();
+		this.profile = request.profile();
+		this.intro = request.intro();
+		this.career = request.career();
+		this.field = request.field();
 	}
 }

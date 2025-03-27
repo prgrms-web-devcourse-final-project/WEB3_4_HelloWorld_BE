@@ -10,7 +10,6 @@ public class GymMateTrainerMapper {
 			.socialProvider(socialProvider)
 			.isOwner(false)
 			.isCheck(false)
-			.businessNumber(null)
 			.score(0.0)
 			.gymId(1L)
 			.cash(100000000L)
