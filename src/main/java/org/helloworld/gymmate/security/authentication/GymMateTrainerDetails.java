@@ -2,7 +2,7 @@ package org.helloworld.gymmate.security.authentication;
 
 import java.util.Collection;
 
-import org.helloworld.gymmate.domain.user.model.GymmateTrainer;
+import org.helloworld.gymmate.domain.user.trainer.model.GymmateTrainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;

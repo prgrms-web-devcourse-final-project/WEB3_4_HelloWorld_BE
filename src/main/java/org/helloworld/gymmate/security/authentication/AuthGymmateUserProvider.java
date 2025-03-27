@@ -2,7 +2,7 @@ package org.helloworld.gymmate.security.authentication;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
-import org.helloworld.gymmate.domain.user.model.GymmateUser;
+import org.helloworld.gymmate.domain.user.member.model.GymmateUser;
 import org.springframework.stereotype.Component;
 
 @Component
