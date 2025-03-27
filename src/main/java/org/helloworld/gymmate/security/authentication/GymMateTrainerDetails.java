@@ -2,7 +2,7 @@ package org.helloworld.gymmate.security.authentication;
 
 import java.util.Collection;
 
-import org.helloworld.gymmate.domain.user.trainer.model.GymmateTrainer;
+import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,10 +14,10 @@ public class GymMateTrainerDetails implements UserDetails {
 
 	final String TRAINER_ROLE = "ROLE_TRAINER";
 
-	private final GymmateTrainer gymmateTrainer;
+	private final Trainer trainer;
 
-	public GymMateTrainerDetails(GymmateTrainer gymmateTrainer) {
-		this.gymmateTrainer = gymmateTrainer;
+	public GymMateTrainerDetails(Trainer trainer) {
+		this.trainer = trainer;
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class GymMateTrainerDetails implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return getGymmateTrainer().getIsAccountNonLocked();
+		return getTrainer().getIsAccountNonLocked();
 	}
 
 	@Override
@@ -52,6 +52,6 @@ public class GymMateTrainerDetails implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return gymmateTrainer.getTrainerName();
+		return trainer.getTrainerName();
 	}
 }
