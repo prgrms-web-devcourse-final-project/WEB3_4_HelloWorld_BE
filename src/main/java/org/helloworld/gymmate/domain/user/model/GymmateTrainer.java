@@ -79,24 +79,24 @@ public class GymmateTrainer {
 	private SocialProvider socialProvider;
 
 	public void updateTrainerInfo(TrainerRegisterRequest request) {
-		this.trainerName = request.getTrainerName();
-		this.phoneNumber = request.getPhoneNumber();
-		this.email = request.getEmail();
-		this.genderType = GenderType.fromString(request.getGender());
-		this.bank = request.getBank();
-		this.account = request.getAccount();
+		this.trainerName = request.trainerName();
+		this.phoneNumber = request.phoneNumber();
+		this.email = request.email();
+		this.genderType = GenderType.fromString(request.gender());
+		this.bank = request.bank();
+		this.account = request.account();
 		this.additionalInfoCompleted = true;
 	}
 
 	public void updateOwnerInfo(OwnerRegisterRequest request) {
-		this.trainerName = request.getTrainerName();
-		this.phoneNumber = request.getPhoneNumber();
-		this.email = request.getEmail();
-		this.genderType = GenderType.fromString(request.getGender());
-		this.bank = request.getBank();
-		this.account = request.getAccount();
-		this.businessNumber = request.getBusinessNumber();
-		this.date = LocalDate.parse(request.getDate(), DateTimeFormatter.ISO_DATE);
+		this.trainerName = request.trainerName();
+		this.phoneNumber = request.phoneNumber();
+		this.email = request.email();
+		this.genderType = GenderType.fromString(request.gender());
+		this.bank = request.bank();
+		this.account = request.account();
+		this.businessNumber = request.businessNumber();
+		this.date = LocalDate.parse(request.date(), DateTimeFormatter.ISO_DATE);
 		this.additionalInfoCompleted = true;
 	}
 }
