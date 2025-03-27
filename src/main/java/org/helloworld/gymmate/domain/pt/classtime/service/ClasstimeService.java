@@ -21,7 +21,7 @@ public class ClasstimeService {
 	private final ClasstimeRepository classtimeRepository;
 
 	@Transactional
-	public Classtime createClassTime(@Valid ClasstimeRequest request) {
+	public Classtime createClasstime(@Valid ClasstimeRequest request) {
 		// TODO : userDetail에서 id 가져와야 함
 		Long trainerId = 0L;
 		if( classtimeRepository.findByTrainerIdAndDayOfWeekAndTime(trainerId,request.dayOfWeek(),request.time()).isPresent()){
@@ -31,12 +31,12 @@ public class ClasstimeService {
 			ClasstimeMapper.toEntity(request, trainerId));
 	}
 
-	public void deleteClassTime(Integer dayOfWeek, Integer time) {
+	public void deleteClasstime(Integer dayOfWeek, Integer time) {
 		// TODO : userDetail에서 id 가져와야 함
 		Long trainerId = 0L;
-		Classtime classTime = classtimeRepository.findByTrainerIdAndDayOfWeekAndTime(trainerId,dayOfWeek,time)
+		Classtime classtime = classtimeRepository.findByTrainerIdAndDayOfWeekAndTime(trainerId,dayOfWeek,time)
 			.orElseThrow(() -> new BusinessException(ErrorCode.CLASSTIME_NOT_FOUND));
-		classtimeRepository.delete(classTime);
+		classtimeRepository.delete(classtime);
 	}
 
 	public ClasstimesResponse getAvailableTimes() {

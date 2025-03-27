@@ -25,27 +25,27 @@ public class ClasstimeController {
 	private final ClasstimeService classtimeService;
 
 	@PostMapping
-	public ResponseEntity<Map<String,Long>> createClassTime(
+	public ResponseEntity<Map<String,Long>> createClasstime(
 		@RequestBody @Valid ClasstimeRequest request
 	){
 		// TODO : userDetail 넘겨줘야 함
-		Classtime classTime = classtimeService.createClassTime(request);
+		Classtime classTime = classtimeService.createClasstime(request);
 		return ResponseEntity.ok(
-			Map.of("classTimeId",classTime.getClassTimeId()));
+			Map.of("classTimeId",classTime.getClasstimeId()));
 	}
 
 	@DeleteMapping
-	public ResponseEntity<Void> deleteClassTime(
+	public ResponseEntity<Void> deleteClasstime(
 		@RequestParam("dayOfWeek") Integer dayOfWeek,
 		@RequestParam("time") Integer time
 	){
 		// TODO : userDetail 넘겨줘야 함
-		classtimeService.deleteClassTime(dayOfWeek,time);
+		classtimeService.deleteClasstime(dayOfWeek,time);
 		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping
-	public ResponseEntity<ClasstimesResponse> getClassTimes(){
+	public ResponseEntity<ClasstimesResponse> getClasstimes(){
 		// TODO : userDetail 넘겨줘야 함
 		return ResponseEntity.ok(
 			classtimeService.getAvailableTimes()
