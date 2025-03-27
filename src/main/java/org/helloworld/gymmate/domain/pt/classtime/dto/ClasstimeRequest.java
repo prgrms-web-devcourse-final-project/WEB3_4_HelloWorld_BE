@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-public record ClassTimeRequest(
+public record ClasstimeRequest(
 	@NotNull(message = "요일은 필수 입력 값입니다.")
 	@Min(value = 0, message = "요일 값은 0(일요일)부터 6(토요일) 사이여야 합니다.")
 	@Max(value = 6, message = "요일 값은 0(일요일)부터 6(토요일) 사이여야 합니다.")

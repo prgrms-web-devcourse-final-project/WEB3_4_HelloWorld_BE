@@ -18,12 +18,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Table(name = "class_time")
-public class ClassTime {
+public class Classtime {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "class_time_id", nullable = false)
-	private Long classTimeId;
+	private Long classtimeId;
 
 	@Column(name = "time", nullable = false)
 	private Integer time;
