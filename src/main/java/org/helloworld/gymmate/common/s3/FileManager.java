@@ -1,60 +1,86 @@
 package org.helloworld.gymmate.common.s3;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import org.helloworld.gymmate.common.properties.AwsS3Properties;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-
 import lombok.RequiredArgsConstructor;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Service
 @RequiredArgsConstructor
 public class FileManager {
-	private final AmazonS3 amazonS3;
+	private final S3Client s3Client;
+	private final AwsS3Properties awsS3Properties;
 
-	@Value("${cloud.aws.s3.bucket}")
-	private String bucket;
-
-	//파일 업로드 관련
-	/* 예시)
-	 * folderPath :"images/profile"
-	 * 이미지 경로(폴더 경로)를 key에 포함
-	 *
-	 * */
-	public String saveFile(MultipartFile multipartFile, String folderPath) throws IOException {
-		String originalFilename = multipartFile.getOriginalFilename();
-		String fileName = UUID.randomUUID() + "_" + originalFilename;
-		String key = folderPath + "/" + fileName;
-
-		ObjectMetadata metadata = new ObjectMetadata();
-		metadata.setContentLength(multipartFile.getSize());
-		metadata.setContentType(multipartFile.getContentType());
-
-		amazonS3.putObject(bucket, key, multipartFile.getInputStream(), metadata);
-		return amazonS3.getUrl(bucket, key).toString();
+	// 단일업로드
+	public String uploadFile(MultipartFile file, String domain) {
+		return uploadToS3(file, domain);
 	}
 
-	public ResponseEntity<UrlResource> downloadImage(String originalFilename, String folderPath) {
-		String key = folderPath + "/" + originalFilename;
-		UrlResource urlResource = new UrlResource(amazonS3.getUrl(bucket, key));
-
-		String contentDisposition = "attachment; filename=\"" + originalFilename + "\"";
-
-		return ResponseEntity.ok()
-			.header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-			.body(urlResource);
+	// 여러파일업로드
+	public List<String> uploadFiles(List<MultipartFile> files, String domain) {
+		System.out.println(awsS3Properties.getS3().getBucket());
+		System.out.println(awsS3Properties.getCredentials().getAccessKey());
+		System.out.println(awsS3Properties.getCredentials().getSecretKey());
+		System.out.println(awsS3Properties.getRegion().getStaticRegion());
+		return files.stream()
+			.map(file -> uploadToS3(file, domain))
+			.collect(Collectors.toList());
 	}
 
-	public void deleteImage(String originalFilename, String folderPath) {
-		String key = folderPath + "/" + originalFilename;
-		amazonS3.deleteObject(bucket, key);
+	// 도메인별 파일 저장 기능
+	public String uploadToS3(MultipartFile file, String domain) {
+		String bucketName = awsS3Properties.getS3().getBucket();
+
+		LocalDate now = LocalDate.now();
+		String datePath = String.format("%d%02d%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());
+		String extension = getFileExtension(file.getOriginalFilename());
+		String uuidFileName = UUID.randomUUID() + extension;
+
+		// 최종 S3 저장 경로 (도메인명/년월일/UUID.확장자)
+		String fileName = String.format("%s/%s/%s", domain, datePath, uuidFileName);
+
+		try {
+			PutObjectRequest request = PutObjectRequest.builder()
+				.bucket(bucketName)
+				.key(fileName)
+				.build();
+
+			s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));
+
+			return "https://" + bucketName + ".s3." +
+				awsS3Properties.getRegion().getStaticRegion() + ".amazonaws.com/" + fileName;
+		} catch (IOException e) {
+			throw new RuntimeException("S3 파일 업로드 실패", e);
+		}
+	}
+
+	// 파일 삭제 기능
+	public void deleteFile(String fileName) {
+		String bucketName = awsS3Properties.getS3().getBucket();
+
+		DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+			.bucket(bucketName)
+			.key(fileName)
+			.build();
+
+		s3Client.deleteObject(deleteRequest);
+	}
+
+	private String getFileExtension(String originalFileName) {
+		if (originalFileName == null || !originalFileName.contains(".")) {
+			return "";
+		}
+		return originalFileName.substring(originalFileName.lastIndexOf("."));
 	}
 }
