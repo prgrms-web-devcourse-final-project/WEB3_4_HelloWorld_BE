@@ -7,6 +7,7 @@ import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
 import org.helloworld.gymmate.domain.gym.gym.dto.GymCreateRequest;
 import org.helloworld.gymmate.domain.gym.gym.dto.GymResponse;
+import org.helloworld.gymmate.domain.gym.gym.dto.GymUpdateRequest;
 import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gym.entity.GymImage;
 import org.helloworld.gymmate.domain.gym.gym.mapper.GymMapper;
@@ -29,7 +30,7 @@ public class GymService {
 
 
 
-		List<String> imageUrls = fileManager.uploadFiles(images, "gymImage");
+		List<String> imageUrls = fileManager.uploadFiles(images, "gym");
 
 		GymCreateRequest updatedRequest = new GymCreateRequest(
 			request.gymName(),
@@ -49,15 +50,35 @@ public class GymService {
 	}
 
 	@Transactional
-	public GymResponse updateGym(Long gymId, GymCreateRequest request, List<MultipartFile> images) {
+	public GymResponse updateGym(Long gymId, GymUpdateRequest request, List<MultipartFile> images) {
 
 		Gym gym = gymRepository.findById(gymId)
 			.orElseThrow(()-> new BusinessException(ErrorCode.GYM_NOT_FOUND));
 
 		GymMapper.updateEntity(gym, request);
 
+		//기존 이미지 중 삭제 대상 S3 삭제
+		List<String> keepUrls = request.existingImageUrls() != null ? request.existingImageUrls() : List.of();
+
+		List<GymImage> imagesToDelete = gym.getImages().stream()
+			.filter(img -> !keepUrls.contains(img.getUrl()))
+			.toList();
+
+		for (GymImage image : imagesToDelete) {
+			fileManager.deleteFile(image.getUrl());
+		}
+
+		// DB에서 삭제 대상 제거하고 유지할 이미지만 남기기
+		List<GymImage> imagesToKeep = gym.getImages().stream()
+			.filter(img -> keepUrls.contains(img.getUrl()))
+			.toList();
+
+		gym.clearImages();
+		gym.addImages(imagesToKeep);
+
 		// 4. 이미지 처리
 		if (images != null && !images.isEmpty()) {
+
 			// 4-1. 이미지 유효성 검사
 			for (MultipartFile image : images) {
 				if (image.getSize() > 5 * 1024 * 1024) {
@@ -81,7 +102,7 @@ public class GymService {
 				.map(url -> GymImage.builder().url(url).build())
 				.toList();
 
-			gym.replaceImages(newImages);
+			gym.addImages(newImages);
 		}
 
 		return GymMapper.toResponse(gym);
