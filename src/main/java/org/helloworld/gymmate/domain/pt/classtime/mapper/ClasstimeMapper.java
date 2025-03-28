@@ -17,23 +17,13 @@ public class ClasstimeMapper {
 			.build();
 	}
 
-	public static Map<Integer, List<String>> toClasstimesResponse(
+	public static Map<Integer, List<Integer>> toClasstimesResponse(
 		List<Classtime> classtimes
 	){
 		return classtimes.stream()
 			.collect(Collectors.groupingBy(
 				Classtime::getDayOfWeek,
-				Collectors.mapping(ct -> convertToTimeFormat(ct.getTime()), Collectors.toList())
+				Collectors.mapping(Classtime::getTime, Collectors.toList())
 			));
 	}
-
-	private static String convertToTimeFormat(Integer time) {
-		return String.format("%02d:00", time); // 14 -> "14:00"
-	}
-
-	private static String convertToDayFormat(Integer time) {
-		String[] days = {"일", "월", "화", "수", "목", "금", "토"};
-		return days[time];
-	}
-
 }
