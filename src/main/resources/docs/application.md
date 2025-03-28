@@ -51,4 +51,17 @@ jwt:
     expiration-time: 3600000
   refresh-token:
     expiration-time: 604800000
+    
+cloud:
+  aws:
+    s3:
+      bucket: devcouse4-team12-bucket
+    credentials:
+      access-key: ${S3_ACCESS_KEY}
+      secret-key: ${S3_SECRET_KEY}
+    region:
+      staticRegion: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
 ```

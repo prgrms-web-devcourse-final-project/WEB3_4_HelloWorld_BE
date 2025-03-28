@@ -1,12 +1,3 @@
----
-name: PR template
-about: PR 작성 시 해당 템플릿 사용
-title: ''
-labels: ''
-assignees: ''
-
----
-
 # 📝 제목
 feat(도메인): 내용 요약
 

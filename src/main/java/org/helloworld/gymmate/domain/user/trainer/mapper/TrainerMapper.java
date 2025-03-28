@@ -1,12 +1,12 @@
 package org.helloworld.gymmate.domain.user.trainer.mapper;
 
 import org.helloworld.gymmate.domain.user.model.SocialProvider;
-import org.helloworld.gymmate.domain.user.trainer.model.GymmateTrainer;
+import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 
-public class GymMateTrainerMapper {
+public class TrainerMapper {
 
-	public static GymmateTrainer toTrainer(SocialProvider socialProvider) {
-		return GymmateTrainer.builder()
+	public static Trainer toTrainer(SocialProvider socialProvider) {
+		return Trainer.builder()
 			.socialProvider(socialProvider)
 			.isOwner(false)
 			.isCheck(false)
@@ -17,8 +17,8 @@ public class GymMateTrainerMapper {
 			.build();
 	}
 
-	public static GymmateTrainer toOwner(SocialProvider socialProvider) {
-		return GymmateTrainer.builder()
+	public static Trainer toOwner(SocialProvider socialProvider) {
+		return Trainer.builder()
 			.socialProvider(socialProvider)
 			.isOwner(true)
 			.isCheck(true)

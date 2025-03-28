@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Table(name = "gymmate_trainer")
-public class GymmateTrainer {
+public class Trainer {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

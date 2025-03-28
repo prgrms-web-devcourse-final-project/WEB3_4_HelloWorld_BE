@@ -1,5 +1,24 @@
 # WEB3_4_HelloWorld_BE
-프로그래머스 데브코스 3기 4회차 HelloWorld 백엔드
+
+> 프로그래머스 데브코스 3기 4회차 HelloWorld 팀 백엔드
+
+<br>
+
+# GymMate (backend)
+
+GymMate 백엔드 레포지토리
+
+<br>
+
+## Swagger
+
+swagger: [서버 실행 후 접속](http://localhost:8080/swagger-ui/index.html)
+
+<br>
+
+## ERD
+
+[ERDCloud (팀 공개)](https://www.erdcloud.com/d/WcjqbEfh4n8qsvEaA)
 
 <br>
 
