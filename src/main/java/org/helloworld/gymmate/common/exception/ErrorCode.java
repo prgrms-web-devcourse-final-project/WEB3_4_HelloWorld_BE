@@ -13,7 +13,6 @@ public enum ErrorCode {
 	TOKEN_NOT_VALID(HttpStatus.UNAUTHORIZED, "TOKEN-001", "토큰이 유효하지 않습니다."),
 	REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW-001", "리뷰를 찾을 수 없습니다."),
 	REVIEW_PERMISSION_DENIED(HttpStatus.UNAUTHORIZED, "REVIEW-002", "리뷰에 대한 삭제/수정 권한이 없습니다."),
-	RECOMMEND_DUPLICATION_ERROR(HttpStatus.BAD_REQUEST, "RECOMMEND-001", "추천/비추천을 두번 이상 할 수 없습니다."),
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL-001", "서버 내부 오류"),
 	PAYLOAD_TOO_LARGE(HttpStatus.BAD_REQUEST, "PAYLOAD-001","파일 크기가 제한을 초과했습니다. (최대 10MB)"),
 	FILE_UPLOAD_TYPE_ERROR(HttpStatus.BAD_REQUEST, "FILE-001", "이미지파일 이외의 업로드는 불가능합니다."),
@@ -21,10 +20,12 @@ public enum ErrorCode {
 	FILE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE-003", "파일 삭제 중 오류가 발생했습니다."),
 	DIRECTORY_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE-004", "디렉토리 생성 중 오류가 발생했습니다."),
 	INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "PARAMETER-001", "요청 파라미터가 유효하지 않습니다."),
-  
-  // PT
+
+  	// PT
 	CLASSTIME_DUPLICATED(HttpStatus.BAD_REQUEST, "PT-CLASSTIME-001", "이미 등록된 수업 시간입니다."),
-	CLASSTIME_NOT_FOUND(HttpStatus.NOT_FOUND, "PT-CLASSTIME-002", "존재하지 않는 PT 수강 가능 시간입니다.");
+	CLASSTIME_NOT_FOUND(HttpStatus.NOT_FOUND, "PT-CLASSTIME-002", "존재하지 않는 PT 수강 가능 시간입니다."),
+	PTPRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "PT-PRODUCT-001", "존재하지 않는 PT 수업입니다."),
+	USER_NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "USER-002", "권한이 부족합니다."),
 
 	// Gym
 	GYM_INVALID_REQUEST(HttpStatus.BAD_REQUEST, "GYM-001", "잘못된 입력값입니다."),
