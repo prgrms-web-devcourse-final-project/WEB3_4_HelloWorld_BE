@@ -9,6 +9,7 @@ import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductModifyRequest;
 import org.helloworld.gymmate.domain.pt.pt_product.service.PtProductService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -47,6 +48,15 @@ public class PtProductController {
 
 		return ResponseEntity.ok(
 			Map.of("ptClassId",ptProductService.modifyPtProduct(productId, request, images)));
+	}
+
+	@DeleteMapping(value = "/{productId}")
+	public ResponseEntity<Map<String,Long>> deletePtProduct(
+		@PathVariable Long productId
+	){
+		// TODO : userDetail 넘겨줘야 함
+		ptProductService.deletePtProduct(productId);
+		return ResponseEntity.ok().build();
 	}
 
 }

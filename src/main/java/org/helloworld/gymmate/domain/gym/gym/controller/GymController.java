@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.helloworld.gymmate.domain.gym.gym.dto.GymCreateRequest;
 import org.helloworld.gymmate.domain.gym.gym.dto.GymResponse;
+import org.helloworld.gymmate.domain.gym.gym.dto.GymUpdateRequest;
 import org.helloworld.gymmate.domain.gym.gym.service.GymService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +47,7 @@ public class GymController {
 		@RequestPart("request") String requestJson,
 		@RequestPart(value = "images" , required = false) List<MultipartFile> images)throws JsonProcessingException {
 
-		GymCreateRequest request = objectMapper.readValue(requestJson, GymCreateRequest.class);
+		GymUpdateRequest request = objectMapper.readValue(requestJson, GymUpdateRequest.class);
 		GymResponse response = gymService.updateGym(gymId, request, images);
 		return ResponseEntity.ok(response);
 	}
