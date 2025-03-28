@@ -42,4 +42,13 @@ public class PtProduct {
 	@OneToMany(mappedBy = "ptProduct", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@Builder.Default
 	private List<PtProductImage> ptProductImages = new ArrayList<>();
+
+	public void update(String info, Long ptProductFee) {
+		this.info = info;
+		this.ptProductFee = ptProductFee;
+	}
+
+	public void removeImageByUrl(String imageUrl) {
+		this.ptProductImages.removeIf(image -> image.getUrl().equals(imageUrl));
+	}
 }
