@@ -22,9 +22,9 @@ public enum ErrorCode {
 	DIRECTORY_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE-004", "디렉토리 생성 중 오류가 발생했습니다."),
 	INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "PARAMETER-001", "요청 파라미터가 유효하지 않습니다."),
   
-  // PT
+    // PT
 	CLASSTIME_DUPLICATED(HttpStatus.BAD_REQUEST, "PT-CLASSTIME-001", "이미 등록된 수업 시간입니다."),
-	CLASSTIME_NOT_FOUND(HttpStatus.NOT_FOUND, "PT-CLASSTIME-002", "존재하지 않는 PT 수강 가능 시간입니다.");
+	CLASSTIME_NOT_FOUND(HttpStatus.NOT_FOUND, "PT-CLASSTIME-002", "존재하지 않는 PT 수강 가능 시간입니다."),
 
 	// Gym
 	GYM_INVALID_REQUEST(HttpStatus.BAD_REQUEST, "GYM-001", "잘못된 입력값입니다."),
