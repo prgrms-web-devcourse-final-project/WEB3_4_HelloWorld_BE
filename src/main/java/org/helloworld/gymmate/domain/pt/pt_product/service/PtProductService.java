@@ -54,6 +54,19 @@ public class PtProductService {
 		return productId;
 	}
 
+	@Transactional
+	public void deletePtProduct(Long productId) {
+		// TODO : 로그인한 id 받아와야 함
+		Long trainerId = 0L;
+
+		PtProduct ptProduct = findProductOrThrow(productId);
+		validateOwnership(ptProduct, trainerId);
+		ptProduct.getPtProductImages()
+			.forEach(image -> fileManager.deleteFile(image.getUrl()));
+
+		ptProductRepository.delete(ptProduct);
+	}
+
 	private void saveProductImages(PtProduct ptProduct, List<MultipartFile> images) {
 		List<String> imageUrls = fileManager.uploadFiles(images, "ptProduct");
 		List<PtProductImage> ptProductImages = imageUrls.stream()
@@ -81,5 +94,4 @@ public class PtProductService {
 				fileManager.deleteFile(url);
 			}));
 	}
-
 }
