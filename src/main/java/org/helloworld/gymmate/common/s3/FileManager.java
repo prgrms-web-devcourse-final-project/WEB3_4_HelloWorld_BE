@@ -29,17 +29,13 @@ public class FileManager {
 
 	// 여러파일업로드
 	public List<String> uploadFiles(List<MultipartFile> files, String domain) {
-		System.out.println(awsS3Properties.getS3().getBucket());
-		System.out.println(awsS3Properties.getCredentials().getAccessKey());
-		System.out.println(awsS3Properties.getCredentials().getSecretKey());
-		System.out.println(awsS3Properties.getRegion().getStaticRegion());
 		return files.stream()
 			.map(file -> uploadToS3(file, domain))
 			.collect(Collectors.toList());
 	}
 
-	// 도메인별 파일 저장 기능
-	public String uploadToS3(MultipartFile file, String domain) {
+	// 테이블별 파일 저장 기능
+	public String uploadToS3(MultipartFile file, String tableName) {
 		String bucketName = awsS3Properties.getS3().getBucket();
 
 		LocalDate now = LocalDate.now();
@@ -48,7 +44,7 @@ public class FileManager {
 		String uuidFileName = UUID.randomUUID() + extension;
 
 		// 최종 S3 저장 경로 (도메인명/년월일/UUID.확장자)
-		String fileName = String.format("%s/%s/%s", domain, datePath, uuidFileName);
+		String fileName = String.format("%s/%s/%s", tableName, datePath, uuidFileName);
 
 		try {
 			PutObjectRequest request = PutObjectRequest.builder()
@@ -66,8 +62,9 @@ public class FileManager {
 	}
 
 	// 파일 삭제 기능
-	public void deleteFile(String fileName) {
+	public void deleteFile(String fileUrl) {
 		String bucketName = awsS3Properties.getS3().getBucket();
+		String fileName = fileUrl.substring(fileUrl.indexOf("amazonaws.com/") + "amazonaws.com/".length());
 
 		DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
 			.bucket(bucketName)
