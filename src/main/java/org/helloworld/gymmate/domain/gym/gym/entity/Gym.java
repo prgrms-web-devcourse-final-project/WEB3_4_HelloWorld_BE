@@ -41,19 +41,19 @@ public class Gym {
 	@Column(name = "phone_number", nullable = false)
 	private String phoneNumber;
 
-	@Column(name= "isPartner", nullable = false)
+	@Column(name = "isPartner", nullable = false)
 	private Boolean isPartner;
 
-	@Column(name = "address" , nullable = false)
+	@Column(name = "address", nullable = false)
 	private String address;
 
 	@Column(name = "x_feild", nullable = false)
 	private String xField;
 
-	@Column(name = "y_feild",nullable = false)
+	@Column(name = "y_feild", nullable = false)
 	private String yField;
 
-	@Column(name = "avg_score",nullable = false)
+	@Column(name = "avg_score", nullable = false)
 	private Double avgScore;
 
 	@Column(name = "intro", nullable = false)
@@ -63,9 +63,37 @@ public class Gym {
 	@Builder.Default
 	private List<GymImage> images = new ArrayList<>();
 
+
+	// ====== Business Logic ======
+
 	public void addImages(List<GymImage> images) {
 		this.images.addAll(images);
 		images.forEach(img -> img.setGym(this));
+	}
+
+	public void replaceImages(List<GymImage> newImages) {
+		this.images.clear();
+		this.addImages(newImages);
+	}
+
+	public void updateInfo(
+		String gymName,
+		String startTime,
+		String endTime,
+		String phoneNumber,
+		String address,
+		String xField,
+		String yField,
+		String intro
+	) {
+		this.gymName = gymName;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.phoneNumber = phoneNumber;
+		this.address = address;
+		this.xField = xField;
+		this.yField = yField;
+		this.intro = intro;
 	}
 }
 
