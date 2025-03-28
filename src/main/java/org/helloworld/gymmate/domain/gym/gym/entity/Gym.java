@@ -76,6 +76,10 @@ public class Gym {
 		this.addImages(newImages);
 	}
 
+	public void clearImages() {
+		this.images.clear();
+	}
+
 	public void updateInfo(
 		String gymName,
 		String startTime,
