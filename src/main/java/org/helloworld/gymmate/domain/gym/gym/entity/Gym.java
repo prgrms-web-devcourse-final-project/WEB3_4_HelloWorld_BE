@@ -53,14 +53,15 @@ public class Gym {
 	@Column(name = "y_feild",nullable = false)
 	private String yField;
 
-	@OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<GymImage> images = new ArrayList<>();
-
 	@Column(name = "avg_score",nullable = false)
 	private Double avgScore;
 
 	@Column(name = "intro", nullable = false)
 	private String intro;
+
+	@OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<GymImage> images = new ArrayList<>();
 
 	public void addImages(List<GymImage> images) {
 		this.images.addAll(images);
