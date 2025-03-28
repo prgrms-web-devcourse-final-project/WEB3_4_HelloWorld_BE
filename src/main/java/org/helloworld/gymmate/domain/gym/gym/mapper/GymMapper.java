@@ -3,6 +3,7 @@ package org.helloworld.gymmate.domain.gym.gym.mapper;
 import java.util.List;
 
 import org.helloworld.gymmate.domain.gym.gym.dto.GymCreateRequest;
+import org.helloworld.gymmate.domain.gym.gym.dto.GymResponse;
 import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gym.entity.GymImage;
 
@@ -31,6 +32,10 @@ public class GymMapper {
 		}
 
 		return gym;
+	}
+
+	public static GymResponse toResponse(Gym gym) {
+		return new GymResponse(gym.getGymId());
 	}
 
 
