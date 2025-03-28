@@ -1,6 +1,6 @@
 package org.helloworld.gymmate.domain.user.member.entity;
 
-import org.helloworld.gymmate.domain.user.enumerate.GenderType;
+import org.helloworld.gymmate.domain.user.enums.GenderType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,10 +35,10 @@ public class Member {
 	@Column(name = "member_name")
 	private String memberName;
 
-	@Column(name="email")
+	@Column(name = "email")
 	private String email;
 
-	@Column(name="birthday")
+	@Column(name = "birthday")
 	private String birthday;
 
 	@Enumerated(value = EnumType.STRING)
