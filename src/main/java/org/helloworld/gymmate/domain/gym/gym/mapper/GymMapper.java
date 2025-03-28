@@ -38,5 +38,17 @@ public class GymMapper {
 		return new GymResponse(gym.getGymId());
 	}
 
+	public static void updateEntity(Gym gym, GymCreateRequest request) {
+		gym.updateInfo(
+			request.gymName(),
+			request.startTime(),
+			request.endTime(),
+			request.phoneNumber(),
+			request.address(),
+			request.xField(),
+			request.yField(),
+			request.intro()
+		);
+	}
 
 }
