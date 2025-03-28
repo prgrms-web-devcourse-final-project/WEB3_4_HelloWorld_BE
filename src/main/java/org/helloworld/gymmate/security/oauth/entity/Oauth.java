@@ -37,7 +37,4 @@ public class Oauth extends BaseEntity {
 
 	@Column(name = "provider_id", nullable = false)
 	private String providerId;
-
-	@Column(name = "create_at", nullable = false)
-	private LocalDate createAt;
 }
