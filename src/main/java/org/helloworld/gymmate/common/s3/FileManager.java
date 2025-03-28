@@ -23,14 +23,14 @@ public class FileManager {
 	private final AwsS3Properties awsS3Properties;
 
 	// 단일업로드
-	public String uploadFile(MultipartFile file, String domain) {
-		return uploadToS3(file, domain);
+	public String uploadFile(MultipartFile file, String tableName) {
+		return uploadToS3(file, tableName);
 	}
 
 	// 여러파일업로드
-	public List<String> uploadFiles(List<MultipartFile> files, String domain) {
+	public List<String> uploadFiles(List<MultipartFile> files, String tableName) {
 		return files.stream()
-			.map(file -> uploadToS3(file, domain))
+			.map(file -> uploadToS3(file, tableName))
 			.collect(Collectors.toList());
 	}
 
