@@ -34,7 +34,9 @@ public enum ErrorCode {
 	VOTE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "VOTE-002", "이미 투표한 내역이 존재합니다."),
 	INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "PARAMETER-001", "요청 파라미터가 유효하지 않습니다."),
 	CLASSTIME_DUPLICATED(HttpStatus.NOT_FOUND, "PT-CLASSTIME-001", "이미 등록된 수업 시간입니다."),
-	CLASSTIME_NOT_FOUND(HttpStatus.NOT_FOUND, "PT-CLASSTIME-002", "존재하지 않는 PT 수강 가능 시간입니다.");
+	CLASSTIME_NOT_FOUND(HttpStatus.NOT_FOUND, "PT-CLASSTIME-002", "존재하지 않는 PT 수강 가능 시간입니다."),
+	PTPRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "PT-PRODUCT-001", "존재하지 않는 PT 수업입니다."),
+	USER_NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "USER-002", "권한이 부족합니다.");
 
 	private final HttpStatus httpStatus;
 	private final String errorCode;
