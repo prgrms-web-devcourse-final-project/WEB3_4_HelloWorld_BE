@@ -65,7 +65,7 @@ public class SecurityConfig {
 	public WebSecurityCustomizer webSecurityCustomizer() { // 스프링 시큐리티를 무시할 페이지 목록 ( = 로그인이 필요없는 페이지 목록)
 		return web -> web.ignoring().requestMatchers(
 				"/v3/**", "/swagger-ui/**", "/api/logistics",
-				"h2-console/**", "/error"
+				"h2-console/**", "/error", "/gym"
 			)
 			//.requestMatchers(HttpMethod.GET, "/similar")
 			//.requestMatchers(HttpMethod.GET, "/reviews/{reviewId}/comments")
