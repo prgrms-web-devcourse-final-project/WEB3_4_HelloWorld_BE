@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.security.config;
+package org.helloworld.gymmate.common.config;
 
 import java.util.List;
 
