@@ -31,7 +31,6 @@ public class ClasstimeService {
 			ClasstimeMapper.toEntity(request, trainerId));
 	}
 
-	@Transactional
 	public void deleteClasstime(Integer dayOfWeek, Integer time) {
 		// TODO : userDetail에서 id 가져와야 함
 		Long trainerId = 0L;
@@ -40,7 +39,6 @@ public class ClasstimeService {
 		classtimeRepository.delete(classtime);
 	}
 
-	@Transactional(readOnly = true)
 	public ClasstimesResponse getAvailableTimes() {
 		// TODO : userDetail에서 id 가져와야 함
 		Long trainerId = 0L;
