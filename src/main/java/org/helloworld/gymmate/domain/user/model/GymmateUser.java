@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.user.member.model;
+package org.helloworld.gymmate.domain.user.model;
 
 public class GymmateUser {
 	public String getNickname() {
