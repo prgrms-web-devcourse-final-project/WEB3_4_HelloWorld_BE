@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.security.authentication;
+package org.helloworld.gymmate.security.model;
 
 import java.util.Collection;
 

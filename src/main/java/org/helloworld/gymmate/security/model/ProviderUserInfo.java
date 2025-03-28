@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.security.oauth2;
+package org.helloworld.gymmate.security.model;
 
 import java.util.Map;
 

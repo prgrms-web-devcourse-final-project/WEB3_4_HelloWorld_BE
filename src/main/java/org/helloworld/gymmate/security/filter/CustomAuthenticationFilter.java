@@ -1,4 +1,5 @@
-package org.helloworld.gymmate.security.authentication;
+package org.helloworld.gymmate.security.filter;
+
 import java.io.IOException;
 import java.util.List;
 

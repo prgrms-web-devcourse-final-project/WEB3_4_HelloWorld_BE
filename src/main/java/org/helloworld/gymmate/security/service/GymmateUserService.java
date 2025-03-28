@@ -1,8 +1,8 @@
-package org.helloworld.gymmate.domain.user.service;
+package org.helloworld.gymmate.security.service;
 
 import java.util.Optional;
 
-import org.helloworld.gymmate.domain.user.model.GymmateUser;
+import org.helloworld.gymmate.security.model.GymmateUser;
 import org.springframework.stereotype.Service;
 
 @Service

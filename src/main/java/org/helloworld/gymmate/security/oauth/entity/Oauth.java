@@ -1,6 +1,9 @@
-package org.helloworld.gymmate.domain.user.model;
+package org.helloworld.gymmate.security.oauth.entity;
 
-import org.helloworld.gymmate.domain.user.enumerate.SocialProviderType;
+import java.time.LocalDate;
+
+import org.helloworld.gymmate.common.entity.BaseEntity;
+import org.helloworld.gymmate.domain.user.enums.SocialProviderType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,12 +24,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name = "social_provider")
-public class SocialProvider {
+@Table(name = "oauth")
+public class Oauth extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private Long socialId;
+	@Column(name = "oauth_id")
+	private Long oauthId;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "provider", nullable = false)
@@ -34,4 +37,7 @@ public class SocialProvider {
 
 	@Column(name = "provider_id", nullable = false)
 	private String providerId;
+
+	@Column(name = "create_at", nullable = false)
+	private LocalDate createAt;
 }
