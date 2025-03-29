@@ -3,25 +3,23 @@ package org.helloworld.gymmate.security.model;
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public class GymmateUserDetails implements UserDetails {
 
-	final String USER_ROLE = "ROLE_USER";
-
-	private final GymmateUser gymmateUser;
-
-	public GymmateUserDetails(GymmateUser gymmateUser) {
-		this.gymmateUser = gymmateUser;
-	}
+	private final Long userId;
+	private final String username;
+	private final String userType; // 예: MEMBER, TRAINER
+	private final Collection<? extends GrantedAuthority> authorities;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return AuthorityUtils.createAuthorityList(USER_ROLE);
+		return authorities;
 	}
 
 	@Override
@@ -31,7 +29,7 @@ public class GymmateUserDetails implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return gymmateUser.getNickname();
+		return username;
 	}
 
 	@Override

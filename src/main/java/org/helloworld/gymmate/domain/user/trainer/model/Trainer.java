@@ -97,6 +97,8 @@ public class Trainer {
 	}
 
 	public void updateOwnerInfo(OwnerRegisterRequest request) {
+		this.isOwner = true;
+		this.isCheck = true;
 		this.trainerName = request.trainerName();
 		this.phoneNumber = request.phoneNumber();
 		this.email = request.email();

@@ -40,18 +40,20 @@ public class JwtManager {
 		log.info("JWT 보안 키가 성공적으로 생성되었습니다.");
 	}
 
-	public String createAccessToken(Long userId) {
+	public String createAccessToken(Long userId, String userType) {
 		return Jwts.builder()
 			.claim("userId", userId)
+			.claim("userType", userType)
 			.issuedAt(new Date())
 			.expiration(new Date(System.currentTimeMillis() + ExpirationPolicy.getAccessTokenExpirationTime()))
 			.signWith(secretKey)
 			.compact();
 	}
 
-	public String createRefreshToken(Long userId) {
+	public String createRefreshToken(Long userId, String userType) {
 		String refreshToken = Jwts.builder()
 			.claim("userId", userId)
+			.claim("userType", userType)
 			.issuedAt(new Date())
 			.expiration(new Date(System.currentTimeMillis() + ExpirationPolicy.getRefreshTokenExpirationTime()))
 			.signWith(secretKey)
@@ -103,9 +105,10 @@ public class JwtManager {
 
 	public String[] recreateTokens(String refreshToken) {
 		Long userId = getUserIdByToken(refreshToken);
+		String userType = getUserTypeByToken(refreshToken);
 
-		String newAccessToken = createAccessToken(userId);
-		String newRefreshToken = createRefreshToken(userId);
+		String newAccessToken = createAccessToken(userId, userType);
+		String newRefreshToken = createRefreshToken(userId, userType);
 
 		return new String[] {newAccessToken, newRefreshToken};
 	}
@@ -124,9 +127,23 @@ public class JwtManager {
 		}
 	}
 
+	public String getUserTypeByToken(String token) {
+		try {
+			return Jwts.parser()
+				.verifyWith(secretKey)
+				.build()
+				.parseSignedClaims(token)
+				.getPayload()
+				.get("userType", String.class);
+		} catch (JwtException e) {
+			log.error("인증 토큰에서 사용자 정보를 가져오는데 실패했습니다: {}", e.getMessage());
+			throw new BusinessException(ErrorCode.TOKEN_NOT_VALID);
+		}
+	}
+
 	public Authentication getAuthentication(String accessToken) {
 		GymmateUserDetails gymmateUserDetails = gymnmateUserDetailsService.loadUserByUserId(
-			getUserIdByToken(accessToken));
+			getUserIdByToken(accessToken), getUserTypeByToken(accessToken));
 		return new UsernamePasswordAuthenticationToken(gymmateUserDetails, "",
 			gymmateUserDetails.getAuthorities());  // 인증 객체 생성
 	}

@@ -16,16 +16,5 @@ public class TrainerMapper {
 			.additionalInfoCompleted(false)
 			.build();
 	}
-
-	public static Trainer toOwner(Oauth oauth) {
-		return Trainer.builder()
-			.oauth(oauth)
-			.isOwner(true)
-			.isCheck(true)
-			.score(0.0)
-			.gymId(1L)
-			.cash(100000000L)
-			.additionalInfoCompleted(false)
-			.build();
-	}
+	
 }
