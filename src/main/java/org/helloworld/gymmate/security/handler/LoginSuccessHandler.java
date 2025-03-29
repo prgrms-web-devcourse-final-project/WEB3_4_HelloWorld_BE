@@ -1,13 +1,10 @@
 package org.helloworld.gymmate.security.handler;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.helloworld.gymmate.common.cookie.CookieManager;
 import org.helloworld.gymmate.common.enums.TokenType;
-import org.helloworld.gymmate.domain.user.enums.UserType;
-import org.helloworld.gymmate.security.model.SocialUserInfo;
-import org.helloworld.gymmate.security.oauth.entity.Oauth;
+import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.helloworld.gymmate.security.oauth.service.OauthService;
 import org.helloworld.gymmate.security.policy.ExpirationPolicy;
 import org.helloworld.gymmate.security.token.JwtManager;
@@ -38,15 +35,21 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 		Authentication authentication) throws IOException {
 		OAuth2AuthenticationToken token = (OAuth2AuthenticationToken)authentication; // 토큰
-		String provider = token.getAuthorizedClientRegistrationId(); // provider 추출
+		Object principal = token.getPrincipal();
 
-		registerTokens(request, response, getLoginUserId(token, provider));
+		if (principal instanceof CustomOAuth2User customUser) {
+			registerTokens(request, response, customUser);
+		} else {
+			throw new IllegalStateException("Unexpected principal type: " + principal.getClass());
+		}
 	}
 
-	private void registerTokens(HttpServletRequest request, HttpServletResponse response, Long userId) throws
+	private void registerTokens(HttpServletRequest request, HttpServletResponse response,
+		CustomOAuth2User customUser) throws
 		IOException {
-		String refreshToken = jwtManager.createRefreshToken(userId);
-		String accessToken = jwtManager.createAccessToken(userId);
+		String refreshToken = jwtManager.createRefreshToken(customUser.getUserId(),
+			customUser.getUserType().toString());
+		String accessToken = jwtManager.createAccessToken(customUser.getUserId(), customUser.getUserType().toString());
 
 		cookieManager.setCookie(TokenType.ACCESS_TOKEN, accessToken,
 			ExpirationPolicy.getAccessTokenExpirationTime());
@@ -56,49 +59,12 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 		getRedirectStrategy().sendRedirect(request, response, String.format(REDIRECT_URI));
 	}
 
-	private Long getLoginUserId(OAuth2AuthenticationToken token, String provider) {
-		// 카카오로부터 받은 전체 사용자 정보를 Map 형태로 가져옴
-		Map<String, Object> attributes = token.getPrincipal().getAttributes();
-
-		// 정보를 담을 임시 객체 생성
-		SocialUserInfo socialUserInfo = new SocialUserInfo(attributes);
-
-		// 필요한 정보 가져오기
-		String providerId = socialUserInfo.getProviderId();
-		UserType userType = socialUserInfo.getUserType();
-
-		log.debug("PROVIDER : {}", provider);
-		log.debug("PROVIDER_ID : {}", providerId);
-
-		// oauth가 없는 경우 -> oauth 생성
-		Oauth oauth = getOauth(providerId);
-		// oauth는 있는데, member or trainer 가 없는 경우 -> member or trainer 생성
-		return getUserId(oauth, userType);
-	}
-
-	private Oauth getOauth(String providerId) {
-		return oauthService.findOauthByProviderId(providerId).orElseGet(() -> oauthService.createOauth(providerId));
-	}
-
-	private Long getUserId(Oauth oauth, UserType userType) {
-		Long userId = 0L;
-
-		if (userType == UserType.MEMBER) {
-			//to do: userId = memberService.getMemberByOauth(oauth);
-			log.debug("기존 유저입니다.");
-			//존재하지 않으면
-			log.debug("신규 유저입니다. 등록을 진행합니다.");
-			//to do: memberService.createMember(SocialProviderType.fromProviderName(provider), providerId);
+	private Long getLoginUserId(OAuth2AuthenticationToken token) {
+		Object principal = token.getPrincipal();
+		if (principal instanceof CustomOAuth2User customUser) {
+			log.debug("유저 ID, 유저 Type: {}, {}", customUser.getUserId(), customUser.getUserType());
+			return customUser.getUserId();
 		}
-
-		if (userType == UserType.TRAINER) {
-			//to do: userId = trainerService.getTrainerByOauth(oauth);
-			log.debug("기존 유저입니다.");
-			//존재하지 않으면
-			log.debug("신규 유저입니다. 등록을 진행합니다.");
-			//to do: trainerService.createTrainer(SocialProviderType.fromProviderName(provider), providerId);
-		}
-
-		return userId;
+		throw new IllegalStateException("Unexpected principal type: " + principal.getClass());
 	}
 }
