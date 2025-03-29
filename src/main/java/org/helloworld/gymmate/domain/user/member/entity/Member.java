@@ -29,20 +29,20 @@ public class Member {
 	@Column(name = "member_id")
 	private Long memberId;
 
-	@Column(name = "phone_number")
+	@Column(name = "phone_number",nullable = false)
 	private String phoneNumber;
 
-	@Column(name = "member_name")
+	@Column(name = "member_name",nullable = false)
 	private String memberName;
 
-	@Column(name="email")
+	@Column(name="email",nullable = false)
 	private String email;
 
-	@Column(name="birthday")
+	@Column(name="birthday",nullable = false)
 	private String birthday;
 
 	@Enumerated(value = EnumType.STRING)
-	@Column(name = "gender")
+	@Column(name = "gender",nullable = false)
 	private GenderType genderType;
 
 }
