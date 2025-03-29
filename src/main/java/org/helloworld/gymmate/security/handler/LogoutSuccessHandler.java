@@ -1,15 +1,14 @@
-package org.helloworld.gymmate.security.oauth2;
+package org.helloworld.gymmate.security.handler;
 
 import java.util.concurrent.TimeUnit;
 
+import org.helloworld.gymmate.common.cookie.CookieManager;
 import org.helloworld.gymmate.common.enums.TokenType;
 import org.helloworld.gymmate.security.token.JwtManager;
-import org.helloworld.gymmate.common.cookie.CookieManager;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
-
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

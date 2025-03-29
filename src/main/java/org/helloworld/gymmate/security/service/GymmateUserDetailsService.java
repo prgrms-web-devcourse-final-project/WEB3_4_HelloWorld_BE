@@ -1,6 +1,6 @@
-package org.helloworld.gymmate.security.authentication;
+package org.helloworld.gymmate.security.service;
 
-import org.helloworld.gymmate.domain.user.service.GymmateUserService;
+import org.helloworld.gymmate.security.model.GymmateUserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;

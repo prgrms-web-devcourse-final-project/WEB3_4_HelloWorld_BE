@@ -1,8 +1,7 @@
-package org.helloworld.gymmate.security.authentication;
+package org.helloworld.gymmate.security.model;
 
 import java.util.Collection;
 
-import org.helloworld.gymmate.domain.user.model.GymmateUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
