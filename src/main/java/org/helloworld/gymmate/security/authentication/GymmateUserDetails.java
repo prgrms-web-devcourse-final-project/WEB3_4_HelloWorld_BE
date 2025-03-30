@@ -2,7 +2,6 @@ package org.helloworld.gymmate.security.authentication;
 
 import java.util.Collection;
 
-import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.model.GymmateUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -15,10 +14,10 @@ public class GymmateUserDetails implements UserDetails {
 
 	final String USER_ROLE = "ROLE_USER";
 
-	private final Member member;
+	private final GymmateUser gymmateUser;
 
-	public GymmateUserDetails(Member member) {
-		this.member = member;
+	public GymmateUserDetails(GymmateUser gymmateUser) {
+		this.gymmateUser = gymmateUser;
 	}
 
 	@Override
@@ -33,7 +32,7 @@ public class GymmateUserDetails implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return member.getMemberName();
+		return gymmateUser.getNickname();
 	}
 
 	@Override
