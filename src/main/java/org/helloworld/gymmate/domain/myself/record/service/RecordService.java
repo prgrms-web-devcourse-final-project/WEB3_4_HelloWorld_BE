@@ -1,6 +1,8 @@
 package org.helloworld.gymmate.domain.myself.record.service;
 
 import lombok.RequiredArgsConstructor;
+import org.helloworld.gymmate.common.exception.BusinessException;
+import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.domain.myself.record.dto.RecordCreateRequest;
 import org.helloworld.gymmate.domain.myself.record.dto.RecordModifyRequest;
 import org.helloworld.gymmate.domain.myself.record.dto.RecordResponse;
@@ -32,6 +34,12 @@ public class RecordService {
     }
 
     public void deleteRecord(Long recordId, Member member) {
+        Record record = recordRepository.findById(recordId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR)); //TODO: 에러코드 수정
+
+        validateRecordOwner(record, member);
+
+        recordRepository.delete(record);
     }
 
     public void modifyRecord(Long recordId, RecordModifyRequest request, Member member) {
@@ -39,5 +47,11 @@ public class RecordService {
 
     public Page<RecordResponse> getRecords(int page, int size, Member member) {
         return null;
+    }
+
+    private void validateRecordOwner(Record record, Member member) {
+        if (record.getMember().equals(member)) {
+            throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
     }
 }
