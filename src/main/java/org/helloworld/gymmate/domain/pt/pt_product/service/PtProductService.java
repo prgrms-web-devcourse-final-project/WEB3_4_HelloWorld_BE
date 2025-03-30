@@ -196,7 +196,7 @@ public class PtProductService {
 
 		List<Award> awards = awardRepository.findByTrainerId(trainer.getTrainerId());
 
-		Gym gym = gymRepository.findWithImagesById(trainer.getGymId())
+		Gym gym = gymRepository.findWithImagesByGymId(trainer.getGymId())
 			.orElseThrow(()-> new BusinessException(ErrorCode.GYM_NOT_FOUND));
 
 		return PtProductMapper.toDto(ptProduct, trainer, awards, gym);

@@ -77,7 +77,7 @@ public class PtProductController {
 			ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize)));
 	}
 
-	@GetMapping("/{ptProductId")
+	@GetMapping("/{ptProductId}")
 	public ResponseEntity<PtProductResponse> getProduct(
 		@PathVariable Long ptProductId
 	){

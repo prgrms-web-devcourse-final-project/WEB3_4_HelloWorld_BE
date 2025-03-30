@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GymRepository extends JpaRepository<Gym, Long> {
 	@EntityGraph(attributePaths = "images")
-	Optional<Gym> findWithImagesById(Long gymId);
+	Optional<Gym> findWithImagesByGymId(Long gymId);
 
 }
