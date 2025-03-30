@@ -23,11 +23,11 @@ public class RecordController {
 
     @PostMapping
     public ResponseEntity<Map<String, Long>> createRecord(
-            @AuthenticationPrincipal GymmateUserDetails userDetails, //Oauth2User로 변경 예정
+            @AuthenticationPrincipal GymmateUserDetails userDetails, //TODO: Oauth2User로 변경
             @RequestBody RecordCreateRequest request) {
 
         long recordId = 0;
-        Member member = null; //Oauth2User.getMember
+        Member member = null; //TODO: Oauth2User.getMember
         recordService.createRecord(request, member);
 
         return ResponseEntity.ok(
@@ -36,10 +36,10 @@ public class RecordController {
 
     @DeleteMapping(value = "/{recordId}")
     public ResponseEntity<Map<String, Long>> deleteRecord(
-            @AuthenticationPrincipal GymmateUserDetails userDetails, //Oauth2User로 변경 예정
+            @AuthenticationPrincipal GymmateUserDetails userDetails, //TODO: Oauth2User로 변경
             @PathVariable Long recordId) {
 
-        Member member = null; //Oauth2User.getMember
+        Member member = null; //TODO: Oauth2User.getMember
         recordService.deleteRecord(recordId, member);
 
         return ResponseEntity.ok().build();
@@ -47,11 +47,11 @@ public class RecordController {
 
     @PutMapping(value = "/{recordId}")
     public ResponseEntity<Map<String, Long>> modifyRecord(
-            @AuthenticationPrincipal GymmateUserDetails userDetails, //Oauth2User로 변경 예정
+            @AuthenticationPrincipal GymmateUserDetails userDetails, //TODO: Oauth2User로 변경
             @PathVariable Long recordId,
             @RequestBody RecordModifyRequest request) {
 
-        Member member = null; //Oauth2User.getMember
+        Member member = null; //TODO: Oauth2User.getMember
         recordService.modifyRecord(recordId, request, member);
 
         return ResponseEntity.ok().build();
@@ -59,11 +59,11 @@ public class RecordController {
 
     @GetMapping
     public ResponseEntity<PageDto<RecordResponse>> getRecords(
-            @AuthenticationPrincipal GymmateUserDetails userDetails, //Oauth2User로 변경 예정
+            @AuthenticationPrincipal GymmateUserDetails userDetails, //TODO: Oauth2User로 변경
             @RequestParam int page,
             @RequestParam int size) {
 
-        Member member = null; //Oauth2User.getMember
+        Member member = null; //TODO: Oauth2User.getMember
 
         return ResponseEntity.ok(PageMapper.toPageDto(
                 recordService.getRecords(page, size, member)));
