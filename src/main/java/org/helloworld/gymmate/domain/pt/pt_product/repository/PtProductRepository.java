@@ -60,6 +60,7 @@ public interface PtProductRepository extends JpaRepository<PtProduct, Long> {
 
 	@Query("""
         SELECT p FROM PtProduct p
+        JOIN Trainer t ON p.trainerId = t.trainerId
         WHERE p.info LIKE %:searchTerm%
         ORDER BY t.score DESC
     """)
