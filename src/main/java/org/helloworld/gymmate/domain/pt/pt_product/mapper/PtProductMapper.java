@@ -1,11 +1,16 @@
 package org.helloworld.gymmate.domain.pt.pt_product.mapper;
 
+import java.util.List;
 import java.util.Map;
 
+import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gym.entity.GymImage;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductCreateRequest;
+import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductResponse;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductsResponse;
 import org.helloworld.gymmate.domain.pt.pt_product.entity.PtProduct;
 import org.helloworld.gymmate.domain.pt.pt_product.entity.PtProductImage;
+import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 
 public class PtProductMapper {
@@ -40,6 +45,37 @@ public class PtProductMapper {
 			trainerMap.get(ptProduct.getTrainerId()), // 트레이너 정보 매핑
 			ptProduct.getInfo(),
 			ptProduct.getPtProductFee()
+		);
+	}
+
+	public static PtProductResponse toDto(PtProduct ptProduct, Trainer trainer, List<Award> awards, Gym gym) {
+		return new PtProductResponse(
+			ptProduct.getPtProductId(),
+			new PtProductResponse.Trainer(
+				trainer.getTrainerId(),
+				trainer.getTrainerName(),
+				trainer.getGenderType().toString(),
+				trainer.getProfile(),
+				trainer.getPhoneNumber(),
+				trainer.getEmail(),
+				trainer.getScore(),
+				awards.stream()
+					.map(a -> new PtProductResponse.Award(a.getAwardYear(), a.getAwardName(), a.getAwardInfo()))
+					.toList()
+			),
+			ptProduct.getInfo(),
+			ptProduct.getPtProductFee(),
+			ptProduct.getPtProductImages().stream().map(PtProductImage::getUrl).toList(),
+			new PtProductResponse.Gym(
+				gym.getGymName(),
+				gym.getAddress(),
+				gym.getXField(),
+				gym.getYField(),
+				gym.getStartTime(),
+				gym.getEndTime(),
+				gym.getAvgScore(),
+				gym.getImages().stream().map(GymImage::getUrl).toList()
+			)
 		);
 	}
 }
