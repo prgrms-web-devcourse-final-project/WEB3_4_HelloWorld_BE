@@ -1,17 +1,29 @@
 package org.helloworld.gymmate.domain.pt.pt_product.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductCreateRequest;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductModifyRequest;
+import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductsResponse;
 import org.helloworld.gymmate.domain.pt.pt_product.entity.PtProduct;
 import org.helloworld.gymmate.domain.pt.pt_product.entity.PtProductImage;
+import org.helloworld.gymmate.domain.pt.pt_product.enums.SearchOption;
+import org.helloworld.gymmate.domain.pt.pt_product.enums.SortOption;
 import org.helloworld.gymmate.domain.pt.pt_product.mapper.PtProductMapper;
 import org.helloworld.gymmate.domain.pt.pt_product.repository.PtProductRepository;
+import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
+import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PtProductService {
 	private final PtProductRepository ptProductRepository;
+	private final TrainerRepository trainerRepository;
 	private final FileManager fileManager;
 
 	@Transactional
@@ -94,4 +107,77 @@ public class PtProductService {
 				fileManager.deleteFile(url);
 			}));
 	}
+
+	public Page<PtProductsResponse> getProducts(String sortOption, String searchOption, String searchTerm, int page, int pageSize) {
+		SortOption sort = SortOption.from(sortOption);
+		SearchOption search = SearchOption.from(searchOption);
+		Pageable pageable = PageRequest.of(page, pageSize);
+
+		return switch (sort) {
+			case LATEST -> fetchLatestProducts(search, searchTerm, pageable);
+			case SCORE -> fetchScoreSortedProducts(search, searchTerm, pageable);
+			// TODO : member 추가되면 달아줘야 함
+			// case NEAREST -> fetchNearestProducts(search, searchTerm, pageable);
+			default -> throw new BusinessException(ErrorCode.UNSUPPORTED_SORT_OPTION);
+		};
+	}
+
+	private Page<PtProductsResponse> fetchLatestProducts(SearchOption search, String searchTerm, Pageable pageable) {
+		Page<PtProduct> ptProducts = switch (search) {
+			case NONE -> ptProductRepository.findAllByOrderByPtProductIdDesc(pageable);
+			case TRAINER -> ptProductRepository.findByTrainerNameOrderByPtProductIdDesc(searchTerm, pageable);
+			case PTPRODUCT -> ptProductRepository.findByPtProductNameOrderByPtProductIdDesc(searchTerm, pageable);
+			case DISTRICT -> ptProductRepository.findByGymAddressOrderByPtProductIdDesc(searchTerm, pageable);
+		};
+
+		return fetchAndMapProducts(ptProducts, pageable);
+	}
+
+	private Page<PtProductsResponse> fetchScoreSortedProducts(SearchOption search, String searchTerm, Pageable pageable) {
+		Page<PtProduct> ptProducts = switch (search) {
+			// 검색어 없이 순수 평점순으로만 ptProduct 조회
+			case NONE -> ptProductRepository.findAllOrderByTrainerScoreDesc(pageable);
+			// 트레이너명으로 검색된 결과에서 Score 순으로 조회
+			case TRAINER -> ptProductRepository.findByTrainerNameOrderByScoreDesc(searchTerm, pageable);
+			case PTPRODUCT -> ptProductRepository.findByPtProductNameOrderByScoreDesc(searchTerm, pageable);
+			case DISTRICT -> ptProductRepository.findByGymAddressOrderByScoreDesc(searchTerm, pageable);
+		};
+
+		return fetchAndMapProducts(ptProducts, pageable);
+	}
+
+	// TODO : member에 위치 정보 추가되야 함
+	// private Page<PtProductsResponse> fetchNearestProducts(SearchOption search, String searchTerm, Pageable pageable) {
+	// 	Page<PtProduct> ptProducts = switch (search) {
+	// 		case NONE -> ptProductRepository.findAllOrderByDistanceAsc(pageable);
+	// 		case TRAINER -> ptProductRepository.findByTrainerNameOrderByDistanceAsc(searchTerm, pageable);
+	// 		case PTPRODUCT -> ptProductRepository.findByPtProductNameOrderByDistanceAsc(searchTerm, pageable);
+	// 		case DISTRICT -> ptProductRepository.findByGymAddressOrderByDistanceAsc(searchTerm, pageable);
+	// 	};
+	//
+	// 	return fetchAndMapProducts(ptProducts, pageable);
+	// }
+
+	private Page<PtProductsResponse> fetchAndMapProducts(Page<PtProduct> ptProducts, Pageable pageable) {
+		// ptProducts에 해당하는 trainerIds 추출(Set으로 같은 id 중복문제 해결)
+		Set<Long> trainerIds = ptProducts.getContent().stream()
+			.map(PtProduct::getTrainerId)
+			.collect(Collectors.toSet());
+
+		// 트레이너 정보 한번의 쿼리로 받아오기
+		Map<Long, PtProductsResponse.PtTrainerResponse> trainerMap = trainerRepository.findByTrainerIdIn(trainerIds)
+			.stream()
+			.collect(Collectors.toMap(
+				Trainer::getTrainerId,
+				PtProductMapper::toDto
+			));
+
+		// Dto 변환
+		List<PtProductsResponse> responseList = ptProducts.getContent().stream()
+			.map(ptProduct -> PtProductMapper.toDto(ptProduct, trainerMap))
+			.toList();
+
+		return new PageImpl<>(responseList, pageable, ptProducts.getTotalElements());
+	}
+
 }
