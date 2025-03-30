@@ -8,6 +8,7 @@ import org.helloworld.gymmate.common.mapper.PageMapper;
 import org.helloworld.gymmate.common.validate.custom.ValidImageFile;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductCreateRequest;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductModifyRequest;
+import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductResponse;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductsResponse;
 import org.helloworld.gymmate.domain.pt.pt_product.service.PtProductService;
 import org.springframework.http.MediaType;
@@ -76,4 +77,10 @@ public class PtProductController {
 			ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize)));
 	}
 
+	@GetMapping("/{ptProductId}")
+	public ResponseEntity<PtProductResponse> getProduct(
+		@PathVariable Long ptProductId
+	){
+		return ResponseEntity.ok(ptProductService.getProduct(ptProductId));
+	}
 }

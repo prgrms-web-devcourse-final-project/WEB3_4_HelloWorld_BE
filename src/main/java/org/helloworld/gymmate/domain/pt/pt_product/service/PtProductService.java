@@ -9,8 +9,11 @@ import java.util.stream.Collectors;
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
+import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gym.repository.GymRepository;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductCreateRequest;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductModifyRequest;
+import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductResponse;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductsResponse;
 import org.helloworld.gymmate.domain.pt.pt_product.entity.PtProduct;
 import org.helloworld.gymmate.domain.pt.pt_product.entity.PtProductImage;
@@ -18,6 +21,8 @@ import org.helloworld.gymmate.domain.pt.pt_product.enums.SearchOption;
 import org.helloworld.gymmate.domain.pt.pt_product.enums.SortOption;
 import org.helloworld.gymmate.domain.pt.pt_product.mapper.PtProductMapper;
 import org.helloworld.gymmate.domain.pt.pt_product.repository.PtProductRepository;
+import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
+import org.helloworld.gymmate.domain.user.trainer.award.repository.AwardRepository;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.springframework.data.domain.Page;
@@ -36,6 +41,8 @@ import lombok.RequiredArgsConstructor;
 public class PtProductService {
 	private final PtProductRepository ptProductRepository;
 	private final TrainerRepository trainerRepository;
+	private final AwardRepository awardRepository;
+	private final GymRepository gymRepository;
 	private final FileManager fileManager;
 
 	@Transactional
@@ -158,6 +165,7 @@ public class PtProductService {
 	// 	return fetchAndMapProducts(ptProducts, pageable);
 	// }
 
+	@Transactional(readOnly = true)
 	private Page<PtProductsResponse> fetchAndMapProducts(Page<PtProduct> ptProducts, Pageable pageable) {
 		// ptProducts에 해당하는 trainerIds 추출(Set으로 같은 id 중복문제 해결)
 		Set<Long> trainerIds = ptProducts.getContent().stream()
@@ -180,4 +188,19 @@ public class PtProductService {
 		return new PageImpl<>(responseList, pageable, ptProducts.getTotalElements());
 	}
 
+	@Transactional(readOnly = true)
+	public PtProductResponse getProduct(Long ptProductId) {
+
+		PtProduct ptProduct = findProductOrThrow(ptProductId);
+
+		Trainer trainer = trainerRepository.findById(ptProduct.getTrainerId())
+			.orElseThrow(()-> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+		List<Award> awards = awardRepository.findByTrainerId(trainer.getTrainerId());
+
+		Gym gym = gymRepository.findWithImagesByGymId(trainer.getGymId())
+			.orElseThrow(()-> new BusinessException(ErrorCode.GYM_NOT_FOUND));
+
+		return PtProductMapper.toDto(ptProduct, trainer, awards, gym);
+	}
 }
