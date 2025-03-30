@@ -7,6 +7,7 @@ import org.helloworld.gymmate.domain.myself.record.dto.RecordCreateRequest;
 import org.helloworld.gymmate.domain.myself.record.dto.RecordModifyRequest;
 import org.helloworld.gymmate.domain.myself.record.dto.RecordResponse;
 import org.helloworld.gymmate.domain.myself.record.service.RecordService;
+import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.security.model.GymmateUserDetails;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,7 +27,8 @@ public class RecordController {
             @RequestBody RecordCreateRequest request) {
 
         long recordId = 0;
-        recordService.createRecord(request, userDetails.getGymmateUser()); //Oauth2User로 변경 예정
+        Member member = null; //Oauth2User.getMember
+        recordService.createRecord(request, member);
 
         return ResponseEntity.ok(
                 Map.of("recordId", recordId));
@@ -37,7 +39,8 @@ public class RecordController {
             @AuthenticationPrincipal GymmateUserDetails userDetails, //Oauth2User로 변경 예정
             @PathVariable Long recordId) {
 
-        recordService.deleteRecord(recordId, userDetails.getGymmateUser()); //Oauth2User로 변경 예정
+        Member member = null; //Oauth2User.getMember
+        recordService.deleteRecord(recordId, member);
 
         return ResponseEntity.ok().build();
     }
@@ -48,7 +51,8 @@ public class RecordController {
             @PathVariable Long recordId,
             @RequestBody RecordModifyRequest request) {
 
-        recordService.modifyRecord(recordId, request, userDetails.getGymmateUser()); //Oauth2User로 변경 예정
+        Member member = null; //Oauth2User.getMember
+        recordService.modifyRecord(recordId, request, member);
 
         return ResponseEntity.ok().build();
     }
@@ -59,7 +63,9 @@ public class RecordController {
             @RequestParam int page,
             @RequestParam int size) {
 
+        Member member = null; //Oauth2User.getMember
+
         return ResponseEntity.ok(PageMapper.toPageDto(
-                recordService.getRecords(page, size, userDetails)));
+                recordService.getRecords(page, size, member)));
     }
 }
