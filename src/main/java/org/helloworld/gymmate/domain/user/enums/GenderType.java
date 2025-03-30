@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.user.enumerate;
+package org.helloworld.gymmate.domain.user.enums;
 
 import java.util.Arrays;
 

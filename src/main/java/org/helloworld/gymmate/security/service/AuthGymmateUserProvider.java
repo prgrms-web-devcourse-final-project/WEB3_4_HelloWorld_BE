@@ -1,8 +1,9 @@
-package org.helloworld.gymmate.security.authentication;
+package org.helloworld.gymmate.security.service;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
-import org.helloworld.gymmate.domain.user.model.GymmateUser;
+import org.helloworld.gymmate.security.model.GymmateUser;
+import org.helloworld.gymmate.security.model.GymmateUserDetails;
 import org.springframework.stereotype.Component;
 
 @Component

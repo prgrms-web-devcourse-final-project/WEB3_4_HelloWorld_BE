@@ -1,15 +1,15 @@
 package org.helloworld.gymmate.domain.user.trainer.service;
 
-import org.helloworld.gymmate.domain.user.enumerate.SocialProviderType;
-import org.helloworld.gymmate.domain.user.mapper.SocialProviderMapper;
-import org.helloworld.gymmate.domain.user.model.SocialProvider;
-import org.helloworld.gymmate.domain.user.repository.SocialProviderRepository;
+import org.helloworld.gymmate.domain.user.enums.SocialProviderType;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.mapper.TrainerMapper;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
+import org.helloworld.gymmate.security.oauth.entity.Oauth;
+import org.helloworld.gymmate.security.oauth.mapper.OauthMapper;
+import org.helloworld.gymmate.security.oauth.repository.OauthRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,25 +19,25 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TrainerService {
 	private final TrainerRepository trainerRepository;
-	private final SocialProviderRepository socialProviderRepository;
+	private final OauthRepository oauthRepository;
 
 	@Transactional
 	public Long createTrainer(SocialProviderType socialProviderType, String socialProviderId) {
-		SocialProvider socialProvider = SocialProviderMapper.toEntity(socialProviderType, socialProviderId);
-		socialProviderRepository.save(socialProvider);
-		socialProviderRepository.flush();
+		Oauth oauth = OauthMapper.toEntity(socialProviderType, socialProviderId);
+		oauthRepository.save(oauth);
+		oauthRepository.flush();
 
-		Trainer trainer = TrainerMapper.toTrainer(socialProvider);
+		Trainer trainer = TrainerMapper.toTrainer(oauth);
 		return trainerRepository.save(trainer).getTrainerId();
 	}
 
 	@Transactional
 	public Long createOwner(SocialProviderType socialProviderType, String socialProviderId) {
-		SocialProvider socialProvider = SocialProviderMapper.toEntity(socialProviderType, socialProviderId);
-		socialProviderRepository.save(socialProvider);
-		socialProviderRepository.flush();
+		Oauth oauth = OauthMapper.toEntity(socialProviderType, socialProviderId);
+		oauthRepository.save(oauth);
+		oauthRepository.flush();
 
-		Trainer owner = TrainerMapper.toOwner(socialProvider);
+		Trainer owner = TrainerMapper.toOwner(oauth);
 		return trainerRepository.save(owner).getTrainerId();
 	}
 

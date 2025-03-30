@@ -7,9 +7,9 @@ import javax.crypto.SecretKey;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
-import org.helloworld.gymmate.security.authentication.GymmateUserDetails;
-import org.helloworld.gymmate.security.authentication.GymmateUserDetailsService;
+import org.helloworld.gymmate.security.model.GymmateUserDetails;
 import org.helloworld.gymmate.security.policy.ExpirationPolicy;
+import org.helloworld.gymmate.security.service.GymmateUserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

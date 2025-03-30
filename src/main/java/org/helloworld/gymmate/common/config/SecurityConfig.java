@@ -1,10 +1,10 @@
-package org.helloworld.gymmate.security.config;
+package org.helloworld.gymmate.common.config;
 
 import java.util.List;
 
-import org.helloworld.gymmate.security.authentication.CustomAuthenticationFilter;
-import org.helloworld.gymmate.security.oauth2.LoginSuccessHandler;
-import org.helloworld.gymmate.security.oauth2.LogoutSuccessHandler;
+import org.helloworld.gymmate.security.filter.CustomAuthenticationFilter;
+import org.helloworld.gymmate.security.handler.LoginSuccessHandler;
+import org.helloworld.gymmate.security.handler.LogoutSuccessHandler;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;

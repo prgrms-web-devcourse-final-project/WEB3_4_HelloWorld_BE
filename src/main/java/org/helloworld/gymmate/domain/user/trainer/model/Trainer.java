@@ -3,11 +3,11 @@ package org.helloworld.gymmate.domain.user.trainer.model;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import org.helloworld.gymmate.domain.user.enumerate.GenderType;
-import org.helloworld.gymmate.domain.user.model.SocialProvider;
+import org.helloworld.gymmate.domain.user.enums.GenderType;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
+import org.helloworld.gymmate.security.oauth.entity.Oauth;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -84,7 +84,7 @@ public class Trainer {
 	private LocalDate date;
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "social_provider_id")
-	private SocialProvider socialProvider;
+	private Oauth oauth;
 
 	public void updateTrainerInfo(TrainerRegisterRequest request) {
 		this.trainerName = request.trainerName();
