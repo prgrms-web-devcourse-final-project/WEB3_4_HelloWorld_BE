@@ -165,6 +165,7 @@ public class PtProductService {
 	// 	return fetchAndMapProducts(ptProducts, pageable);
 	// }
 
+	@Transactional(readOnly = true)
 	private Page<PtProductsResponse> fetchAndMapProducts(Page<PtProduct> ptProducts, Pageable pageable) {
 		// ptProducts에 해당하는 trainerIds 추출(Set으로 같은 id 중복문제 해결)
 		Set<Long> trainerIds = ptProducts.getContent().stream()
@@ -187,6 +188,7 @@ public class PtProductService {
 		return new PageImpl<>(responseList, pageable, ptProducts.getTotalElements());
 	}
 
+	@Transactional(readOnly = true)
 	public PtProductResponse getProduct(Long ptProductId) {
 
 		PtProduct ptProduct = findProductOrThrow(ptProductId);
