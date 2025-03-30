@@ -1,5 +1,8 @@
 package org.helloworld.gymmate.security.oauth.service;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -9,6 +12,8 @@ import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.helloworld.gymmate.security.model.SocialUserInfo;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -76,5 +81,33 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 		// TODO : MemberService 사용자 등록 로직 구현
 		return new CustomOAuth2User(oAuth2User, userId, userType);
+	}
+
+	public CustomOAuth2User loadUserByUserId(Long userId, String userTypeStr) {
+		UserType userType = UserType.fromString(userTypeStr);
+		Map<String, Object> attributes = new HashMap<>();
+		attributes.put("userId", userId);
+		attributes.put("userType", userTypeStr);
+		//  권한 부여 (ROLE_MEMBER 또는 ROLE_TRAINER)
+		Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + userTypeStr));
+
+		OAuth2User dummyOAuth2User = new OAuth2User() {
+			@Override
+			public Map<String, Object> getAttributes() {
+				return attributes;
+			}
+
+			@Override
+			public Collection<? extends GrantedAuthority> getAuthorities() {
+				return authorities;
+			}
+
+			@Override
+			public String getName() {
+				return String.valueOf(userId);
+			}
+		};
+
+		return new CustomOAuth2User(dummyOAuth2User, userId, userType);
 	}
 }
