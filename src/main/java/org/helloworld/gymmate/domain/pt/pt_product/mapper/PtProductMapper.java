@@ -14,7 +14,7 @@ import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 
 public class PtProductMapper {
-	public static PtProduct toEntity(PtProductCreateRequest request, Long trainerId){
+	public static PtProduct toEntity(PtProductCreateRequest request, Long trainerId) {
 		return PtProduct.builder()
 			.info(request.info())
 			.ptProductFee(request.ptProductFee())
@@ -22,7 +22,7 @@ public class PtProductMapper {
 			.build();
 	}
 
-	public static PtProductImage toEntity(String fileUrl, PtProduct ptProduct){
+	public static PtProductImage toEntity(String fileUrl, PtProduct ptProduct) {
 		return PtProductImage.builder()
 			.url(fileUrl)
 			.ptProduct(ptProduct)
@@ -39,7 +39,8 @@ public class PtProductMapper {
 		);
 	}
 
-	public static PtProductsResponse toDto(PtProduct ptProduct, Map<Long, PtProductsResponse.PtTrainerResponse> trainerMap) {
+	public static PtProductsResponse toDto(PtProduct ptProduct,
+		Map<Long, PtProductsResponse.PtTrainerResponse> trainerMap) {
 		return new PtProductsResponse(
 			ptProduct.getPtProductId(),
 			trainerMap.get(ptProduct.getTrainerId()), // 트레이너 정보 매핑
@@ -59,13 +60,14 @@ public class PtProductMapper {
 				trainer.getPhoneNumber(),
 				trainer.getEmail(),
 				trainer.getScore(),
-				awards.stream()
+				awards != null ? awards.stream()
 					.map(a -> new PtProductResponse.Award(a.getAwardYear(), a.getAwardName(), a.getAwardInfo()))
-					.toList()
+					.toList() : List.of()
 			),
 			ptProduct.getInfo(),
 			ptProduct.getPtProductFee(),
-			ptProduct.getPtProductImages().stream().map(PtProductImage::getUrl).toList(),
+			ptProduct.getPtProductImages() != null ?
+				ptProduct.getPtProductImages().stream().map(PtProductImage::getUrl).toList() : List.of(),
 			new PtProductResponse.Gym(
 				gym.getGymName(),
 				gym.getAddress(),
@@ -74,7 +76,8 @@ public class PtProductMapper {
 				gym.getStartTime(),
 				gym.getEndTime(),
 				gym.getAvgScore(),
-				gym.getImages().stream().map(GymImage::getUrl).toList()
+				gym.getImages() != null ?
+					gym.getImages().stream().map(GymImage::getUrl).toList() : List.of()
 			)
 		);
 	}
