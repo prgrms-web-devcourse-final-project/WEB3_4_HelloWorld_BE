@@ -4,8 +4,7 @@ import org.helloworld.gymmate.domain.user.enums.GenderType;
 
 import jakarta.validation.constraints.NotNull;
 
-
-public record MemberRequest (
+public record MemberRequest(
 
 	@NotNull(message = "전화번호는 필수입니다.")
 	String phoneNumber,
@@ -20,7 +19,7 @@ public record MemberRequest (
 	String birthday,
 
 	@NotNull(message = "성별은 필수입니다.")
-	GenderType genderType,
+	GenderType gender,
 
 	//신체정보
 	String height,
@@ -48,4 +47,5 @@ public record MemberRequest (
 
 	Long cash
 
-){}
+) {
+}

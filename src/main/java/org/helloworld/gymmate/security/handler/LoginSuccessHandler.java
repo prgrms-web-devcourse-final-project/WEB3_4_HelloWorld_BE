@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.helloworld.gymmate.common.cookie.CookieManager;
 import org.helloworld.gymmate.common.enums.TokenType;
 import org.helloworld.gymmate.domain.user.enums.UserType;
+import org.helloworld.gymmate.domain.user.member.entity.Member;
+import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
@@ -29,6 +31,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 	private final CookieManager cookieManager;
 	private final JwtManager jwtManager;
 	private final TrainerService trainerService;
+	private final MemberService memberService;
 	@Value("${jwt.redirect}")
 	private String REDIRECT_URI; // 프론트엔드로 Jwt 토큰을 리다이렉트할 URI
 
@@ -38,7 +41,18 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 		OAuth2AuthenticationToken token = (OAuth2AuthenticationToken)authentication; // 토큰
 		CustomOAuth2User customOAuth2User = (CustomOAuth2User)token.getPrincipal();
 
-		// TODO: MEMBER
+		if (customOAuth2User.getUserType() == UserType.MEMBER) {
+			Member member = memberService.findByUserId(customOAuth2User.getUserId());
+			log.debug("Member 생성 확인: {}", member);
+			if (!member.getAdditionalInfoCompleted()) { // 추가 정보 입력이 필요한 경우
+				// 회원 추가 정보 입력 페이지로 리다이렉트할 URI
+				String memberRedirectUri = "http://localhost:3000/login?additionalInfoCompleted=false&role=member"; // 예시(회원 추가 정보 입력 페이지)
+				registerTokens(request, response, customOAuth2User, memberRedirectUri); // 추가 정보 입력 페이지로 리다이렉트
+				return; // 리다이렉트 후 더 이상 진행하지 않도록 return 처리
+			}
+
+		}
+
 		if (customOAuth2User.getUserType() == UserType.TRAINER) {
 			Trainer trainer = trainerService.findByUserId(customOAuth2User.getUserId());
 			if (!trainer.getAdditionalInfoCompleted()) { // 추가 정보 입력이 필요한 경우
