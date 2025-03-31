@@ -2,58 +2,50 @@ package org.helloworld.gymmate.domain.user.member.dto;
 
 import org.helloworld.gymmate.domain.user.enumerate.GenderType;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class MemberRequest {
+
+public record MemberRequest (
 
 	@NotNull(message = "전화번호는 필수입니다.")
-	private String phoneNumber;
+	String phoneNumber,
 
 	@NotNull(message = "이름은 필수입니다.")
-	private String memberName;
+	String memberName,
 
 	@NotNull(message = "이메일은 필수입니다.")
-	private String email;
+	String email,
 
 	@NotNull(message = "생년월일은 필수입니다.")
-	private String birthday;
+	String birthday,
 
 	@NotNull(message = "성별은 필수입니다.")
-	private GenderType genderType;
+	GenderType genderType,
 
 	//신체정보
-	private String height;
+	String height,
 
-	private String weight;
+	String weight,
 
 	//주소
-	private String address;
+	String address,
 
-	private String xField;
+	String xField,
 
-	private String yField;
+	String yField,
 
 	//3대
-	private Double recentBench;
+	Double recentBench,
 
-	private Double recentDeadlift;
+	Double recentDeadlift,
 
-	private Double recentSquat;
+	Double recentSquat,
 
-	private Integer level;
+	Integer level,
 
 	//계정잠김
-	private Boolean isAccountNonLocked;
+	Boolean isAccountNonLocked,
 
-	private Long cash;
+	Long cash
 
-}
+){}

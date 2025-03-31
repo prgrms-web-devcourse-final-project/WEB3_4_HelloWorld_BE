@@ -1,19 +1,13 @@
 package org.helloworld.gymmate.domain.user.member.entity;
 
 import org.helloworld.gymmate.domain.user.enumerate.GenderType;
-import org.helloworld.gymmate.domain.user.model.SocialProvider;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -49,10 +43,6 @@ public class Member {
 	@Enumerated(value = EnumType.STRING)
 	@Column(name = "gender",nullable = false)
 	private GenderType genderType;
-
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "social_provider_id")
-	private SocialProvider socialProvider;
 
 	//신체정보
 	@Column(name="height")
