@@ -3,6 +3,7 @@ package org.helloworld.gymmate.domain.myself.bigthree.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeCreateRequest;
+import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeModifyRequest;
 import org.helloworld.gymmate.domain.myself.bigthree.service.BigthreeService;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
@@ -37,6 +38,18 @@ public class BigthreeController {
 
         Member member = null; //TODO: memberService.findByUserId(customOAuth2User.getUserId());
         bigthreeService.deleteBigthree(bigthreeId, member);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/{bigthreeId}")
+    public ResponseEntity<Map<String, Long>> modifyBigthree(
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+            @PathVariable Long bigthreeId,
+            @Valid @RequestBody BigthreeModifyRequest request) {
+
+        Member member = null; //TODO: memberService.findByUserId(customOAuth2User.getUserId());
+        bigthreeService.modifyBigthree(bigthreeId, request, member);
 
         return ResponseEntity.ok().build();
     }

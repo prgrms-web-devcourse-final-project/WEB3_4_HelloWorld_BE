@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeCreateRequest;
+import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeModifyRequest;
 import org.helloworld.gymmate.domain.myself.bigthree.entity.Bigthree;
 import org.helloworld.gymmate.domain.myself.bigthree.mapper.BigthreeMapper;
 import org.helloworld.gymmate.domain.myself.bigthree.repository.BigthreeRepository;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 public class BigthreeService {
     private final BigthreeRepository bigthreeRepository;
 
+    @Transactional
     public long createBigthree(@Valid BigthreeCreateRequest request, Member member) {
         // 날짜가 비어있으면 현재 시간 넣기
         LocalDate date = request.date() != null ? request.date() : LocalDate.now();
@@ -35,6 +37,18 @@ public class BigthreeService {
         bigthreeRepository.delete(existBigthree);
     }
 
+    @Transactional
+    public void modifyBigthree(Long bigthreeId, @Valid BigthreeModifyRequest request, Member member) {
+        Bigthree existBigthree = getExistingBigthree(bigthreeId);
+
+        validateBigthreeOwner(existBigthree, member);
+
+        // 기존 날짜 가져오기
+        LocalDate date = existBigthree.getDate();
+
+        bigthreeRepository.save(BigthreeMapper.toEntity(request, member, date));
+    }
+
     private Bigthree getExistingBigthree(Long bigthreeId) {
         //기존 3대 측정 기록 가져오기
         return bigthreeRepository.findById(bigthreeId)
@@ -47,4 +61,5 @@ public class BigthreeService {
             throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
         }
     }
+
 }
