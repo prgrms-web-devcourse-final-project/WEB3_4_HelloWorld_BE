@@ -106,6 +106,7 @@ public class Member {
 		this.recentBench = request.recentBench();
 		this.recentDeadlift = request.recentDeadlift();
 		this.recentSquat = request.recentSquat();
+		this.additionalInfoCompleted = true;
 
 	}
 }

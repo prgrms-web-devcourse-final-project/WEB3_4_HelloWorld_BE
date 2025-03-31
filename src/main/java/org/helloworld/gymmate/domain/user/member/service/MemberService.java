@@ -2,6 +2,8 @@ package org.helloworld.gymmate.domain.user.member.service;
 
 import java.util.Optional;
 
+import org.helloworld.gymmate.common.exception.BusinessException;
+import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
@@ -28,7 +30,7 @@ public class MemberService {
 			oauth = entityManager.merge(oauth);
 		}
 
-		Member member = MemberMapper.ToMember(oauth);
+		Member member = MemberMapper.toMember(oauth);
 
 		return memberRepository.save(member).getMemberId();
 	}
@@ -53,4 +55,8 @@ public class MemberService {
 				.map(Member::getMemberId));
 	}
 
+	public Member findByUserId(Long userId) {
+		return memberRepository.findByMemberId(userId).orElseThrow(() -> new BusinessException(
+			ErrorCode.USER_NOT_FOUND));
+	}
 }
