@@ -17,7 +17,7 @@ public class GymCrawlScheduler {
 	private final SeoulGymWebClientCrawler seoulGymWebClientCrawler;
 
 	// 서울 헬스장 크롤링 스케쥴러
-	@Scheduled(cron = "10 20 15 * * *", zone = "Asia/Seoul")
+	@Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
 	public void scheduleCrawl() {
 		log.info("Crawl task started at {}", LocalDateTime.now());
 		seoulGymWebClientCrawler.crawlSeoulGyms();

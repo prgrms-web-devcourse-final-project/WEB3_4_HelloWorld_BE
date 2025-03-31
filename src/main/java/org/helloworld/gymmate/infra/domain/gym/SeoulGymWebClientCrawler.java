@@ -45,10 +45,10 @@ public class SeoulGymWebClientCrawler {
 				double finalLat = lat;
 
 				CompletableFuture<Void> future = kakaoMapWebClientService.searchHealthClubs(lng, lat, 5000)
-					.thenAcceptAsync(responses -> {
+					.thenCompose(responses -> CompletableFuture.runAsync(() -> {
 						processGyms(responses, finalLng, finalLat);
-						log.info("크롤링 진행률: (현재 위치: lat={}, lng={})" , finalLat, finalLng);
-					});
+						log.info("크롤링 진행률: (현재 위치: lat={}, lng={})", finalLat, finalLng);
+					}));
 
 				futures.add(future);
 			}
@@ -58,6 +58,16 @@ public class SeoulGymWebClientCrawler {
 		return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
 			.thenRun(() -> {
 				if (!gymBatch.isEmpty()) {
+					// 마지막 남은 데이터 중복 검사 후 저장
+					List<Gym> gymsToCheck = List.copyOf(gymBatch);
+					List<String> existingUrls = gymRepository.findExistingPlaceUrls(
+						gymsToCheck.stream().map(Gym::getPlaceUrl).collect(Collectors.toList())
+					);
+
+					// 중복 제거 후 남은 데이터만 저장
+					gymBatch.removeIf(gym -> existingUrls.contains(gym.getPlaceUrl()));
+
+					// 중복 제거 후 저장
 					saveGyms(List.copyOf(gymBatch));
 					gymBatch.clear();
 				}
@@ -65,19 +75,18 @@ public class SeoulGymWebClientCrawler {
 	}
 
 	private void processGyms(List<Map<String, Object>> responses, double lng, double lat) {
-		if (responses.isEmpty()) {
-			log.warn("검색 결과가 없습니다. (lng: {}, lat: {})", lng, lat);
-			return;
-		}
 
 		Set<String> placeUrls = responses.stream()
 			.map(response -> (String) response.get("place_url"))
 			.collect(Collectors.toSet());
 
-		if (placeUrls.isEmpty()) {
-			log.warn("중복된 데이터로 인해 새로운 placeUrls가 없음!");
-			return;
-		}
+		List<Gym> newGyms = responses.stream()
+			.filter(response -> placeUrls.contains(response.get("place_url"))) // place_url 필터링
+			.map(GymMapper::toEntity)
+			.filter(gym -> gymBatch.stream().noneMatch(existingGym -> existingGym.getPlaceUrl().equals(gym.getPlaceUrl()))) // 중복 검사
+			.toList();
+
+		gymBatch.addAll(newGyms);
 
 		// 500개가 모일 때마다 기존 DB와 중복 검사 실행
 		if (gymBatch.size() >= BATCH_SIZE) {
@@ -95,14 +104,6 @@ public class SeoulGymWebClientCrawler {
 				gymBatch.clear();
 			}
 		}
-
-		// 새로운 데이터 추가
-		List<Gym> newGyms = responses.stream()
-			.filter(response -> placeUrls.contains(response.get("place_url")))
-			.map(GymMapper::toEntity)
-			.toList();
-
-		gymBatch.addAll(newGyms);
 	}
 
 	@Transactional
@@ -115,7 +116,7 @@ public class SeoulGymWebClientCrawler {
 		log.info("총 {}개의 데이터를 저장합니다.", gyms.size());
 
 		String sql = "INSERT INTO gym (gym_name, start_time, end_time, phone_number, is_partner, " +
-			"address, x_feild, y_feild, avg_score, intro, place_url) " +
+			"address, x_field, y_field, avg_score, intro, place_url) " +
 			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		try {

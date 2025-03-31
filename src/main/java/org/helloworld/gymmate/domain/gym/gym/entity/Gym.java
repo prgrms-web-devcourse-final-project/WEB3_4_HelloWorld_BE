@@ -47,10 +47,10 @@ public class Gym {
 	@Column(name = "address", nullable = false)
 	private String address;
 
-	@Column(name = "x_feild", nullable = false)
+	@Column(name = "x_field", nullable = false)
 	private String xField;
 
-	@Column(name = "y_feild", nullable = false)
+	@Column(name = "y_field", nullable = false)
 	private String yField;
 
 	@Column(name = "avg_score", nullable = false)
