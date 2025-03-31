@@ -57,24 +57,20 @@ public class GymService {
 
 		GymMapper.updateEntity(gym, request);
 
-		//기존 이미지 중 삭제 대상 S3 삭제
-		List<String> keepUrls = request.existingImageUrls() != null ? request.existingImageUrls() : List.of();
+		// 삭제할 이미지 ID 목록
+		List<Long> deleteImageIds   = request.deleteImageIds() != null ? request.deleteImageIds() : List.of();
 
 		List<GymImage> imagesToDelete = gym.getImages().stream()
-			.filter(img -> !keepUrls.contains(img.getUrl()))
+			.filter(img -> deleteImageIds .contains(img.getId()))
 			.toList();
 
+
+		// 삭제 (S3 + DB 관계 제거)
 		for (GymImage image : imagesToDelete) {
 			fileManager.deleteFile(image.getUrl());
+			gym.removeImage(image);
 		}
 
-		// DB에서 삭제 대상 제거하고 유지할 이미지만 남기기
-		List<GymImage> imagesToKeep = gym.getImages().stream()
-			.filter(img -> keepUrls.contains(img.getUrl()))
-			.toList();
-
-		gym.clearImages();
-		gym.addImages(imagesToKeep);
 
 		// 4. 이미지 처리
 		if (images != null && !images.isEmpty()) {
