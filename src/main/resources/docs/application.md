@@ -64,4 +64,8 @@ cloud:
       auto: false
     stack:
       auto: false
+      
+kakao:
+  api:
+    key: ${KAKAO_API_KEY}
 ```
