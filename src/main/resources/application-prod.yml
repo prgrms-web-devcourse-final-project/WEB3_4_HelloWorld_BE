@@ -1,0 +1,16 @@
+# 기본 환경 설정
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/gymmate_db?rewriteBatchedStatements=true
+    username: gymmate_user
+    password: gymmate_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: true
