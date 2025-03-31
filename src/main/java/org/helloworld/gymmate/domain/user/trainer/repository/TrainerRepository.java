@@ -11,9 +11,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TrainerRepository extends JpaRepository<Trainer, Long> {
+	List<Trainer> findByTrainerIdIn(Set<Long> trainerIds);
+
 	Optional<Trainer> findByOauth(Oauth oauth);
 
 	Optional<Trainer> findByTrainerId(Long trainerId);
 
-	List<Trainer> findByTrainerIdIn(Set<Long> trainerIds);
 }
