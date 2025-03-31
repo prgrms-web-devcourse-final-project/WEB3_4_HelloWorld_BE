@@ -29,20 +29,54 @@ public class Member {
 	@Column(name = "member_id")
 	private Long memberId;
 
-	@Column(name = "phone_number")
+	@Column(name = "phone_number",nullable = false)
 	private String phoneNumber;
 
-	@Column(name = "member_name")
+	@Column(name = "member_name",nullable = false)
 	private String memberName;
 
-	@Column(name = "email")
+	@Column(name="email",nullable = false)
 	private String email;
 
-	@Column(name = "birthday")
+	@Column(name="birthday",nullable = false)
 	private String birthday;
 
 	@Enumerated(value = EnumType.STRING)
-	@Column(name = "gender")
+	@Column(name = "gender",nullable = false)
 	private GenderType genderType;
 
+	//신체정보
+	@Column(name="height")
+	private String height;
+
+	@Column(name="weight")
+	private String weight;
+
+
+	//주소
+	@Column(name="address")
+	private String address;
+
+	@Column(name="x_field")
+	private String xField;
+
+	@Column(name="y_field")
+	private String yField;
+
+	//3대
+	@Column(name="recent_bench")
+	private Double recentBench;
+
+	@Column(name="recent_deadlift")
+	private Double recentDeadlift;
+
+	@Column(name="recent_squat")
+	private Double recentSquat;
+
+	//계정잠김여부
+	@Column(name="is_account_nonloked")
+	private Boolean isAccountNonLocked;
+
+	@Column(name="cash")
+	private Long cash;
 }
