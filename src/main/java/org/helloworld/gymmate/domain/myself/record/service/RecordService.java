@@ -1,5 +1,6 @@
 package org.helloworld.gymmate.domain.myself.record.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 public class RecordService {
     private final RecordRepository recordRepository;
 
+    @Transactional
     public void createRecord(RecordCreateRequest request, Member member) {
         // 날짜가 비어있으면 현재 시간 넣기
         LocalDate date = request.date() != null ? request.date() : LocalDate.now();
@@ -30,6 +32,7 @@ public class RecordService {
         recordRepository.save(RecordMapper.toEntity(request, member, date));
     }
 
+    @Transactional
     public void deleteRecord(Long recordId, Member member) {
         Record existRecord = getExistingRecord(recordId);
 
@@ -38,6 +41,7 @@ public class RecordService {
         recordRepository.delete(existRecord);
     }
 
+    @Transactional
     public void modifyRecord(Long recordId, RecordModifyRequest request, Member member) {
         Record existRecord = getExistingRecord(recordId);
 
