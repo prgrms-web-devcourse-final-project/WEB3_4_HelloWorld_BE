@@ -43,7 +43,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 			Trainer trainer = trainerService.findByUserId(customOAuth2User.getUserId());
 			if (!trainer.getAdditionalInfoCompleted()) { // 추가 정보 입력이 필요한 경우
 				// 트레이너 추가 정보 입력 페이지로 리다이렉트할 URI
-				String trainerRedirectUri = "http://localhost:3000/trainer"; // 예시(트레이너 추가 정보 입력 페이지)
+				String trainerRedirectUri = "http://localhost:3000/login?additionalInfoCompleted=false&role=trainer"; // 예시(트레이너 추가 정보 입력 페이지)
 				registerTokens(request, response, customOAuth2User, trainerRedirectUri); // 추가 정보 입력 페이지로 리다이렉트
 				return;  // 리다이렉트 후 더 이상 진행하지 않도록 return 처리
 			}
@@ -57,7 +57,8 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 		IOException {
 		String refreshToken = jwtManager.createRefreshToken(customUser.getUserId(),
 			customUser.getUserType().toString());
-		String accessToken = jwtManager.createAccessToken(customUser.getUserId(), customUser.getUserType().toString());
+		String accessToken = jwtManager.createAccessToken(customUser.getUserId(),
+			customUser.getUserType().toString());
 
 		cookieManager.setCookie(TokenType.ACCESS_TOKEN, accessToken,
 			ExpirationPolicy.getAccessTokenExpirationTime());
