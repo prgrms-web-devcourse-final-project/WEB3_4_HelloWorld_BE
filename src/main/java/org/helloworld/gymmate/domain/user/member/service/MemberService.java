@@ -1,5 +1,6 @@
 package org.helloworld.gymmate.domain.user.member.service;
 
+import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
 import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
@@ -30,6 +31,17 @@ public class MemberService {
 		return memberRepository.save(member).getMemberId();
 	}
 
+	//추가정보 등록
+	@Transactional
+	public void registerInfoMember(Member member, MemberRequest request) {
+		member.registerMemberInfo(request);
+		memberRepository.save(member);
+	}
 
+	//추가정보 등록 여부 확인
+	@Transactional(readOnly = true)
+	public boolean check(Member member) {
+		return member.getAdditionalInfoCompleted();
+	}
 
 }
