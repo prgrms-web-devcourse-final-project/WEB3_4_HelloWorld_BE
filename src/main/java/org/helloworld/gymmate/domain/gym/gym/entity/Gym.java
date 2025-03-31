@@ -71,13 +71,9 @@ public class Gym {
 		images.forEach(img -> img.setGym(this));
 	}
 
-	public void replaceImages(List<GymImage> newImages) {
-		this.images.clear();
-		this.addImages(newImages);
-	}
-
-	public void clearImages() {
-		this.images.clear();
+	public void removeImage(GymImage image) {
+		images.remove(image);
+		image.setGym(null);
 	}
 
 	public void updateInfo(

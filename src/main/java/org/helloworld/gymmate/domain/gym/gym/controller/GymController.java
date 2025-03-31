@@ -16,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -27,15 +25,11 @@ import lombok.RequiredArgsConstructor;
 public class GymController {
 
 	private final GymService gymService;
-	private final ObjectMapper objectMapper;
 
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<GymResponse> createGym(
-		@RequestPart("request") String requestJson,
-		@RequestPart("images") List<MultipartFile> images)throws JsonProcessingException {
-
-		// JSON 문자열을 record로 변환
-		GymCreateRequest request = objectMapper.readValue(requestJson, GymCreateRequest.class);
+		@RequestPart("request") @Valid GymCreateRequest request,
+		@RequestPart("images") List<MultipartFile> images){
 
 		GymResponse response = gymService.createGym(request, images);
 		return ResponseEntity.ok(response);
@@ -44,10 +38,9 @@ public class GymController {
 	@PutMapping(value = "/{gymId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<GymResponse> updateGym(
 		@PathVariable Long gymId,
-		@RequestPart("request") String requestJson,
-		@RequestPart(value = "images" , required = false) List<MultipartFile> images)throws JsonProcessingException {
+		@RequestPart("request") @Valid GymUpdateRequest request,
+		@RequestPart(value = "images" , required = false) List<MultipartFile> images){
 
-		GymUpdateRequest request = objectMapper.readValue(requestJson, GymUpdateRequest.class);
 		GymResponse response = gymService.updateGym(gymId, request, images);
 		return ResponseEntity.ok(response);
 	}
