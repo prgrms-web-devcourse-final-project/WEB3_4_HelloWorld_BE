@@ -1,5 +1,6 @@
 package org.helloworld.gymmate.domain.myself.record.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.helloworld.gymmate.common.dto.PageDto;
 import org.helloworld.gymmate.common.mapper.PageMapper;
@@ -24,7 +25,7 @@ public class RecordController {
     @PostMapping
     public ResponseEntity<Map<String, Long>> createRecord(
             @AuthenticationPrincipal GymmateUserDetails userDetails, //TODO: Oauth2User로 변경
-            @RequestBody RecordCreateRequest request) {
+            @Valid @RequestBody RecordCreateRequest request) {
 
         long recordId = 0;
         Member member = null; //TODO: Oauth2User.getMember
@@ -49,7 +50,7 @@ public class RecordController {
     public ResponseEntity<Map<String, Long>> modifyRecord(
             @AuthenticationPrincipal GymmateUserDetails userDetails, //TODO: Oauth2User로 변경
             @PathVariable Long recordId,
-            @RequestBody RecordModifyRequest request) {
+            @Valid @RequestBody RecordModifyRequest request) {
 
         Member member = null; //TODO: Oauth2User.getMember
         recordService.modifyRecord(recordId, request, member);
