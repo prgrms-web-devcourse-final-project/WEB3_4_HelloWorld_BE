@@ -1,6 +1,6 @@
 package org.helloworld.gymmate.domain.user.member.dto;
 
-import org.helloworld.gymmate.domain.user.enumerate.GenderType;
+import org.helloworld.gymmate.domain.user.enums.GenderType;
 
 import jakarta.validation.constraints.NotNull;
 
