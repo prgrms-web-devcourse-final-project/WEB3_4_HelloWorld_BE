@@ -1,5 +1,7 @@
 package org.helloworld.gymmate.domain.user.member.service;
 
+import java.util.Optional;
+
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
@@ -42,6 +44,13 @@ public class MemberService {
 	@Transactional(readOnly = true)
 	public boolean check(Member member) {
 		return member.getAdditionalInfoCompleted();
+	}
+
+	@Transactional(readOnly = true)
+	public Optional<Long> getMemberIdByOauth(String providerId) {
+		return oauthRepository.findByProviderId(providerId)
+			.flatMap(oauth -> memberRepository.findByOauth(oauth)
+				.map(Member::getMemberId));
 	}
 
 }
