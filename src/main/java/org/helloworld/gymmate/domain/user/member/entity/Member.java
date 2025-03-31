@@ -53,4 +53,39 @@ public class Member {
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "social_provider_id")
 	private SocialProvider socialProvider;
+
+	//신체정보
+	@Column(name="height")
+	private String height;
+
+	@Column(name="weight")
+	private String weight;
+
+
+	//주소
+	@Column(name="address")
+	private String address;
+
+	@Column(name="x_field")
+	private String xField;
+
+	@Column(name="y_field")
+	private String yField;
+
+	//3대
+	@Column(name="recent_bench")
+	private Double recentBench;
+
+	@Column(name="recent_deadlift")
+	private Double recentDeadlift;
+
+	@Column(name="recent_squat")
+	private Double recentSquat;
+
+	//계정잠김여부
+	@Column(name="is_account_nonloked")
+	private Boolean isAccountNonLocked;
+
+	@Column(name="cash")
+	private Long cash;
 }

@@ -2,6 +2,7 @@ package org.helloworld.gymmate.domain.user.member.dto;
 
 import org.helloworld.gymmate.domain.user.enumerate.GenderType;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,5 +29,31 @@ public class MemberRequest {
 
 	@NotNull(message = "성별은 필수입니다.")
 	private GenderType genderType;
+
+	//신체정보
+	private String height;
+
+	private String weight;
+
+	//주소
+	private String address;
+
+	private String xField;
+
+	private String yField;
+
+	//3대
+	private Double recentBench;
+
+	private Double recentDeadlift;
+
+	private Double recentSquat;
+
+	private Integer level;
+
+	//계정잠김
+	private Boolean isAccountNonLocked;
+
+	private Long cash;
 
 }
