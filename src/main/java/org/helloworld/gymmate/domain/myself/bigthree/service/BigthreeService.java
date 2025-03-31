@@ -17,14 +17,22 @@ import java.time.LocalDate;
 @Service
 @RequiredArgsConstructor
 public class BigthreeService {
-    private BigthreeRepository bigthreeRepository;
+    private final BigthreeRepository bigthreeRepository;
 
-    @Transactional
     public long createBigthree(@Valid BigthreeCreateRequest request, Member member) {
         // 날짜가 비어있으면 현재 시간 넣기
         LocalDate date = request.date() != null ? request.date() : LocalDate.now();
 
         return bigthreeRepository.save(BigthreeMapper.toEntity(request, member, date)).getBigthreeId();
+    }
+
+    @Transactional
+    public void deleteBigthree(Long bigthreeId, Member member) {
+        Bigthree existBigthree = getExistingBigthree(bigthreeId);
+
+        validateBigthreeOwner(existBigthree, member);
+
+        bigthreeRepository.delete(existBigthree);
     }
 
     private Bigthree getExistingBigthree(Long bigthreeId) {

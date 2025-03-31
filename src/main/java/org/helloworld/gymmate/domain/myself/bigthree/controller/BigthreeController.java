@@ -8,10 +8,7 @@ import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -32,4 +29,16 @@ public class BigthreeController {
         return ResponseEntity.ok(
                 Map.of("bigthreeId", bigthreeId));
     }
+
+    @DeleteMapping(value = "/{bigthreeId}")
+    public ResponseEntity<Map<String, Long>> deleteBigthree(
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+            @PathVariable Long bigthreeId) {
+
+        Member member = null; //TODO: memberService.findByUserId(customOAuth2User.getUserId());
+        bigthreeService.deleteBigthree(bigthreeId, member);
+
+        return ResponseEntity.ok().build();
+    }
+
 }
