@@ -6,6 +6,7 @@ import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gym.repository.GymRepository;
+import org.helloworld.gymmate.domain.user.trainer.business.service.BusinessValidateService;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
@@ -27,6 +28,7 @@ public class TrainerService {
 	private final OauthRepository oauthRepository;
 	private final EntityManager entityManager;
 	private final GymRepository gymRepository;
+	private final BusinessValidateService businessValidateService;
 
 	@Transactional
 	public Long createTrainer(Oauth oauth) {
@@ -50,6 +52,7 @@ public class TrainerService {
 	// 추가 정보 등록 (사장)
 	@Transactional
 	public void registerInfoByOwner(Trainer trainer, OwnerRegisterRequest request) {
+		businessValidateService.validateBusiness(request);
 		trainer.registerOwnerInfo(request);
 		trainerRepository.save(trainer);
 	}
