@@ -22,7 +22,7 @@ public class BigthreeController {
     private BigthreeService bigthreeService;
 
     @PostMapping
-    public ResponseEntity<Map<String, Long>> createRecord(
+    public ResponseEntity<Map<String, Long>> createBigthree(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @Valid @RequestBody BigthreeCreateRequest request) {
 
