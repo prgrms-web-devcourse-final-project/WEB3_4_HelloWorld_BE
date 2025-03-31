@@ -69,7 +69,7 @@ public class TrainerService {
 	}
 
 	@Transactional(readOnly = true)
-	public Optional<Long> getTrainerByOauth(String providerId) {
+	public Optional<Long> getTrainerIdByOauth(String providerId) {
 		return oauthRepository.findByProviderId(providerId)
 			.flatMap(oauth -> trainerRepository.findByOauth(oauth)
 				.map(Trainer::getTrainerId));

@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
+import org.helloworld.gymmate.common.rq.Rq;
 import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
@@ -19,10 +19,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,6 +31,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	private final OauthService oauthService;
 	private final MemberService memberService;
 	private final TrainerService trainerService;
+	private final Rq rq;
 
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -49,19 +47,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		Map<String, Object> attributes = oAuth2User.getAttributes();
 		SocialUserInfo socialUserInfo = new SocialUserInfo(attributes);
 		String providerId = socialUserInfo.getProviderId();
+		String state = rq.getParameter("state");
+		log.info("state : {}", state);
 
-		HttpServletRequest request = ((ServletRequestAttributes)Objects.requireNonNull(
-			RequestContextHolder.getRequestAttributes())).getRequest();
-		String sessionUserType = (String)request.getSession().getAttribute("userType");
-		log.info("Retrieved userType from session: {}", sessionUserType);
-		if (sessionUserType == null) {
-			throw new IllegalArgumentException("User type not found in session");
-		}
-		UserType userType = UserType.fromString(sessionUserType);
-		// 추가 파라미터(state)에서 가입 유형 확인 (프론트에서 oauth2/authorization/kakao?state=MEMBER 또는 TRAINER)
-		// log.info("userRequest.params : {}", userRequest.getAdditionalParameters().get("userType"));
-		// String stateParam = (String)userRequest.getAdditionalParameters().get("userType");
-		// UserType userType = UserType.fromString(stateParam);
+		UserType userType = UserType.fromString(state);
 
 		// oauth 엔티티 조회 또는 신규 생성
 		Oauth oauth = oauthService.findOauthByProviderId(providerId)
@@ -70,7 +59,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		Long userId = 0L;
 		// 가입 유형에 따른 사용자 등록 처리
 		if (userType == UserType.TRAINER) {
-			userId = trainerService.getTrainerByOauth(oauth.getProviderId())
+			userId = trainerService.getTrainerIdByOauth(oauth.getProviderId())
 				.orElseGet(() -> {
 					log.debug("신규 트레이너입니다. 등록을 진행합니다.");
 					return trainerService.createTrainer(
@@ -78,8 +67,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 					);
 				});
 		}
-
-		// TODO : MemberService 사용자 등록 로직 구현
+		// TODO : Member 사용자 등록 로직 구현
 		return new CustomOAuth2User(oAuth2User, userId, userType);
 	}
 

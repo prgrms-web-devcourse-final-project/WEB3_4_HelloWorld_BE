@@ -10,7 +10,6 @@ import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.helloworld.gymmate.security.oauth.service.CustomOAuth2UserService;
 import org.helloworld.gymmate.security.policy.ExpirationPolicy;
-import org.helloworld.gymmate.security.service.GymmateUserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtManager {
-	private final GymmateUserDetailsService gymnmateUserDetailsService;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final CustomOAuth2UserService customOAuth2UserService;
 

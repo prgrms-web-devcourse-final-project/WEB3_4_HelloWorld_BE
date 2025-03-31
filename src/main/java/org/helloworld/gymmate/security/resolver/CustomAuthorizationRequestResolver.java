@@ -41,18 +41,13 @@ public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRe
 		}
 		// 클라이언트 URL에서 state 파라미터를 읽음 (예: ?state=TRAINER)
 
-		String paramValue = request.getParameter("param");
+		String paramValue = request.getParameter("state");
+		String userType = paramValue.toUpperCase();
+		log.info("userType : {}", userType);
 		Map<String, Object> additionalParameters = new HashMap<>(authorizationRequest.getAdditionalParameters());
-		if (paramValue != null) {
-			// 값은 대문자로 변환 (예: "TRAINER" 또는 "MEMBER")
-			String userType = paramValue.toUpperCase();
-			additionalParameters.put("userType", userType);
-			// HTTP 세션에 저장
-			request.getSession().setAttribute("userType", userType);
-		}
-		log.info("Detected userType: {}", paramValue);
 		return OAuth2AuthorizationRequest.from(authorizationRequest)
 			.additionalParameters(additionalParameters)
+			.state(paramValue)
 			.build();
 	}
 }

@@ -83,10 +83,10 @@ public class Trainer {
 
 	private LocalDate date;
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "social_provider_id")
+	@JoinColumn(name = "oauth_id")
 	private Oauth oauth;
 
-	public void updateTrainerInfo(TrainerRegisterRequest request) {
+	public void updateTrainerInfo(TrainerRegisterRequest request) { // 나중에 헬스장 추가해야함
 		this.trainerName = request.trainerName();
 		this.phoneNumber = request.phoneNumber();
 		this.email = request.email();
