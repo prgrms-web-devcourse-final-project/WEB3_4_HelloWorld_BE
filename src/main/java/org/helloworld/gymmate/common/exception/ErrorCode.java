@@ -25,7 +25,8 @@ public enum ErrorCode {
 	CLASSTIME_DUPLICATED(HttpStatus.BAD_REQUEST, "PT-CLASSTIME-001", "이미 등록된 수업 시간입니다."),
 	CLASSTIME_NOT_FOUND(HttpStatus.NOT_FOUND, "PT-CLASSTIME-002", "존재하지 않는 PT 수강 가능 시간입니다."),
 	PTPRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "PT-PRODUCT-001", "존재하지 않는 PT 수업입니다."),
-	USER_NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "USER-002", "권한이 부족합니다."),
+	UNSUPPORTED_SEARCH_OPTION(HttpStatus.BAD_REQUEST,"PT-PRODUCT-002","존재하지 않는 검색 옵션입니다."),
+	UNSUPPORTED_SORT_OPTION(HttpStatus.BAD_REQUEST,"PT-PRODUCT-003","존재하지 않는 정렬 조건입니다."),
 
 	// Gym
 	GYM_INVALID_REQUEST(HttpStatus.BAD_REQUEST, "GYM-001", "잘못된 입력값입니다."),
@@ -36,6 +37,7 @@ public enum ErrorCode {
 
 	// 인증 관련
 	AUTH_REQUIRED(HttpStatus.UNAUTHORIZED, "AUTH-001", "인증이 필요합니다. 로그인 후 다시 시도해주세요."),
+	USER_NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "USER-002", "권한이 부족합니다."),
 
 	// 이미지 관련
 	IMAGE_TOO_LARGE(HttpStatus.PAYLOAD_TOO_LARGE, "IMAGE-002", "업로드한 파일 크기가 너무 큽니다. 최대 5MB까지 가능합니다."),
