@@ -25,7 +25,7 @@ public class TrainerController {
 	// 트레이너 정보 테스트
 	// 직원 추가 정보 등록
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
-	public ResponseEntity<Void> test(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+	public ResponseEntity<Void> register(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@RequestBody @Valid TrainerRegisterRequest registerRequest) {
 		trainerService.registerInfoByTrainer(trainerService.findByUserId(customOAuth2User.getUserId()),
 			registerRequest);
@@ -35,7 +35,7 @@ public class TrainerController {
 	// 사장 추가 정보 등록
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
 	@PostMapping("/owner")
-	public ResponseEntity<Void> test(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+	public ResponseEntity<Void> register(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@RequestBody @Valid OwnerRegisterRequest registerRequest) {
 		trainerService.registerInfoByOwner(trainerService.findByUserId(customOAuth2User.getUserId()), registerRequest);
 		return ResponseEntity.ok().build();
