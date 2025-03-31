@@ -35,6 +35,7 @@ public enum ErrorCode {
     GYM_FORBIDDEN(HttpStatus.FORBIDDEN, "GYM-005", "해당 헬스장에 대한 수정 권한이 없습니다."),
 
     // Myself
+    BIGTHREE_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-BIGTHREE-001", "해당 3대 측정 기록을 찾을 수 없습니다."),
     RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-RECORD-001", "해당 운동 기록을 찾을 수 없습니다."),
 
     // 인증 관련
