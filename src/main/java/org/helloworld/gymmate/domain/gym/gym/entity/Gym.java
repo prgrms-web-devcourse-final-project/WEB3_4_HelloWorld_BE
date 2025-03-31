@@ -59,6 +59,9 @@ public class Gym {
 	@Column(name = "intro", nullable = false)
 	private String intro;
 
+	@Column(name = "place_url")
+	private String placeUrl;
+
 	@OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<GymImage> images = new ArrayList<>();
