@@ -1,9 +1,27 @@
 package org.helloworld.gymmate.domain.myself.record.controller;
 
+import java.util.Map;
+
+import org.helloworld.gymmate.common.dto.PageDto;
+import org.helloworld.gymmate.common.mapper.PageMapper;
+import org.helloworld.gymmate.domain.myself.record.dto.RecordCreateRequest;
+import org.helloworld.gymmate.domain.myself.record.dto.RecordModifyRequest;
+import org.helloworld.gymmate.domain.myself.record.dto.RecordResponse;
 import org.helloworld.gymmate.domain.myself.record.service.RecordService;
+import org.helloworld.gymmate.domain.user.member.entity.Member;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -12,51 +30,51 @@ import lombok.RequiredArgsConstructor;
 public class RecordController {
 	private final RecordService recordService;
 
-	// @PostMapping
-	// public ResponseEntity<Map<String, Long>> createRecord(
-	//         @AuthenticationPrincipal GymmateUserDetails userDetails, //TODO: Oauth2User로 변경
-	//         @Valid @RequestBody RecordCreateRequest request) {
-	//
-	//     long recordId = 0;
-	//     Member member = null; //TODO: Oauth2User.getMember
-	//     recordService.createRecord(request, member);
-	//
-	//     return ResponseEntity.ok(
-	//             Map.of("recordId", recordId));
-	// }
-	//
-	// @DeleteMapping(value = "/{recordId}")
-	// public ResponseEntity<Map<String, Long>> deleteRecord(
-	//         @AuthenticationPrincipal GymmateUserDetails userDetails, //TODO: Oauth2User로 변경
-	//         @PathVariable Long recordId) {
-	//
-	//     Member member = null; //TODO: Oauth2User.getMember
-	//     recordService.deleteRecord(recordId, member);
-	//
-	//     return ResponseEntity.ok().build();
-	// }
-	//
-	// @PutMapping(value = "/{recordId}")
-	// public ResponseEntity<Map<String, Long>> modifyRecord(
-	//         @AuthenticationPrincipal GymmateUserDetails userDetails, //TODO: Oauth2User로 변경
-	//         @PathVariable Long recordId,
-	//         @Valid @RequestBody RecordModifyRequest request) {
-	//
-	//     Member member = null; //TODO: Oauth2User.getMember
-	//     recordService.modifyRecord(recordId, request, member);
-	//
-	//     return ResponseEntity.ok().build();
-	// }
-	//
-	// @GetMapping
-	// public ResponseEntity<PageDto<RecordResponse>> getRecords(
-	//         @AuthenticationPrincipal GymmateUserDetails userDetails, //TODO: Oauth2User로 변경
-	//         @RequestParam int page,
-	//         @RequestParam int size) {
-	//
-	//     Member member = null; //TODO: Oauth2User.getMember
-	//
-	//     return ResponseEntity.ok(PageMapper.toPageDto(
-	//             recordService.getRecords(page, size, member)));
-	// }
+	@PostMapping
+	public ResponseEntity<Map<String, Long>> createRecord(
+		@AuthenticationPrincipal GymmateUserDetails userDetails, //TODO: Oauth2User로 변경
+		@Valid @RequestBody RecordCreateRequest request) {
+
+		long recordId = 0;
+		Member member = null; //TODO: Oauth2User.getMember
+		recordService.createRecord(request, member);
+
+		return ResponseEntity.ok(
+			Map.of("recordId", recordId));
+	}
+
+	@DeleteMapping(value = "/{recordId}")
+	public ResponseEntity<Map<String, Long>> deleteRecord(
+		@AuthenticationPrincipal GymmateUserDetails userDetails, //TODO: Oauth2User로 변경
+		@PathVariable Long recordId) {
+
+		Member member = null; //TODO: Oauth2User.getMember
+		recordService.deleteRecord(recordId, member);
+
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping(value = "/{recordId}")
+	public ResponseEntity<Map<String, Long>> modifyRecord(
+		@AuthenticationPrincipal GymmateUserDetails userDetails, //TODO: Oauth2User로 변경
+		@PathVariable Long recordId,
+		@Valid @RequestBody RecordModifyRequest request) {
+
+		Member member = null; //TODO: Oauth2User.getMember
+		recordService.modifyRecord(recordId, request, member);
+
+		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping
+	public ResponseEntity<PageDto<RecordResponse>> getRecords(
+		@AuthenticationPrincipal GymmateUserDetails userDetails, //TODO: Oauth2User로 변경
+		@RequestParam int page,
+		@RequestParam int size) {
+
+		Member member = null; //TODO: Oauth2User.getMember
+
+		return ResponseEntity.ok(PageMapper.toPageDto(
+			recordService.getRecords(page, size, member)));
+	}
 }
