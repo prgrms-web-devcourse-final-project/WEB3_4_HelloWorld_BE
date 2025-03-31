@@ -1,6 +1,7 @@
 package org.helloworld.gymmate.domain.user.member.entity;
 
-import org.helloworld.gymmate.domain.user.enumerate.GenderType;
+import org.helloworld.gymmate.domain.user.enums.GenderType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
