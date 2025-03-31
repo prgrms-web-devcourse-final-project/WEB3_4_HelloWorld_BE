@@ -3,7 +3,10 @@ package org.helloworld.gymmate.domain.myself.bigthree.service;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.helloworld.gymmate.common.exception.BusinessException;
+import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeCreateRequest;
+import org.helloworld.gymmate.domain.myself.bigthree.entity.Bigthree;
 import org.helloworld.gymmate.domain.myself.bigthree.mapper.BigthreeMapper;
 import org.helloworld.gymmate.domain.myself.bigthree.repository.BigthreeRepository;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
@@ -22,5 +25,18 @@ public class BigthreeService {
         LocalDate date = request.date() != null ? request.date() : LocalDate.now();
 
         return bigthreeRepository.save(BigthreeMapper.toEntity(request, member, date)).getBigthreeId();
+    }
+
+    private Bigthree getExistingBigthree(Long bigthreeId) {
+        //기존 3대 측정 기록 가져오기
+        return bigthreeRepository.findById(bigthreeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.BIGTHREE_NOT_FOUND));
+    }
+
+    private void validateBigthreeOwner(Bigthree Bigthree, Member member) {
+        // 본인의 3대 측정 기록이 아니면 예외 발생
+        if (Bigthree.getMember().equals(member)) {
+            throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
     }
 }
