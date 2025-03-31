@@ -3,6 +3,7 @@ package org.helloworld.gymmate.domain.user.trainer.model;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
 import org.helloworld.gymmate.domain.user.enums.GenderType;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
@@ -19,6 +20,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -71,7 +73,9 @@ public class Trainer {
 
 	private Double score; // 리뷰 평점 평균
 
-	private Long gymId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "gym_id")
+	private Gym gym;
 
 	private String intro;
 
@@ -86,7 +90,7 @@ public class Trainer {
 	@JoinColumn(name = "oauth_id")
 	private Oauth oauth;
 
-	public void updateTrainerInfo(TrainerRegisterRequest request) { // 나중에 헬스장 추가해야함
+	public void registerTrainerInfo(TrainerRegisterRequest request) { // 나중에 헬스장 추가해야함
 		this.trainerName = request.trainerName();
 		this.phoneNumber = request.phoneNumber();
 		this.email = request.email();
@@ -96,7 +100,11 @@ public class Trainer {
 		this.additionalInfoCompleted = true;
 	}
 
-	public void updateOwnerInfo(OwnerRegisterRequest request) {
+	public void assignGym(Gym gym) {
+		this.gym = gym;
+	}
+
+	public void registerOwnerInfo(OwnerRegisterRequest request) {
 		this.isOwner = true;
 		this.isCheck = true;
 		this.trainerName = request.trainerName();
@@ -106,7 +114,7 @@ public class Trainer {
 		this.bank = request.bank();
 		this.account = request.account();
 		this.businessNumber = request.businessNumber();
-		this.date = LocalDate.parse(request.date(), DateTimeFormatter.ISO_DATE);
+		this.date = LocalDate.parse(request.date(), DateTimeFormatter.ofPattern("yyyyMMdd"));
 		this.additionalInfoCompleted = true;
 	}
 
