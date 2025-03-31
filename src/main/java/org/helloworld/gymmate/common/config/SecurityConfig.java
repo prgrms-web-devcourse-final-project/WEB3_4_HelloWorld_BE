@@ -5,6 +5,7 @@ import java.util.List;
 import org.helloworld.gymmate.security.filter.CustomAuthenticationFilter;
 import org.helloworld.gymmate.security.handler.LoginSuccessHandler;
 import org.helloworld.gymmate.security.handler.LogoutSuccessHandler;
+import org.helloworld.gymmate.security.resolver.CustomAuthorizationRequestResolver;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +33,7 @@ public class SecurityConfig {
 	private final LoginSuccessHandler loginSuccessHandler;
 	private final CustomAuthenticationFilter customAuthenticationFilter;
 	private final LogoutSuccessHandler logoutSuccessHandler;
+	private final CustomAuthorizationRequestResolver customAuthorizationRequestResolver;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -48,7 +50,9 @@ public class SecurityConfig {
 			.csrf(AbstractHttpConfigurer::disable)
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.oauth2Login(oauth2Login ->
-				oauth2Login.successHandler(loginSuccessHandler))
+				oauth2Login.successHandler(loginSuccessHandler)
+					.authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint.authorizationRequestResolver(
+						customAuthorizationRequestResolver)))
 			.logout(logout -> logout
 				.addLogoutHandler(logoutSuccessHandler)
 				.invalidateHttpSession(true)
