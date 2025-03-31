@@ -1,14 +1,22 @@
 package org.helloworld.gymmate.domain.user.member.entity;
 
-import org.helloworld.gymmate.domain.user.enums.GenderType;
+import java.time.LocalDate;
 
+import org.helloworld.gymmate.domain.user.enums.GenderType;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
+import org.helloworld.gymmate.security.oauth.entity.Oauth;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -29,7 +37,7 @@ public class Member {
 	@Column(name = "member_id")
 	private Long memberId;
 
-	@Column(name = "phone_number",nullable = false)
+	@Column(name = "phone_number",nullable = false, unique = true)
 	private String phoneNumber;
 
 	@Column(name = "member_name",nullable = false)
@@ -51,7 +59,6 @@ public class Member {
 
 	@Column(name="weight")
 	private String weight;
-
 
 	//주소
 	@Column(name="address")
@@ -79,4 +86,16 @@ public class Member {
 
 	@Column(name="cash")
 	private Long cash;
+
+	private LocalDate date;
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "oauth_id")
+	private Oauth oauth;
+
+	public void updateTrainerInfo(TrainerRegisterRequest request) { // 나중에 헬스장 추가해야함
+		this.phoneNumber = request.phoneNumber();
+		this.email = request.email();
+		this.genderType = GenderType.fromString(request.gender());
+
+	}
 }
