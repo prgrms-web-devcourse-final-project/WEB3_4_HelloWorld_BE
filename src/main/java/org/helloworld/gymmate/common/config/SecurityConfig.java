@@ -67,7 +67,7 @@ public class SecurityConfig {
 				"/v3/**", "/swagger-ui/**", "/api/logistics",
 				"h2-console/**", "/error",
 				// 이하는 개발환경에서만 허용해야 함
-				"/gym/**", "/ptProduct/**", "/classtime"
+				"/gym/**", "/ptProduct/**", "/classtime", "/crawl/**"
 			)
 			//.requestMatchers(HttpMethod.GET, "/similar")
 			//.requestMatchers(HttpMethod.GET, "/reviews/{reviewId}/comments")
