@@ -27,9 +27,9 @@ public class RecordController {
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @Valid @RequestBody RecordCreateRequest request) {
 
-        long recordId = 0;
+
         Member member = null; //TODO: memberService.findByUserId(customOAuth2User.getUserId());
-        recordService.createRecord(request, member);
+        long recordId = recordService.createRecord(request, member);
 
         return ResponseEntity.ok(
                 Map.of("recordId", recordId));

@@ -25,11 +25,11 @@ public class RecordService {
     private final RecordRepository recordRepository;
 
     @Transactional
-    public void createRecord(RecordCreateRequest request, Member member) {
+    public long createRecord(RecordCreateRequest request, Member member) {
         // 날짜가 비어있으면 현재 시간 넣기
         LocalDate date = request.date() != null ? request.date() : LocalDate.now();
-
-        recordRepository.save(RecordMapper.toEntity(request, member, date));
+        
+        return recordRepository.save(RecordMapper.toEntity(request, member, date)).getRecordId();
     }
 
     @Transactional
