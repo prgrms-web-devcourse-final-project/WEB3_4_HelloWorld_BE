@@ -50,7 +50,7 @@ public class PtProductService {
 		// TODO : 로그인한 id 받아와야 함
 		Long trainerId = 0L;
 
-		PtProduct ptProduct = PtProductMapper.toEntity(request,trainerId);
+		PtProduct ptProduct = PtProductMapper.toEntity(request, trainerId);
 		ptProduct = ptProductRepository.save(ptProduct);
 		if (images != null && !images.isEmpty()) {
 			saveProductImages(ptProduct, images);
@@ -65,7 +65,7 @@ public class PtProductService {
 
 		PtProduct ptProduct = findProductOrThrow(productId);
 		validateOwnership(ptProduct, trainerId);
-		ptProduct.update(request.info(),request.ptProductFee());
+		ptProduct.update(request.info(), request.ptProductFee());
 		deleteImagesIfExists(ptProduct, request.deleteImageIds());
 		if (images != null && !images.isEmpty()) {
 			saveProductImages(ptProduct, images);
@@ -90,7 +90,7 @@ public class PtProductService {
 	private void saveProductImages(PtProduct ptProduct, List<MultipartFile> images) {
 		List<String> imageUrls = fileManager.uploadFiles(images, "ptProduct");
 		List<PtProductImage> ptProductImages = imageUrls.stream()
-			.map(url -> PtProductMapper.toEntity(url,ptProduct))
+			.map(url -> PtProductMapper.toEntity(url, ptProduct))
 			.toList();
 
 		ptProduct.getPtProductImages().addAll(ptProductImages);
@@ -115,7 +115,8 @@ public class PtProductService {
 			}));
 	}
 
-	public Page<PtProductsResponse> getProducts(String sortOption, String searchOption, String searchTerm, int page, int pageSize) {
+	public Page<PtProductsResponse> getProducts(String sortOption, String searchOption, String searchTerm, int page,
+		int pageSize) {
 		SortOption sort = SortOption.from(sortOption);
 		SearchOption search = SearchOption.from(searchOption);
 		Pageable pageable = PageRequest.of(page, pageSize);
@@ -140,7 +141,8 @@ public class PtProductService {
 		return fetchAndMapProducts(ptProducts, pageable);
 	}
 
-	private Page<PtProductsResponse> fetchScoreSortedProducts(SearchOption search, String searchTerm, Pageable pageable) {
+	private Page<PtProductsResponse> fetchScoreSortedProducts(SearchOption search, String searchTerm,
+		Pageable pageable) {
 		Page<PtProduct> ptProducts = switch (search) {
 			// 검색어 없이 순수 평점순으로만 ptProduct 조회
 			case NONE -> ptProductRepository.findAllOrderByTrainerScoreDesc(pageable);
@@ -194,12 +196,12 @@ public class PtProductService {
 		PtProduct ptProduct = findProductOrThrow(ptProductId);
 
 		Trainer trainer = trainerRepository.findById(ptProduct.getTrainerId())
-			.orElseThrow(()-> new BusinessException(ErrorCode.USER_NOT_FOUND));
+			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
 		List<Award> awards = awardRepository.findByTrainerId(trainer.getTrainerId());
 
-		Gym gym = gymRepository.findWithImagesByGymId(trainer.getGymId())
-			.orElseThrow(()-> new BusinessException(ErrorCode.GYM_NOT_FOUND));
+		Gym gym = gymRepository.findWithImagesByGymId(trainer.getGym().getGymId())
+			.orElseThrow(() -> new BusinessException(ErrorCode.GYM_NOT_FOUND));
 
 		return PtProductMapper.toDto(ptProduct, trainer, awards, gym);
 	}

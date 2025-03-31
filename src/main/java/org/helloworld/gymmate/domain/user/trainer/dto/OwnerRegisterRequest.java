@@ -20,5 +20,4 @@ public record OwnerRegisterRequest(
 	@NotBlank(message = "개업일자를 입력해주세요.")
 	String date
 ) {
-
 }
