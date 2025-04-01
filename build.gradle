@@ -54,8 +54,6 @@ dependencies {
     implementation 'software.amazon.awssdk:s3'
     // Webflux (WebClient)
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    // @ConstructorBinding
-    implementation 'org.springframework.boot:spring-boot-configuration-processor'
 }
 
 tasks.named('test') {
