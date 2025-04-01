@@ -1,5 +1,6 @@
 package org.helloworld.gymmate.domain.pt.pt_product.mapper;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -62,12 +63,12 @@ public class PtProductMapper {
 				trainer.getScore(),
 				awards != null ? awards.stream()
 					.map(a -> new PtProductResponse.Award(a.getAwardYear(), a.getAwardName(), a.getAwardInfo()))
-					.toList() : List.of()
+					.toList() : Collections.emptyList()
 			),
 			ptProduct.getInfo(),
 			ptProduct.getPtProductFee(),
 			ptProduct.getPtProductImages() != null ?
-				ptProduct.getPtProductImages().stream().map(PtProductImage::getUrl).toList() : List.of(),
+				ptProduct.getPtProductImages().stream().map(PtProductImage::getUrl).toList() : Collections.emptyList(),
 			new PtProductResponse.Gym(
 				gym.getGymName(),
 				gym.getAddress(),
@@ -77,7 +78,7 @@ public class PtProductMapper {
 				gym.getEndTime(),
 				gym.getAvgScore(),
 				gym.getImages() != null ?
-					gym.getImages().stream().map(GymImage::getUrl).toList() : List.of()
+					gym.getImages().stream().map(GymImage::getUrl).toList() : Collections.emptyList()
 			)
 		);
 	}
