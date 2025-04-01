@@ -32,16 +32,16 @@ public class Gym {
 	@Column(name = "gym_name", nullable = false)
 	private String gymName;
 
-	@Column(name = "start_time", nullable = false)
+	@Column(name = "start_time", nullable = false)  //크롤링 해서 없는 경우 "운영시간이 없습니다" 표시
 	private String startTime;
 
-	@Column(name = "end_time", nullable = false)
+	@Column(name = "end_time", nullable = false) //크롤링 해서 없는 경우 "운영시간이 없습니다" 표시
 	private String endTime;
 
-	@Column(name = "phone_number", nullable = false)
+	@Column(name = "phone_number", nullable = true) //헬스장 번호가 없는 경우 존재함
 	private String phoneNumber;
 
-	@Column(name = "isPartner", nullable = false)
+	@Column(name = "is_partner", nullable = false)
 	private Boolean isPartner;
 
 	@Column(name = "address", nullable = false)
@@ -59,12 +59,12 @@ public class Gym {
 	@Column(name = "intro", nullable = false)
 	private String intro;
 
-	@Column(name = "place_url")
+	@Column(name = "place_url") //헬스장 상세 정보URL
 	private String placeUrl;
 
 	@OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
-	private List<GymImage> images = new ArrayList<>();
+	private List<GymImage> images = new ArrayList<>();  //이미지의 경우 default이미지 표시
 
 
 	// ====== Business Logic ======
@@ -85,8 +85,6 @@ public class Gym {
 		String endTime,
 		String phoneNumber,
 		String address,
-		String xField,
-		String yField,
 		String intro
 	) {
 		this.gymName = gymName;
@@ -94,8 +92,6 @@ public class Gym {
 		this.endTime = endTime;
 		this.phoneNumber = phoneNumber;
 		this.address = address;
-		this.xField = xField;
-		this.yField = yField;
 		this.intro = intro;
 	}
 }

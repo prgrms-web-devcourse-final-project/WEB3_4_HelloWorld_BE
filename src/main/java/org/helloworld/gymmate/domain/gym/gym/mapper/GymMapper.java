@@ -4,9 +4,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.helloworld.gymmate.domain.gym.gym.dto.GymCreateRequest;
-import org.helloworld.gymmate.domain.gym.gym.dto.GymResponse;
-import org.helloworld.gymmate.domain.gym.gym.dto.GymUpdateRequest;
+import org.helloworld.gymmate.domain.gym.gym.dto.request.GymCreateRequest;
+import org.helloworld.gymmate.domain.gym.gym.dto.response.GymResponse;
+import org.helloworld.gymmate.domain.gym.gym.dto.request.GymUpdateRequest;
 import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gym.entity.GymImage;
 
@@ -69,8 +69,6 @@ public class GymMapper {
 			request.endTime(),
 			request.phoneNumber(),
 			request.address(),
-			request.xField(),
-			request.yField(),
 			request.intro()
 		);
 	}
