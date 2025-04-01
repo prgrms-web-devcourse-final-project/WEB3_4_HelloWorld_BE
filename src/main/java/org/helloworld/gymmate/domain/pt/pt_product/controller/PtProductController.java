@@ -11,8 +11,10 @@ import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductModifyRequest;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductResponse;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductsResponse;
 import org.helloworld.gymmate.domain.pt.pt_product.service.PtProductService;
+import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,61 +28,65 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/ptProduct")
 @RequiredArgsConstructor
+@Slf4j
 public class PtProductController {
 	private final PtProductService ptProductService;
 
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Map<String,Long>> createPtProduct(
+	public ResponseEntity<Map<String, Long>> createPtProduct(
 		@RequestPart("ptProductData") @Valid PtProductCreateRequest request,
 		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images
-	){
+	) {
 		// TODO : userDetail 넘겨줘야 함
 
 		return ResponseEntity.ok(
-			Map.of("ptClassId",ptProductService.createPtProduct(request, images)));
+			Map.of("ptClassId", ptProductService.createPtProduct(request, images)));
 	}
 
 	@PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Map<String,Long>> modifyPtProduct(
+	public ResponseEntity<Map<String, Long>> modifyPtProduct(
 		@PathVariable Long productId,
 		@RequestPart("ptProductData") @Valid PtProductModifyRequest request,
 		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images
-	){
+	) {
 		// TODO : userDetail 넘겨줘야 함
 
 		return ResponseEntity.ok(
-			Map.of("ptClassId",ptProductService.modifyPtProduct(productId, request, images)));
+			Map.of("ptClassId", ptProductService.modifyPtProduct(productId, request, images)));
 	}
 
 	@DeleteMapping(value = "/{productId}")
-	public ResponseEntity<Map<String,Long>> deletePtProduct(
+	public ResponseEntity<Map<String, Long>> deletePtProduct(
 		@PathVariable Long productId
-	){
+	) {
 		// TODO : userDetail 넘겨줘야 함
 		ptProductService.deletePtProduct(productId);
 		return ResponseEntity.ok().build();
 	}
 
+	// TODO : 인증정보 null인 문제.. 이게 permitAll() 때문인지 확인 필요함
 	@GetMapping
 	public ResponseEntity<PageDto<PtProductsResponse>> getProducts(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@RequestParam(defaultValue = "score") String sortOption,
-		@RequestParam String searchOption,
-		@RequestParam String searchTerm,
+		@RequestParam(required = false) String searchOption,
+		@RequestParam(defaultValue = "") String searchTerm,
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int pageSize
-	){
+	) {
 		return ResponseEntity.ok(PageMapper.toPageDto(
-			ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize)));
+			ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize, customOAuth2User)));
 	}
 
 	@GetMapping("/{ptProductId}")
 	public ResponseEntity<PtProductResponse> getProduct(
 		@PathVariable Long ptProductId
-	){
+	) {
 		return ResponseEntity.ok(ptProductService.getProduct(ptProductId));
 	}
 }
