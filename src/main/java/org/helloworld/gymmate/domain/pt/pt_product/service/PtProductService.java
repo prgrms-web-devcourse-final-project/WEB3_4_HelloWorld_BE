@@ -46,10 +46,7 @@ public class PtProductService {
 	private final FileManager fileManager;
 
 	@Transactional
-	public Long createPtProduct(@Valid PtProductCreateRequest request, List<MultipartFile> images) {
-		// TODO : 로그인한 id 받아와야 함
-		Long trainerId = 0L;
-
+	public Long createPtProduct(@Valid PtProductCreateRequest request, List<MultipartFile> images, Long trainerId) {
 		PtProduct ptProduct = PtProductMapper.toEntity(request, trainerId);
 		ptProduct = ptProductRepository.save(ptProduct);
 		if (images != null && !images.isEmpty()) {
@@ -59,10 +56,8 @@ public class PtProductService {
 	}
 
 	@Transactional
-	public Long modifyPtProduct(Long productId, @Valid PtProductModifyRequest request, List<MultipartFile> images) {
-		// TODO : 로그인한 id 받아와야 함
-		Long trainerId = 0L;
-
+	public Long modifyPtProduct(Long productId, @Valid PtProductModifyRequest request, List<MultipartFile> images,
+		Long trainerId) {
 		PtProduct ptProduct = findProductOrThrow(productId);
 		validateOwnership(ptProduct, trainerId);
 		ptProduct.update(request.info(), request.ptProductFee());
@@ -75,15 +70,11 @@ public class PtProductService {
 	}
 
 	@Transactional
-	public void deletePtProduct(Long productId) {
-		// TODO : 로그인한 id 받아와야 함
-		Long trainerId = 0L;
-
+	public void deletePtProduct(Long productId, Long trainerId) {
 		PtProduct ptProduct = findProductOrThrow(productId);
 		validateOwnership(ptProduct, trainerId);
 		ptProduct.getPtProductImages()
 			.forEach(image -> fileManager.deleteFile(image.getUrl()));
-
 		ptProductRepository.delete(ptProduct);
 	}
 
@@ -92,7 +83,6 @@ public class PtProductService {
 		List<PtProductImage> ptProductImages = imageUrls.stream()
 			.map(url -> PtProductMapper.toEntity(url, ptProduct))
 			.toList();
-
 		ptProduct.getPtProductImages().addAll(ptProductImages);
 	}
 
