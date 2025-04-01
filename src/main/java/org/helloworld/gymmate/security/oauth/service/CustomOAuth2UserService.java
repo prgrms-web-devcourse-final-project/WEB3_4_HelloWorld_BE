@@ -49,7 +49,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		SocialUserInfo socialUserInfo = new SocialUserInfo(attributes);
 		String providerId = socialUserInfo.getProviderId();
 		String state = rq.getParameter("state");
-		log.info("state : {}", state);
+		log.debug("state : {}", state);
 
 		UserType userType = UserType.fromString(state);
 
@@ -68,7 +68,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 					);
 				});
 		}
-		// TODO : Member 사용자 등록 로직 구현
+		if (userType == UserType.MEMBER) {
+			userId = memberService.getMemberIdByOauth(oauth.getProviderId())
+				.orElseGet(() -> {
+					log.debug("신규 유저입니다. 등록을 진행합니다.");
+					return memberService.createMember(
+						oauth
+					);
+				});
+		}
 		return new CustomOAuth2User(oAuth2User, userId, userType);
 	}
 

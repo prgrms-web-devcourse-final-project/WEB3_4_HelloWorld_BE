@@ -1,5 +1,10 @@
 package org.helloworld.gymmate.domain.user.member.service;
 
+import java.util.Optional;
+
+import org.helloworld.gymmate.common.exception.BusinessException;
+import org.helloworld.gymmate.common.exception.ErrorCode;
+import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
 import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
@@ -25,11 +30,33 @@ public class MemberService {
 			oauth = entityManager.merge(oauth);
 		}
 
-		Member member = MemberMapper.ToMember(oauth);
+		Member member = MemberMapper.toMember(oauth);
 
 		return memberRepository.save(member).getMemberId();
 	}
 
+	//추가정보 등록
+	@Transactional
+	public void registerInfoMember(Member member, MemberRequest request) {
+		member.registerMemberInfo(request);
+		memberRepository.save(member);
+	}
 
+	//추가정보 등록 여부 확인
+	@Transactional(readOnly = true)
+	public boolean check(Member member) {
+		return member.getAdditionalInfoCompleted();
+	}
 
+	@Transactional(readOnly = true)
+	public Optional<Long> getMemberIdByOauth(String providerId) {
+		return oauthRepository.findByProviderId(providerId)
+			.flatMap(oauth -> memberRepository.findByOauth(oauth)
+				.map(Member::getMemberId));
+	}
+
+	public Member findByUserId(Long userId) {
+		return memberRepository.findByMemberId(userId).orElseThrow(() -> new BusinessException(
+			ErrorCode.USER_NOT_FOUND));
+	}
 }
