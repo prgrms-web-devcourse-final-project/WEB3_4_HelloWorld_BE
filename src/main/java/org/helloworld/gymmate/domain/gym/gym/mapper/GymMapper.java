@@ -37,7 +37,7 @@ public class GymMapper {
 	}
 
 	// 크롤링 1단계 (api에서 영업시간, 이미지 빼고 전부 받아옴)
-	// TODO : 제휴 헬스장 등록 또는 크롤링 2단계 진행후 default 이미지 객체는 테이블에서 삭제되어야 함
+	// TODO : 디폴트 이미지 랜덤 구현
 	public static Gym toEntity(Map<String, Object> response) {
 		double x = parseToDouble(response.get("x"));
 		double y = parseToDouble(response.get("y"));
