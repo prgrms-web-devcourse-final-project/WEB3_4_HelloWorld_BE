@@ -66,16 +66,6 @@ public class MemberService {
 			ErrorCode.USER_NOT_FOUND));
 	}
 
-	// @Transactional
-	// public void deleteMember(Long memberId) {
-	//
-	// 	if (memberRepository.existsByMemberId(memberId)) { // 멤버가 존재하는지 확인
-	// 		memberRepository.deleteByMemberId(memberId);  // 멤버 삭제
-	// 	} else {
-	// 		throw new BusinessException(ErrorCode.USER_NOT_FOUND);
-	// 	}
-	// }
-
 	@Transactional
 	public void deleteMember(Long memberId) {
 		log.debug("회원 삭제 시작: memberId={}", memberId);
