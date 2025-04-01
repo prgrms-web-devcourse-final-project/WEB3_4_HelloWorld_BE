@@ -1,10 +1,10 @@
-package org.helloworld.gymmate.domain.gym.gym.dto;
+package org.helloworld.gymmate.domain.gym.gym.dto.request;
 
 import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record GymUpdateRequest(
+public record GymCreateRequest (
 	@NotBlank(message = "헬스장 이름을 입력해주세요.")
 	String gymName,
 
@@ -29,6 +29,7 @@ public record GymUpdateRequest(
 	@NotBlank(message = "헬스장 소개를 입력해주세요.")
 	String intro,
 
-	List<Long> deleteImageIds
-) {
+	List<String> imageUrls
+){
+
 }
