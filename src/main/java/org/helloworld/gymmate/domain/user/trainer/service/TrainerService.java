@@ -9,6 +9,7 @@ import org.helloworld.gymmate.domain.gym.gym.repository.GymRepository;
 import org.helloworld.gymmate.domain.user.trainer.business.service.BusinessValidateService;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerProfileRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.mapper.TrainerMapper;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
@@ -61,6 +62,13 @@ public class TrainerService {
 	@Transactional
 	public Long modifyTrainerInfo(Trainer trainer, TrainerModifyRequest modifyRequest) {
 		trainer.modifyTrainerInfo(modifyRequest);
+		return trainerRepository.save(trainer).getTrainerId();
+	}
+
+	// 직원 및 사장 한줄소개, 경력, 전문 분야 입력
+	@Transactional
+	public Long updateTrainerProfile(Trainer trainer, TrainerProfileRequest profileRequest) {
+		trainer.updateTrainerProfile(profileRequest);
 		return trainerRepository.save(trainer).getTrainerId();
 	}
 
