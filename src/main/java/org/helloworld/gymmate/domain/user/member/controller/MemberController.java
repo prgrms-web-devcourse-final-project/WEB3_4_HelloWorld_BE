@@ -28,29 +28,16 @@ public class MemberController {
 	 * 회원 추가 정보 등록
 	 */
 	@PostMapping("/member/register")
-	public ResponseEntity<Map<String, Long>> registerAdditionalInfo(
+	public ResponseEntity<Long> registerAdditionalInfo(
 		@AuthenticationPrincipal CustomOAuth2User oAuth2User,
 		@Valid @RequestBody MemberRequest request
 	) {
-		log.info("회원 추가 정보 등록 요청: userId={}", oAuth2User.getUserId());
+		log.debug("회원 추가 정보 등록 요청: userId={}", oAuth2User.getUserId());
 
 		Member member = memberService.findByUserId(oAuth2User.getUserId());
 		Long memberId = memberService.registerInfoMember(member, request);
 
-		return ResponseEntity.ok(Map.of("memberId", memberId));
-	}
-
-	/**
-	 * 회원 추가 정보 등록 여부 확인
-	 */
-	@GetMapping("/check-info")
-	public ResponseEntity<Map<String, Boolean>> checkAdditionalInfo(
-		@AuthenticationPrincipal CustomOAuth2User oAuth2User
-	) {
-		Member member = memberService.findByUserId(oAuth2User.getUserId());
-		boolean isCompleted = memberService.check(member);
-
-		return ResponseEntity.ok(Map.of("isCompleted", isCompleted));
+		return ResponseEntity.ok(memberId);
 	}
 
 	/**
