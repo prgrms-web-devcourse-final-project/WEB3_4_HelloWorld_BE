@@ -26,7 +26,7 @@ public class BusinessValidateService {
 	private final BusinessProperties businessProperties;
 
 	public void validateBusiness(OwnerRegisterRequest ownerRegisterRequest) {
-		String validateUrl = businessProperties.getUrl() + "?serviceKey=" + businessProperties.getServiceKey();
+		String validateUrl = businessProperties.url() + "?serviceKey=" + businessProperties.serviceKey();
 		URI uri = URI.create(validateUrl);
 
 		BusinessVerificationRequest businessVerificationRequest = BusinessVerificationRequest.from(
