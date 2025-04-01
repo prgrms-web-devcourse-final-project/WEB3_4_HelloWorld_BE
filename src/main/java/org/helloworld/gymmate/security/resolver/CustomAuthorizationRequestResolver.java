@@ -43,7 +43,7 @@ public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRe
 
 		String paramValue = request.getParameter("state");
 		String userType = paramValue.toUpperCase();
-		log.info("userType : {}", userType);
+		log.debug("userType : {}", userType);
 		Map<String, Object> additionalParameters = new HashMap<>(authorizationRequest.getAdditionalParameters());
 		return OAuth2AuthorizationRequest.from(authorizationRequest)
 			.additionalParameters(additionalParameters)

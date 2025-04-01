@@ -50,7 +50,7 @@ public class BusinessValidateService {
 		String valid = (String)result.get("valid");
 
 		if ("01".equals(valid)) {
-			log.info("사업자등록번호 인증 성공");
+			log.debug("사업자등록번호 인증 성공");
 		} else {
 			throw new BusinessException(ErrorCode.INVALID_BUSINESS_NUMBER);
 		}

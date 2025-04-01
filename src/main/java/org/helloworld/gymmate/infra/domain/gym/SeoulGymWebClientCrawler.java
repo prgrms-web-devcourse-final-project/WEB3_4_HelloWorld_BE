@@ -25,10 +25,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class SeoulGymWebClientCrawler {
+	private static final int BATCH_SIZE = 500;
 	private final JdbcTemplate jdbcTemplate;
 	private final KakaoMapWebClientService kakaoMapWebClientService;
 	private final GymRepository gymRepository;
-	private static final int BATCH_SIZE = 500;
 	private final Queue<Gym> gymBatch = new ConcurrentLinkedQueue<>();
 
 	@Async
@@ -47,7 +47,7 @@ public class SeoulGymWebClientCrawler {
 				CompletableFuture<Void> future = kakaoMapWebClientService.searchHealthClubs(lng, lat, 5000)
 					.thenCompose(responses -> CompletableFuture.runAsync(() -> {
 						processGyms(responses, finalLng, finalLat);
-						log.info("크롤링 진행률: (현재 위치: lat={}, lng={})", finalLat, finalLng);
+						log.debug("크롤링 진행률: (현재 위치: lat={}, lng={})", finalLat, finalLng);
 					}));
 
 				futures.add(future);
@@ -77,13 +77,14 @@ public class SeoulGymWebClientCrawler {
 	private void processGyms(List<Map<String, Object>> responses, double lng, double lat) {
 
 		Set<String> placeUrls = responses.stream()
-			.map(response -> (String) response.get("place_url"))
+			.map(response -> (String)response.get("place_url"))
 			.collect(Collectors.toSet());
 
 		List<Gym> newGyms = responses.stream()
 			.filter(response -> placeUrls.contains(response.get("place_url"))) // place_url 필터링
 			.map(GymMapper::toEntity)
-			.filter(gym -> gymBatch.stream().noneMatch(existingGym -> existingGym.getPlaceUrl().equals(gym.getPlaceUrl()))) // 중복 검사
+			.filter(gym -> gymBatch.stream()
+				.noneMatch(existingGym -> existingGym.getPlaceUrl().equals(gym.getPlaceUrl()))) // 중복 검사
 			.toList();
 
 		gymBatch.addAll(newGyms);
@@ -109,11 +110,11 @@ public class SeoulGymWebClientCrawler {
 	@Transactional
 	public void saveGyms(List<Gym> gyms) {
 		if (gyms.isEmpty()) {
-			log.info("저장할 데이터가 없습니다.");
+			log.debug("저장할 데이터가 없습니다.");
 			return;
 		}
 
-		log.info("총 {}개의 데이터를 저장합니다.", gyms.size());
+		log.debug("총 {}개의 데이터를 저장합니다.", gyms.size());
 
 		String sql = "INSERT INTO gym (gym_name, start_time, end_time, phone_number, is_partner, " +
 			"address, x_field, y_field, avg_score, intro, place_url) " +
@@ -134,7 +135,7 @@ public class SeoulGymWebClientCrawler {
 				ps.setString(11, gym.getPlaceUrl());
 			});
 
-			log.info("데이터 저장 완료!");
+			log.debug("데이터 저장 완료!");
 		} catch (Exception e) {
 			log.error("데이터 저장 중 오류 발생: ", e);
 		}
