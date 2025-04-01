@@ -41,26 +41,20 @@ public class TrainerService {
 
 	// 추가 정보 등록 (직원)
 	@Transactional
-	public void registerInfoByTrainer(Trainer trainer, TrainerRegisterRequest request) {
+	public Long registerInfoByTrainer(Trainer trainer, TrainerRegisterRequest request) {
 		trainer.registerTrainerInfo(request);
 		Gym gym = gymRepository.findGymByGymName(request.gymName())
 			.orElseThrow(() -> new BusinessException(ErrorCode.GYM_NOT_FOUND));
 		trainer.assignGym(gym);
-		trainerRepository.save(trainer);
+		return trainerRepository.save(trainer).getTrainerId();
 	}
 
 	// 추가 정보 등록 (사장)
 	@Transactional
-	public void registerInfoByOwner(Trainer trainer, OwnerRegisterRequest request) {
+	public Long registerInfoByOwner(Trainer trainer, OwnerRegisterRequest request) {
 		businessValidateService.validateBusiness(request);
 		trainer.registerOwnerInfo(request);
-		trainerRepository.save(trainer);
-	}
-
-	// 추가 정보 등록 여부 확인
-	@Transactional(readOnly = true)
-	public boolean check(Trainer trainer) {
-		return trainer.getAdditionalInfoCompleted();
+		return trainerRepository.save(trainer).getTrainerId();
 	}
 
 	// 직원 및 사장 개인정보 수정
