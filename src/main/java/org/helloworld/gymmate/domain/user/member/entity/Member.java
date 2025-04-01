@@ -12,7 +12,6 @@ import org.helloworld.gymmate.security.oauth.entity.Oauth;
 @AllArgsConstructor
 @Builder
 @Table(name = "member")
-@EqualsAndHashCode(of = "memberId")
 public class Member {
 
     @Id
