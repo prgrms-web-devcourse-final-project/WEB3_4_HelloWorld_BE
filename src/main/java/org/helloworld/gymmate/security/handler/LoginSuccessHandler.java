@@ -30,6 +30,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final CookieManager cookieManager;
     private final JwtManager jwtManager;
+    private final ExpirationPolicy expirationPolicy;
     private final TrainerService trainerService;
     private final MemberService memberService;
     @Value("${jwt.redirect}")
@@ -81,9 +82,9 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         String accessToken = jwtManager.createAccessToken(customUser.getUserId(), customUser.getUserType().toString());
 
         cookieManager.setCookie(TokenType.ACCESS_TOKEN, accessToken,
-                ExpirationPolicy.getAccessTokenExpirationTime());
+                expirationPolicy.getAccessTokenExpirationTime());
         cookieManager.setCookie(TokenType.REFRESH_TOKEN, refreshToken,
-                ExpirationPolicy.getRefreshTokenExpirationTime());
+                expirationPolicy.getRefreshTokenExpirationTime());
 
         getRedirectStrategy().sendRedirect(request, response, redirectUri);
     }
