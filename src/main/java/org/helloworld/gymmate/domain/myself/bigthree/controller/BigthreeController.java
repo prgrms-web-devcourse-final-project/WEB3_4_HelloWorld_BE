@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.net.URI;
 
 @RestController
 @RequestMapping("/bigthree")
@@ -19,18 +19,18 @@ public class BigthreeController {
     private final BigthreeService bigthreeService;
 
     @PostMapping
-    public ResponseEntity<Map<String, Long>> createBigthree(
+    public ResponseEntity<Long> createBigthree(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @Valid @RequestBody BigthreeCreateRequest request) {
 
         long bigthreeId = bigthreeService.createBigthree(request, customOAuth2User.getUserId());
 
-        return ResponseEntity.ok(
-                Map.of("bigthreeId", bigthreeId));
+        URI location = URI.create("/bigthree/" + bigthreeId);
+        return ResponseEntity.created(location).body(bigthreeId);
     }
 
     @DeleteMapping(value = "/{bigthreeId}")
-    public ResponseEntity<Map<String, Long>> deleteBigthree(
+    public ResponseEntity<Void> deleteBigthree(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @PathVariable Long bigthreeId) {
 
@@ -40,7 +40,7 @@ public class BigthreeController {
     }
 
     @PutMapping(value = "/{bigthreeId}")
-    public ResponseEntity<Map<String, Long>> modifyBigthree(
+    public ResponseEntity<Void> modifyBigthree(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @PathVariable Long bigthreeId,
             @Valid @RequestBody BigthreeRequest request) {
