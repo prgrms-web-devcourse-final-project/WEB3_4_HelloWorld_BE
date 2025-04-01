@@ -3,9 +3,8 @@ package org.helloworld.gymmate.domain.myself.bigthree.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeCreateRequest;
-import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeModifyRequest;
+import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeRequest;
 import org.helloworld.gymmate.domain.myself.bigthree.service.BigthreeService;
-import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,15 +16,14 @@ import java.util.Map;
 @RequestMapping("/bigthree")
 @RequiredArgsConstructor
 public class BigthreeController {
-    private BigthreeService bigthreeService;
+    private final BigthreeService bigthreeService;
 
     @PostMapping
     public ResponseEntity<Map<String, Long>> createBigthree(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @Valid @RequestBody BigthreeCreateRequest request) {
 
-        Member member = null; //TODO: memberService.findByUserId(customOAuth2User.getUserId());
-        long bigthreeId = bigthreeService.createBigthree(request, member);
+        long bigthreeId = bigthreeService.createBigthree(request, customOAuth2User.getUserId());
 
         return ResponseEntity.ok(
                 Map.of("bigthreeId", bigthreeId));
@@ -36,8 +34,7 @@ public class BigthreeController {
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @PathVariable Long bigthreeId) {
 
-        Member member = null; //TODO: memberService.findByUserId(customOAuth2User.getUserId());
-        bigthreeService.deleteBigthree(bigthreeId, member);
+        bigthreeService.deleteBigthree(bigthreeId, customOAuth2User.getUserId());
 
         return ResponseEntity.ok().build();
     }
@@ -46,10 +43,9 @@ public class BigthreeController {
     public ResponseEntity<Map<String, Long>> modifyBigthree(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @PathVariable Long bigthreeId,
-            @Valid @RequestBody BigthreeModifyRequest request) {
+            @Valid @RequestBody BigthreeRequest request) {
 
-        Member member = null; //TODO: memberService.findByUserId(customOAuth2User.getUserId());
-        bigthreeService.modifyBigthree(bigthreeId, request, member);
+        bigthreeService.modifyBigthree(bigthreeId, request, customOAuth2User.getUserId());
 
         return ResponseEntity.ok().build();
     }
