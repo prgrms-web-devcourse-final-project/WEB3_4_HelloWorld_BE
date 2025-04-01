@@ -36,7 +36,7 @@ public class FileManager {
 
 	// 테이블별 파일 저장 기능
 	public String uploadToS3(MultipartFile file, String tableName) {
-		String bucketName = awsS3Properties.getS3().getBucket();
+		String bucketName = awsS3Properties.s3().bucket();
 
 		LocalDate now = LocalDate.now();
 		String datePath = String.format("%d%02d%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());
@@ -55,7 +55,7 @@ public class FileManager {
 			s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));
 
 			return "https://" + bucketName + ".s3." +
-				awsS3Properties.getRegion().getStaticRegion() + ".amazonaws.com/" + fileName;
+				awsS3Properties.region().staticRegion() + ".amazonaws.com/" + fileName;
 		} catch (IOException e) {
 			throw new RuntimeException("S3 파일 업로드 실패", e);
 		}
@@ -63,7 +63,7 @@ public class FileManager {
 
 	// 파일 삭제 기능
 	public void deleteFile(String fileUrl) {
-		String bucketName = awsS3Properties.getS3().getBucket();
+		String bucketName = awsS3Properties.s3().bucket();
 		String fileName = fileUrl.substring(fileUrl.indexOf("amazonaws.com/") + "amazonaws.com/".length());
 
 		DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
