@@ -46,7 +46,8 @@ app:
 
 jwt:
   secret: ngSp2t9twQ46LNeTEhhbEL7eXilryjiytLBTZl2dkxJpazA1RyPe6fdMj7utWkE07zhqrJDdmSpfOSCKYUhsA2VpdzWpqqbw
-  redirect: http://localhost:3000/callback
+  redirect: http://localhost:3000
+  redirect-login: http://localhost:3000/login
   access-token:
     expiration-time: 3600000
   refresh-token:
