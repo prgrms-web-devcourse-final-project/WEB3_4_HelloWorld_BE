@@ -5,13 +5,16 @@ import java.util.List;
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
-import org.helloworld.gymmate.domain.gym.gym.dto.GymCreateRequest;
-import org.helloworld.gymmate.domain.gym.gym.dto.GymResponse;
-import org.helloworld.gymmate.domain.gym.gym.dto.GymUpdateRequest;
+import org.helloworld.gymmate.domain.gym.gym.dto.request.GymUpdateRequest;
+import org.helloworld.gymmate.domain.gym.gym.dto.request.PartnerGymRequest;
+import org.helloworld.gymmate.domain.gym.gym.dto.response.GymResponse;
+import org.helloworld.gymmate.domain.gym.gym.dto.response.PartnerGymResponse;
 import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gym.entity.GymImage;
+import org.helloworld.gymmate.domain.gym.gym.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.gym.mapper.GymMapper;
 import org.helloworld.gymmate.domain.gym.gym.repository.GymRepository;
+import org.helloworld.gymmate.domain.gym.gym.repository.PartnerGymRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,38 +25,41 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GymService {
 
+	private final PartnerGymRepository partnerGymRepository;
 	private final GymRepository gymRepository;
 	private final FileManager fileManager;
 
+	//헬스장 조회(공통 코드)
+	public Gym getGymOrThrow(Long gymId) {
+		return gymRepository.findById(gymId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.GYM_NOT_FOUND));
+	}
+
 	@Transactional
-	public GymResponse createGym(GymCreateRequest request, List<MultipartFile> images) {
+	public PartnerGymResponse registerPartnerGym(PartnerGymRequest request, Long ownerId) {
 
+		// 중복 등록 방지
+		if (partnerGymRepository.existsByOwnerIdAndGym_GymId(ownerId, request.gymId())) {
+			throw new BusinessException(ErrorCode.GYM_ALREADY_EXISTS);
+		}
 
+		// gym 조회
+		Gym gym = getGymOrThrow(request.gymId());
 
-		List<String> imageUrls = fileManager.uploadFiles(images, "gym");
+		// partnerGym 저장
+		PartnerGym partnerGym = PartnerGym.builder()
+			.ownerId(ownerId)
+			.gym(gym)
+			.build();
 
-		GymCreateRequest updatedRequest = new GymCreateRequest(
-			request.gymName(),
-			request.startTime(),
-			request.endTime(),
-			request.phoneNumber(),
-			request.address(),
-			request.xField(),
-			request.yField(),
-			request.intro(),
-			imageUrls
-		);
-
-		Gym gym = GymMapper.toEntity(updatedRequest);
-		Gym saved = gymRepository.save(gym);
-		return GymMapper.toResponse(saved);
+		PartnerGym saved = partnerGymRepository.save(partnerGym);
+		return new PartnerGymResponse(saved.getPartnerGymId());
 	}
 
 	@Transactional
 	public GymResponse updateGym(Long gymId, GymUpdateRequest request, List<MultipartFile> images) {
 
-		Gym gym = gymRepository.findById(gymId)
-			.orElseThrow(()-> new BusinessException(ErrorCode.GYM_NOT_FOUND));
+		Gym gym = getGymOrThrow(gymId);
 
 		GymMapper.updateEntity(gym, request);
 
