@@ -37,9 +37,10 @@ public class MemberService {
 
 	//추가정보 등록
 	@Transactional
-	public void registerInfoMember(Member member, MemberRequest request) {
+	public Long registerInfoMember(Member member, MemberRequest request) {
 		member.registerMemberInfo(request);
-		memberRepository.save(member);
+		Member savedMember = memberRepository.save(member);
+		return savedMember.getMemberId();
 	}
 
 	//추가정보 등록 여부 확인
