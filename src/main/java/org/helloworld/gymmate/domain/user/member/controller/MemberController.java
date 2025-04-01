@@ -8,6 +8,7 @@ import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,9 +25,7 @@ public class MemberController {
 
 	private final MemberService memberService;
 
-	/**
-	 * 회원 추가 정보 등록
-	 */
+	//회원 추가정보 등록
 	@PostMapping("/member/register")
 	public ResponseEntity<Long> registerAdditionalInfo(
 		@AuthenticationPrincipal CustomOAuth2User oAuth2User,
@@ -39,10 +38,8 @@ public class MemberController {
 		return ResponseEntity.ok(memberId);
 	}
 
-	/**
-	 * 회원 정보 조회
-	 */
-	@GetMapping("/me")
+	//회원 정보 조회
+	@GetMapping("/member/me")
 	public ResponseEntity<MemberResponse> getMyInfo(
 		@AuthenticationPrincipal CustomOAuth2User oAuth2User
 	) {
@@ -50,5 +47,19 @@ public class MemberController {
 		MemberResponse memberResponse = MemberMapper.toResponseDto(member);
 
 		return ResponseEntity.ok(memberResponse);
+	}
+
+	//회원 삭제
+	@DeleteMapping("/member")
+	public ResponseEntity<Void> deleteMember(
+		@AuthenticationPrincipal CustomOAuth2User oAuth2User
+	) {
+		log.debug("회원 탈퇴 요청: userId={}", oAuth2User.getUserId());
+
+		memberService.deleteMember(oAuth2User.getUserId());
+
+		log.debug("회원 탈퇴 완료: userId={}", oAuth2User.getUserId());
+
+		return ResponseEntity.ok().build();
 	}
 }

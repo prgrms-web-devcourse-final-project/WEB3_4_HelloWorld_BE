@@ -12,4 +12,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	Optional<Member> findByOauth(Oauth oauth);
 
 	Optional<Member> findByMemberId(Long memberId);
+
+	void deleteByMemberId(Long memberId);
+
+	boolean existsByMemberId(Long memberId);
 }
