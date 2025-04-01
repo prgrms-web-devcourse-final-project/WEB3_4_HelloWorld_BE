@@ -37,7 +37,7 @@ public class JwtManager {
 	@PostConstruct
 	public void init() {
 		this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
-		log.info("JWT 보안 키가 성공적으로 생성되었습니다.");
+		log.debug("JWT 보안 키가 성공적으로 생성되었습니다.");
 	}
 
 	public String createAccessToken(Long userId, String userType) {

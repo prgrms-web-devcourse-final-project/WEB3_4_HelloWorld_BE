@@ -49,7 +49,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		SocialUserInfo socialUserInfo = new SocialUserInfo(attributes);
 		String providerId = socialUserInfo.getProviderId();
 		String state = rq.getParameter("state");
-		log.info("state : {}", state);
+		log.debug("state : {}", state);
 
 		UserType userType = UserType.fromString(state);
 
