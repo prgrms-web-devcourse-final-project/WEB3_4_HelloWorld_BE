@@ -66,7 +66,6 @@ public class MemberService {
 			ErrorCode.USER_NOT_FOUND));
 	}
 
-	//
 	// @Transactional
 	// public void deleteMember(Long memberId) {
 	//
@@ -76,14 +75,16 @@ public class MemberService {
 	// 		throw new BusinessException(ErrorCode.USER_NOT_FOUND);
 	// 	}
 	// }
+
 	@Transactional
 	public void deleteMember(Long memberId) {
 		log.debug("회원 삭제 시작: memberId={}", memberId);
 
-		Member member = memberRepository.findByMemberId(memberId)
-			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+		Member member = this.findByUserId(memberId);
 
-		// OAuth ID 가져오기
+		//TODO: trainer와의 외래키 제약조건 해결 시 아래 Oauth 관련 코드 삭제
+
+		//OAuth ID 가져오기
 		Oauth oauth = member.getOauth();
 
 		// Trainer 테이블에서 해당 OAuth 관련 데이터가 있는지 확인 및 처리
