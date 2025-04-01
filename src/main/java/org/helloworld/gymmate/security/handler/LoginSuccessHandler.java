@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,8 +33,10 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 	private final JwtManager jwtManager;
 	private final TrainerService trainerService;
 	private final MemberService memberService;
-	@Value("${jwt.redirect}")
-	private String REDIRECT_URI; // 프론트엔드로 Jwt 토큰을 리다이렉트할 URI
+	@Value("${jwt.redirect}") //
+	private String REDIRECT_URI; // 메인 페이지로 리다이렉트
+	@Value("${jwt.redirect-login}")
+	private String LOGIN_REDIRECT_URI; // 로그인 페이지로 리다이렉트
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -46,7 +49,10 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 			log.debug("Member 생성 확인: {}", member);
 			if (!member.getAdditionalInfoCompleted()) { // 추가 정보 입력이 필요한 경우
 				// 회원 추가 정보 입력 페이지로 리다이렉트할 URI
-				String memberRedirectUri = "http://localhost:3000/login?additionalInfoCompleted=false&role=member"; // 예시(회원 추가 정보 입력 페이지)
+				String memberRedirectUri = UriComponentsBuilder.fromUriString(LOGIN_REDIRECT_URI)
+					.queryParam("additionalInfoCompleted", false)
+					.queryParam("role", "member")
+					.toUriString();
 				registerTokens(request, response, customOAuth2User, memberRedirectUri); // 추가 정보 입력 페이지로 리다이렉트
 				return; // 리다이렉트 후 더 이상 진행하지 않도록 return 처리
 			}
@@ -57,13 +63,15 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 			Trainer trainer = trainerService.findByUserId(customOAuth2User.getUserId());
 			if (!trainer.getAdditionalInfoCompleted()) { // 추가 정보 입력이 필요한 경우
 				// 트레이너 추가 정보 입력 페이지로 리다이렉트할 URI
-				String trainerRedirectUri = "http://localhost:3000/login?additionalInfoCompleted=false&role=trainer";// 예시(트레이너 추가 정보 입력 페이지)
+				String trainerRedirectUri = UriComponentsBuilder.fromUriString(LOGIN_REDIRECT_URI)
+					.queryParam("additionalInfoCompleted", false)
+					.queryParam("role", "trainer")
+					.toUriString();
 				registerTokens(request, response, customOAuth2User, trainerRedirectUri); // 추가 정보 입력 페이지로 리다이렉트
 				return;  // 리다이렉트 후 더 이상 진행하지 않도록 return 처리
 			}
 		}
-		String mainRedirectUri = "http://localhost:3000"; // 예시(메인페이지)
-		registerTokens(request, response, customOAuth2User, mainRedirectUri); // 메인 페이지로 리다이렉트 (추가 정보 입력 완료)
+		registerTokens(request, response, customOAuth2User, REDIRECT_URI); // 메인 페이지로 리다이렉트 (추가 정보 입력 완료)
 	}
 
 	private void registerTokens(HttpServletRequest request, HttpServletResponse response,
