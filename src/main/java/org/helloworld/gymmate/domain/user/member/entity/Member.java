@@ -48,8 +48,8 @@ public class Member {
 	private String birthday;
 
 	@Enumerated(value = EnumType.STRING)
-	@Column(name = "gender", nullable = false)
-	private GenderType gender;
+	@Column(name = "genderType", nullable = false)
+	private GenderType genderType;
 
 	//신체정보
 	@Column(name = "height")
@@ -97,7 +97,7 @@ public class Member {
 		this.memberName = request.memberName();
 		this.email = request.email();
 		this.birthday = request.birthday();
-		this.gender = request.gender();
+		this.genderType = GenderType.fromString(request.gender());
 		this.height = request.height();
 		this.weight = request.weight();
 		this.address = request.address();

@@ -1,7 +1,5 @@
 package org.helloworld.gymmate.domain.user.member.dto;
 
-import org.helloworld.gymmate.domain.user.enums.GenderType;
-
 import jakarta.validation.constraints.NotNull;
 
 public record MemberRequest(
@@ -19,8 +17,7 @@ public record MemberRequest(
 	String birthday,
 
 	@NotNull(message = "성별은 필수입니다.")
-	GenderType gender,
-
+	String gender,
 	//신체정보
 	String height,
 

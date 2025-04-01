@@ -12,7 +12,7 @@ public class MemberMapper {
 			.phoneNumber("010-1111-2222")
 			.memberName("이름1")
 			.email("aa@naver.com")
-			.gender(GenderType.FEMALE)
+			.genderType(GenderType.FEMALE)
 			.birthday("2000-00-00")
 			.additionalInfoCompleted(false)
 			.build();
