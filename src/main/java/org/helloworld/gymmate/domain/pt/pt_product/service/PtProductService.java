@@ -168,7 +168,7 @@ public class PtProductService {
 	// }
 
 	@Transactional(readOnly = true)
-	private Page<PtProductsResponse> fetchAndMapProducts(Page<PtProduct> ptProducts, Pageable pageable) {
+	protected Page<PtProductsResponse> fetchAndMapProducts(Page<PtProduct> ptProducts, Pageable pageable) {
 		// ptProducts에 해당하는 trainerIds 추출(Set으로 같은 id 중복문제 해결)
 		Set<Long> trainerIds = ptProducts.getContent().stream()
 			.map(PtProduct::getTrainerId)
