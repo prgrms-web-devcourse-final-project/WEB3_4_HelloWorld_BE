@@ -19,22 +19,25 @@ public record PtProductResponse(
 		String email,
 		Double trainerScore,
 		List<Award> awards
-	) {}
+	) {
+	}
 
 	public record Award(
 		String year,
 		String awardName,
 		String info
-	) {}
+	) {
+	}
 
 	public record Gym(
 		String gymName,
 		String gymAddress,
-		String gymX,
-		String gymY,
+		Double gymX,
+		Double gymY,
 		String gymOpen,
 		String gymClose,
 		Double gymScore,
 		List<String> images
-	) {}
+	) {
+	}
 }

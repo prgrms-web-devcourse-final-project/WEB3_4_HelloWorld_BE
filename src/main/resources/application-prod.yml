@@ -14,3 +14,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
     show-sql: true
+
+logging:
+  level:
+    org.helloworld.gymmate: DEBUG
