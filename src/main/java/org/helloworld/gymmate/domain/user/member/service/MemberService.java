@@ -8,6 +8,8 @@ import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
 import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
+import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
+import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 import org.helloworld.gymmate.security.oauth.repository.OauthRepository;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class MemberService {
@@ -23,6 +27,7 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 	private final OauthRepository oauthRepository;
 	private final EntityManager entityManager;
+	private final TrainerRepository trainerRepository;
 
 	@Transactional
 	public Long createMember(Oauth oauth) {
@@ -59,5 +64,37 @@ public class MemberService {
 	public Member findByUserId(Long userId) {
 		return memberRepository.findByMemberId(userId).orElseThrow(() -> new BusinessException(
 			ErrorCode.USER_NOT_FOUND));
+	}
+
+	//
+	// @Transactional
+	// public void deleteMember(Long memberId) {
+	//
+	// 	if (memberRepository.existsByMemberId(memberId)) { // 멤버가 존재하는지 확인
+	// 		memberRepository.deleteByMemberId(memberId);  // 멤버 삭제
+	// 	} else {
+	// 		throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+	// 	}
+	// }
+	@Transactional
+	public void deleteMember(Long memberId) {
+		log.debug("회원 삭제 시작: memberId={}", memberId);
+
+		Member member = memberRepository.findByMemberId(memberId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+		// OAuth ID 가져오기
+		Oauth oauth = member.getOauth();
+
+		// Trainer 테이블에서 해당 OAuth 관련 데이터가 있는지 확인 및 처리
+		Optional<Trainer> trainer = trainerRepository.findByOauth(oauth);
+		if (trainer.isPresent()) {
+			log.debug("연관된 Trainer 데이터 삭제: trainerId={}", trainer.get().getTrainerId());
+			trainerRepository.delete(trainer.get());
+		}
+
+		memberRepository.deleteByMemberId(memberId);
+		log.info("회원이 성공적으로 삭제되었습니다. memberId={}", memberId);
+
 	}
 }
