@@ -4,6 +4,9 @@ import java.util.Optional;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
+import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gym.repository.GymRepository;
+import org.helloworld.gymmate.domain.user.trainer.business.service.BusinessValidateService;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
@@ -24,6 +27,8 @@ public class TrainerService {
 	private final TrainerRepository trainerRepository;
 	private final OauthRepository oauthRepository;
 	private final EntityManager entityManager;
+	private final GymRepository gymRepository;
+	private final BusinessValidateService businessValidateService;
 
 	@Transactional
 	public Long createTrainer(Oauth oauth) {
@@ -36,22 +41,20 @@ public class TrainerService {
 
 	// 추가 정보 등록 (직원)
 	@Transactional
-	public void registerInfoByTrainer(Trainer trainer, TrainerRegisterRequest request) {
-		trainer.updateTrainerInfo(request);
-		trainerRepository.save(trainer);
+	public Long registerInfoByTrainer(Trainer trainer, TrainerRegisterRequest request) {
+		trainer.registerTrainerInfo(request);
+		Gym gym = gymRepository.findGymByGymName(request.gymName())
+			.orElseThrow(() -> new BusinessException(ErrorCode.GYM_NOT_FOUND));
+		trainer.assignGym(gym);
+		return trainerRepository.save(trainer).getTrainerId();
 	}
 
 	// 추가 정보 등록 (사장)
 	@Transactional
-	public void registerInfoByOwner(Trainer trainer, OwnerRegisterRequest request) {
-		trainer.updateOwnerInfo(request);
-		trainerRepository.save(trainer);
-	}
-
-	// 추가 정보 등록 여부 확인
-	@Transactional(readOnly = true)
-	public boolean check(Trainer trainer) {
-		return trainer.getAdditionalInfoCompleted();
+	public Long registerInfoByOwner(Trainer trainer, OwnerRegisterRequest request) {
+		businessValidateService.validateBusiness(request);
+		trainer.registerOwnerInfo(request);
+		return trainerRepository.save(trainer).getTrainerId();
 	}
 
 	// 직원 및 사장 개인정보 수정

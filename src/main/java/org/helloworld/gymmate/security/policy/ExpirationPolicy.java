@@ -1,14 +1,19 @@
 package org.helloworld.gymmate.security.policy;
 
+import org.springframework.beans.factory.annotation.Value;
+
 public class ExpirationPolicy {
-	private static final long REFRESH_TOKEN_EXPIRATION_TIME = 3600000; // 1 hour in milliseconds
-	private static final long ACCESS_TOKEN_EXPIRATION_TIME = 3600000; // 1 hour in milliseconds
+    @Value("${jwt.access-token.expiration-time}")
+    private static long ACCESS_TOKEN_EXPIRATION_TIME;
+    @Value("${jwt.refresh-token.expiration-time}")
+    private static long REFRESH_TOKEN_EXPIRATION_TIME;
 
-	public static long getRefreshTokenExpirationTime() {
-		return REFRESH_TOKEN_EXPIRATION_TIME;
-	}
+    public static long getAccessTokenExpirationTime() {
+        return ACCESS_TOKEN_EXPIRATION_TIME;
+    }
 
-	public static long getAccessTokenExpirationTime() {
-		return ACCESS_TOKEN_EXPIRATION_TIME;
-	}
+    public static long getRefreshTokenExpirationTime() {
+        return REFRESH_TOKEN_EXPIRATION_TIME;
+    }
+
 }

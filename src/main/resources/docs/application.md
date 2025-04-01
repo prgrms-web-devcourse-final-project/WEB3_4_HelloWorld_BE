@@ -6,7 +6,9 @@ api:
 
 server:
   url: http://localhost:8080
-
+client:
+  url: http://localhost:3000
+  
 spring:
   profiles:
     active: prod
@@ -45,8 +47,9 @@ app:
     redirect-uri-suffix: ${OAUTH_KAKAO_REDIRECT_URI_SUFFIX}
 
 jwt:
-  secret: ngSp2t9twQ46LNeTEhhbEL7eXilryjiytLBTZl2dkxJpazA1RyPe6fdMj7utWkE07zhqrJDdmSpfOSCKYUhsA2VpdzWpqqbw
-  redirect: http://localhost:3000/callback
+  secret: ${JWT_SECRET}
+  redirect: ${client.url}
+  redirect-login: ${client.url}/login
   access-token:
     expiration-time: 3600000
   refresh-token:
@@ -64,4 +67,12 @@ cloud:
       auto: false
     stack:
       auto: false
+      
+kakao-map:
+  api:
+    key: ${KAKAO_API_KEY}
+    
+business:
+  url: ${BUSINESS_URL}
+  serviceKey: ${BUSINESS_KEY}
 ```

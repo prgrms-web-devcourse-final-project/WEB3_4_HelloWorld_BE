@@ -1,15 +1,20 @@
 package org.helloworld.gymmate.domain.user.trainer.controller;
 
-import org.helloworld.gymmate.domain.user.trainer.mapper.TrainerMapper;
+import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -19,11 +24,41 @@ public class TrainerController {
 
 	private final TrainerService trainerService;
 
-	// 트레이너 정보 테스트
+	// 직원 추가 정보 등록
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
-	@GetMapping("/test")
-	public ResponseEntity<?> test(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-		return ResponseEntity.ok(TrainerMapper.toDto(trainerService.findByUserId(customOAuth2User.getUserId())));
+	@PostMapping
+	public ResponseEntity<Long> register(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+		@RequestBody @Valid TrainerRegisterRequest registerRequest) {
+		return ResponseEntity.ok()
+			.body(trainerService.registerInfoByTrainer(trainerService.findByUserId(customOAuth2User.getUserId()),
+				registerRequest));
 	}
-	
+
+	// 사장 추가 정보 등록
+	@PreAuthorize("hasRole('ROLE_TRAINER')")
+	@PostMapping("/owner")
+	public ResponseEntity<Long> register(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+		@RequestBody @Valid OwnerRegisterRequest registerRequest) {
+		return ResponseEntity.ok()
+			.body(trainerService.registerInfoByOwner(trainerService.findByUserId(customOAuth2User.getUserId()),
+				registerRequest));
+	}
+
+	// 직원 및 사장 개인정보 수정
+	@PreAuthorize("hasRole('ROLE_TRAINER')")
+	@PostMapping("/modify")
+	public ResponseEntity<Long> modify(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+		@RequestBody TrainerModifyRequest modifyRequest) {
+		return ResponseEntity.ok()
+			.body(trainerService.modifyTrainerInfo(trainerService.findByUserId(customOAuth2User.getUserId()),
+				modifyRequest));
+	}
+
+	@PreAuthorize("hasRole('ROLE_TRAINER')")
+	@DeleteMapping
+	public ResponseEntity<Void> delete(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+		trainerService.deleteTrainer(trainerService.findByUserId(customOAuth2User.getUserId()));
+		return ResponseEntity.ok().build();
+	}
+
 }
