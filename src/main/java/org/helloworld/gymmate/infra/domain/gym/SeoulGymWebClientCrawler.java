@@ -9,6 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
+import org.helloworld.gymmate.common.util.StringUtil;
 import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gym.mapper.GymMapper;
 import org.helloworld.gymmate.domain.gym.gym.repository.GymRepository;
@@ -33,6 +34,7 @@ public class SeoulGymWebClientCrawler {
 
 	@Async
 	public CompletableFuture<Void> crawlSeoulGyms() {
+		log.debug("서울 체육관 크롤링 시작! (비동기 실행)");
 		List<CompletableFuture<Void>> futures = new ArrayList<>();
 
 		double startLat = 37.4, endLat = 37.7;
@@ -43,8 +45,8 @@ public class SeoulGymWebClientCrawler {
 			for (double lng = startLng; lng <= endLng; lng += step) {
 				double finalLng = lng;
 				double finalLat = lat;
-
 				CompletableFuture<Void> future = kakaoMapWebClientService.searchHealthClubs(lng, lat, 5000)
+
 					.thenCompose(responses -> CompletableFuture.runAsync(() -> {
 						processGyms(responses, finalLng, finalLat);
 						log.debug("크롤링 진행률: (현재 위치: lat={}, lng={})", finalLat, finalLng);
@@ -117,8 +119,8 @@ public class SeoulGymWebClientCrawler {
 		log.debug("총 {}개의 데이터를 저장합니다.", gyms.size());
 
 		String sql = "INSERT INTO gym (gym_name, start_time, end_time, phone_number, is_partner, " +
-			"address, x_field, y_field, avg_score, intro, place_url) " +
-			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			"address, location, avg_score, intro, place_url) " +
+			"VALUES (?, ?, ?, ?, ?, ?, ST_PointFromText(?, 4326), ?, ?, ?)";
 
 		try {
 			jdbcTemplate.batchUpdate(sql, gyms, BATCH_SIZE, (ps, gym) -> {
@@ -128,11 +130,10 @@ public class SeoulGymWebClientCrawler {
 				ps.setString(4, gym.getPhoneNumber());
 				ps.setBoolean(5, gym.getIsPartner());
 				ps.setString(6, gym.getAddress());
-				ps.setString(7, gym.getXField());
-				ps.setString(8, gym.getYField());
-				ps.setDouble(9, gym.getAvgScore());
-				ps.setString(10, gym.getIntro());
-				ps.setString(11, gym.getPlaceUrl());
+				ps.setString(7, StringUtil.format("POINT({} {})", gym.getLocation().getY(), gym.getLocation().getX()));
+				ps.setDouble(8, gym.getAvgScore());
+				ps.setString(9, gym.getIntro());
+				ps.setString(10, gym.getPlaceUrl());
 			});
 
 			log.debug("데이터 저장 완료!");

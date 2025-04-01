@@ -58,7 +58,7 @@ public class MemberController {
 
 		memberService.deleteMember(oAuth2User.getUserId());
 
-		log.info("회원 탈퇴 완료: userId={}", oAuth2User.getUserId());
+		log.debug("회원 탈퇴 완료: userId={}", oAuth2User.getUserId());
 
 		return ResponseEntity.ok().build();
 	}

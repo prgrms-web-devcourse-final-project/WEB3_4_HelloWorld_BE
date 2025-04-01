@@ -29,7 +29,7 @@ public class GymController {
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<GymResponse> createGym(
 		@RequestPart("request") @Valid GymCreateRequest request,
-		@RequestPart("images") List<MultipartFile> images){
+		@RequestPart("images") List<MultipartFile> images) {
 
 		GymResponse response = gymService.createGym(request, images);
 		return ResponseEntity.ok(response);
@@ -39,7 +39,7 @@ public class GymController {
 	public ResponseEntity<GymResponse> updateGym(
 		@PathVariable Long gymId,
 		@RequestPart("request") @Valid GymUpdateRequest request,
-		@RequestPart(value = "images" , required = false) List<MultipartFile> images){
+		@RequestPart(value = "images", required = false) List<MultipartFile> images) {
 
 		GymResponse response = gymService.updateGym(gymId, request, images);
 		return ResponseEntity.ok(response);

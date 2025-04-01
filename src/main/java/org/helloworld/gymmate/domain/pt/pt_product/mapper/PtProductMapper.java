@@ -72,8 +72,8 @@ public class PtProductMapper {
 			new PtProductResponse.Gym(
 				gym.getGymName(),
 				gym.getAddress(),
-				gym.getXField(),
-				gym.getYField(),
+				gym.getLocation().getX(),
+				gym.getLocation().getY(),
 				gym.getStartTime(),
 				gym.getEndTime(),
 				gym.getAvgScore(),
