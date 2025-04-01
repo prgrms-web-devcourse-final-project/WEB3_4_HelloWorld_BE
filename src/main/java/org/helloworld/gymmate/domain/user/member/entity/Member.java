@@ -78,6 +78,9 @@ public class Member {
 	@Column(name = "recent_squat")
 	private Double recentSquat;
 
+	@Column(name = "level")
+	private Integer level;
+
 	//계정잠김여부
 	@Column(name = "is_account_nonloked")
 	private Boolean isAccountNonLocked;

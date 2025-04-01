@@ -1,9 +1,9 @@
 package org.helloworld.gymmate.domain.user.member.controller;
 
-import java.util.Map;
-
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
+import org.helloworld.gymmate.domain.user.member.dto.MemberResponse;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
+import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
@@ -44,10 +44,12 @@ public class MemberController {
 	 * 회원 정보 조회
 	 */
 	@GetMapping("/me")
-	public ResponseEntity<Map<String, Member>> getMyInfo(
+	public ResponseEntity<MemberResponse> getMyInfo(
 		@AuthenticationPrincipal CustomOAuth2User oAuth2User
 	) {
 		Member member = memberService.findByUserId(oAuth2User.getUserId());
-		return ResponseEntity.ok(Map.of("member", member));
+		MemberResponse memberResponse = MemberMapper.toResponseDto(member);
+		
+		return ResponseEntity.ok(memberResponse);
 	}
 }
