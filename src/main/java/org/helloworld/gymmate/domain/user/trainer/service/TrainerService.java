@@ -6,9 +6,11 @@ import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gym.repository.GymRepository;
+import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.trainer.business.service.BusinessValidateService;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerProfileRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.mapper.TrainerMapper;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
@@ -64,6 +66,13 @@ public class TrainerService {
 		return trainerRepository.save(trainer).getTrainerId();
 	}
 
+	// 직원 및 사장 한줄소개, 경력, 전문 분야 입력
+	@Transactional
+	public Long updateTrainerProfile(Trainer trainer, TrainerProfileRequest profileRequest) {
+		trainer.updateTrainerProfile(profileRequest);
+		return trainerRepository.save(trainer).getTrainerId();
+	}
+
 	// 직원 및 사장 삭제
 	// 추후 추가되는 기능에 따라 수정 필요
 	@Transactional
@@ -73,7 +82,7 @@ public class TrainerService {
 
 	@Transactional(readOnly = true)
 	public Optional<Long> getTrainerIdByOauth(String providerId) {
-		return oauthRepository.findByProviderId(providerId)
+		return oauthRepository.findByProviderIdAndUserType(providerId, UserType.TRAINER)
 			.flatMap(oauth -> trainerRepository.findByOauth(oauth)
 				.map(Trainer::getTrainerId));
 	}

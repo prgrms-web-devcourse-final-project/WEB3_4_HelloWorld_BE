@@ -46,7 +46,7 @@ public class GymController {
 	public ResponseEntity<GymResponse> updateGym(
 		@PathVariable Long gymId,
 		@RequestPart("request") @Valid GymUpdateRequest request,
-		@RequestPart(value = "images" , required = false) List<MultipartFile> images){
+		@RequestPart(value = "images", required = false) List<MultipartFile> images) {
 
 		GymResponse response = gymService.updateGym(gymId, request, images);
 		return ResponseEntity.ok(response);

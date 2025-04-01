@@ -2,6 +2,7 @@ package org.helloworld.gymmate.domain.user.trainer.controller;
 
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerProfileRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
@@ -10,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,7 +48,7 @@ public class TrainerController {
 
 	// 직원 및 사장 개인정보 수정
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
-	@PostMapping("/modify")
+	@PutMapping("/modify")
 	public ResponseEntity<Long> modify(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@RequestBody TrainerModifyRequest modifyRequest) {
 		return ResponseEntity.ok()
@@ -59,6 +61,16 @@ public class TrainerController {
 	public ResponseEntity<Void> delete(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 		trainerService.deleteTrainer(trainerService.findByUserId(customOAuth2User.getUserId()));
 		return ResponseEntity.ok().build();
+	}
+
+	// 한줄소개, 경력, 전문 분야 입력
+	@PreAuthorize("hasRole('ROLE_TRAINER')")
+	@PutMapping("/profile")
+	public ResponseEntity<Long> updateProfile(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+		@RequestBody TrainerProfileRequest profileRequest) {
+		return ResponseEntity.ok()
+			.body(trainerService.updateTrainerProfile(trainerService.findByUserId(customOAuth2User.getUserId()),
+				profileRequest));
 	}
 
 }

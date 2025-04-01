@@ -30,4 +30,11 @@ public interface GymRepository extends JpaRepository<Gym, Long> {
 
 	Optional<Gym> findGymByGymName(String gymName);
 
+	@Query(value = "SELECT g.* FROM gym g " +
+		"WHERE ST_Distance_Sphere(g.location, ST_PointFromText(:point, 4326)) <= :distance " +
+		"ORDER BY ST_Distance_Sphere(g.location, ST_PointFromText(:point, 4326)) " +
+		"LIMIT :limit", nativeQuery = true)
+	List<Gym> findNearbyGyms(@Param("point") String point, @Param("distance") double distance,
+		@Param("limit") int limit);
+
 }

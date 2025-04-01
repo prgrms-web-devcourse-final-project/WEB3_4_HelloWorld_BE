@@ -1,9 +1,8 @@
 package org.helloworld.gymmate.security.oauth.entity;
 
-import java.time.LocalDate;
-
 import org.helloworld.gymmate.common.entity.BaseEntity;
 import org.helloworld.gymmate.domain.user.enums.SocialProviderType;
+import org.helloworld.gymmate.domain.user.enums.UserType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,4 +36,8 @@ public class Oauth extends BaseEntity {
 
 	@Column(name = "provider_id", nullable = false)
 	private String providerId;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "user_type", nullable = false)
+	private UserType userType;
 }

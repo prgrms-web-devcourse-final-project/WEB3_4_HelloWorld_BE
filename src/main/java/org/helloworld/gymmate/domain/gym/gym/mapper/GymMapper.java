@@ -1,9 +1,9 @@
 package org.helloworld.gymmate.domain.gym.gym.mapper;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.helloworld.gymmate.common.util.GeometryUtil;
 import org.helloworld.gymmate.domain.gym.gym.dto.request.GymCreateRequest;
 import org.helloworld.gymmate.domain.gym.gym.dto.response.GymResponse;
 import org.helloworld.gymmate.domain.gym.gym.dto.request.GymUpdateRequest;
@@ -12,7 +12,7 @@ import org.helloworld.gymmate.domain.gym.gym.entity.GymImage;
 
 public class GymMapper {
 
-	public static Gym toEntity(GymCreateRequest request){
+	public static Gym toEntity(GymCreateRequest request) {
 		Gym gym = Gym.builder()
 			.gymName(request.gymName())
 			.startTime(request.startTime())
@@ -20,8 +20,7 @@ public class GymMapper {
 			.phoneNumber(request.phoneNumber())
 			.isPartner(true)
 			.address(request.address())
-			.xField(request.xField())
-			.yField(request.yField())
+			.location(GeometryUtil.createPoint(request.xField(), request.yField()))
 			.intro(request.intro())
 			.avgScore(0.0)
 			.build();
@@ -38,24 +37,36 @@ public class GymMapper {
 	}
 
 	// 크롤링 1단계 (api에서 영업시간, 이미지 빼고 전부 받아옴)
-	// TODO : 제휴 헬스장 등록 또는 크롤링 2단계 진행후 default 이미지 객체는 테이블에서 삭제되어야 함
+	// TODO : 디폴트 이미지 랜덤 구현
 	public static Gym toEntity(Map<String, Object> response) {
-		GymImage defaultImage = GymImage.builder().url("default_image_url").build();
-		Gym gym = Gym.builder()
-			.gymName((String) response.get("place_name"))
+		double x = parseToDouble(response.get("x"));
+		double y = parseToDouble(response.get("y"));
+		return Gym.builder()
+			.gymName((String)response.get("place_name"))
 			.startTime("영업시간이 등록되지 않았습니다.")
 			.endTime("영업시간이 등록되지 않았습니다.")
-			.phoneNumber((String) response.get("phone"))
+			.phoneNumber((String)response.get("phone"))
 			.isPartner(false)
-			.address((String) response.get("road_address_name"))
-			.xField((String) response.get("x"))
-			.yField((String) response.get("y"))
+			.address((String)response.get("road_address_name"))
+			.location(GeometryUtil.createPoint(x, y))
 			.intro("소개가 등록되지 않았습니다.")
 			.avgScore(0.0)
-			.placeUrl((String) response.get("place_url"))
+			.placeUrl((String)response.get("place_url"))
 			.build();
-		gym.addImages(Collections.singletonList(defaultImage));
-		return gym;
+	}
+
+	private static double parseToDouble(Object value) {
+		if (value instanceof Number) {
+			return ((Number)value).doubleValue();
+		} else if (value instanceof String) {
+			try {
+				return Double.parseDouble((String)value);
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException("좌표 변환 실패: " + value, e);
+			}
+		} else {
+			throw new IllegalArgumentException("잘못된 좌표 타입: " + value);
+		}
 	}
 
 	public static GymResponse toResponse(Gym gym) {

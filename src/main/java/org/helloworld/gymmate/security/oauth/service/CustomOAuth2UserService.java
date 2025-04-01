@@ -54,8 +54,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		UserType userType = UserType.fromString(state);
 
 		// oauth 엔티티 조회 또는 신규 생성
-		Oauth oauth = oauthService.findOauthByProviderId(providerId)
-			.orElseGet(() -> oauthService.createOauth(providerId));
+		Oauth oauth = oauthService.findOauthByProviderIdAndUserType(providerId, userType)
+			.orElseGet(() -> oauthService.createOauth(providerId, userType));
 
 		Long userId = 0L;
 		// 가입 유형에 따른 사용자 등록 처리

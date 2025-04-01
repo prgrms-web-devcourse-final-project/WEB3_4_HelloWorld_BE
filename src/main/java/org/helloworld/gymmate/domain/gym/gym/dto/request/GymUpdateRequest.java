@@ -21,10 +21,10 @@ public record GymUpdateRequest(
 	String address,
 
 	@NotBlank(message = "x 좌표를 입력해주세요.")
-	String xField,
+	Double xField,
 
 	@NotBlank(message = "y 좌표를 입력해주세요.")
-	String yField,
+	Double yField,
 
 	@NotBlank(message = "헬스장 소개를 입력해주세요.")
 	String intro,

@@ -4,7 +4,7 @@ import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record GymCreateRequest (
+public record GymCreateRequest(
 	@NotBlank(message = "헬스장 이름을 입력해주세요.")
 	String gymName,
 
@@ -21,15 +21,15 @@ public record GymCreateRequest (
 	String address,
 
 	@NotBlank(message = "x 좌표를 입력해주세요.")
-	String xField,
+	Double xField,
 
 	@NotBlank(message = "y 좌표를 입력해주세요.")
-	String yField,
+	Double yField,
 
 	@NotBlank(message = "헬스장 소개를 입력해주세요.")
 	String intro,
 
 	List<String> imageUrls
-){
+) {
 
 }
