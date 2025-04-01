@@ -1,5 +1,7 @@
 package org.helloworld.gymmate.domain.gym.gym.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -33,6 +35,7 @@ public class GymImage {
 	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "gym_id")
+	@JsonIgnore
 	private Gym gym;
 
 }

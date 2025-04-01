@@ -54,6 +54,9 @@ dependencies {
     implementation 'software.amazon.awssdk:s3'
     // Webflux (WebClient)
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    // Jts
+    implementation 'org.locationtech.jts:jts-core:1.20.0'
+    implementation 'org.hibernate:hibernate-spatial:6.4.0.Final'
 }
 
 tasks.named('test') {

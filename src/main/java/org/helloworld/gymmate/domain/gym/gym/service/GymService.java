@@ -5,6 +5,7 @@ import java.util.List;
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
+import org.helloworld.gymmate.common.util.StringUtil;
 import org.helloworld.gymmate.domain.gym.gym.dto.GymCreateRequest;
 import org.helloworld.gymmate.domain.gym.gym.dto.GymResponse;
 import org.helloworld.gymmate.domain.gym.gym.dto.GymUpdateRequest;
@@ -27,8 +28,6 @@ public class GymService {
 
 	@Transactional
 	public GymResponse createGym(GymCreateRequest request, List<MultipartFile> images) {
-
-
 
 		List<String> imageUrls = fileManager.uploadFiles(images, "gym");
 
@@ -53,24 +52,22 @@ public class GymService {
 	public GymResponse updateGym(Long gymId, GymUpdateRequest request, List<MultipartFile> images) {
 
 		Gym gym = gymRepository.findById(gymId)
-			.orElseThrow(()-> new BusinessException(ErrorCode.GYM_NOT_FOUND));
+			.orElseThrow(() -> new BusinessException(ErrorCode.GYM_NOT_FOUND));
 
 		GymMapper.updateEntity(gym, request);
 
 		// 삭제할 이미지 ID 목록
-		List<Long> deleteImageIds   = request.deleteImageIds() != null ? request.deleteImageIds() : List.of();
+		List<Long> deleteImageIds = request.deleteImageIds() != null ? request.deleteImageIds() : List.of();
 
 		List<GymImage> imagesToDelete = gym.getImages().stream()
-			.filter(img -> deleteImageIds .contains(img.getId()))
+			.filter(img -> deleteImageIds.contains(img.getId()))
 			.toList();
-
 
 		// 삭제 (S3 + DB 관계 제거)
 		for (GymImage image : imagesToDelete) {
 			fileManager.deleteFile(image.getUrl());
 			gym.removeImage(image);
 		}
-
 
 		// 4. 이미지 처리
 		if (images != null && !images.isEmpty()) {
@@ -104,6 +101,11 @@ public class GymService {
 		return GymMapper.toResponse(gym);
 	}
 
+	@Transactional(readOnly = true)
+	public List<Gym> findNearbyGyms(double longitude, double latitude, double radiusInMeters, int limit) {
+		String point = StringUtil.format("POINT({} {})", latitude, longitude);
+		return gymRepository.findNearbyGyms(point, radiusInMeters, limit);
+	}
 
 }
 
