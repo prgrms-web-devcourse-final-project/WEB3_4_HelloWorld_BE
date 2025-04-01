@@ -36,7 +36,6 @@ public class MemberController {
 
 		Member member = memberService.findByUserId(oAuth2User.getUserId());
 		Long memberId = memberService.registerInfoMember(member, request);
-
 		return ResponseEntity.ok(memberId);
 	}
 
@@ -49,7 +48,7 @@ public class MemberController {
 	) {
 		Member member = memberService.findByUserId(oAuth2User.getUserId());
 		MemberResponse memberResponse = MemberMapper.toResponseDto(member);
-		
+
 		return ResponseEntity.ok(memberResponse);
 	}
 }

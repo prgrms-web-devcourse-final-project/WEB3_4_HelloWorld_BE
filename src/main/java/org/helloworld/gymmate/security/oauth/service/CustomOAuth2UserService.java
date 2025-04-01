@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.helloworld.gymmate.common.rq.Rq;
 import org.helloworld.gymmate.domain.user.enums.UserType;
-import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
@@ -55,8 +54,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		UserType userType = UserType.fromString(state);
 
 		// oauth 엔티티 조회 또는 신규 생성
-		Oauth oauth = oauthService.findOauthByProviderId(providerId)
-			.orElseGet(() -> oauthService.createOauth(providerId));
+		Oauth oauth = oauthService.findOauthByProviderIdAndUserType(providerId, userType)
+			.orElseGet(() -> oauthService.createOauth(providerId, userType));
 
 		Long userId = 0L;
 		// 가입 유형에 따른 사용자 등록 처리
@@ -89,17 +88,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		//  권한 부여 (ROLE_MEMBER 또는 ROLE_TRAINER)
 		Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + userTypeStr));
 
-		// 사용자 타입에 따라 다른 서비스 호출
-		String userName;
-		if (userType == UserType.MEMBER) {
-			Member member = memberService.findByUserId(userId);
-			userName = member.getMemberName();
-		} else {
-			Trainer trainer = trainerService.findByUserId(userId);
-			userName = trainer.getTrainerName();
-		}
-
-		final String finalUserName = userName;
+		Trainer trainer = trainerService.findByUserId(userId);
 
 		OAuth2User dummyOAuth2User = new OAuth2User() {
 			@Override
@@ -114,10 +103,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 			@Override
 			public String getName() {
-				return finalUserName;
+				return trainer.getTrainerName();
 			}
 		};
 
 		return new CustomOAuth2User(dummyOAuth2User, userId, userType);
 	}
 }
+
+
+
+

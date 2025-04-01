@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
+import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
@@ -39,8 +40,7 @@ public class MemberService {
 	@Transactional
 	public Long registerInfoMember(Member member, MemberRequest request) {
 		member.registerMemberInfo(request);
-		Member savedMember = memberRepository.save(member);
-		return savedMember.getMemberId();
+		return memberRepository.save(member).getMemberId();
 	}
 
 	//추가정보 등록 여부 확인
@@ -51,7 +51,7 @@ public class MemberService {
 
 	@Transactional(readOnly = true)
 	public Optional<Long> getMemberIdByOauth(String providerId) {
-		return oauthRepository.findByProviderId(providerId)
+		return oauthRepository.findByProviderIdAndUserType(providerId, UserType.MEMBER)
 			.flatMap(oauth -> memberRepository.findByOauth(oauth)
 				.map(Member::getMemberId));
 	}
