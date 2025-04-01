@@ -7,6 +7,7 @@ import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
 import org.helloworld.gymmate.domain.user.enums.GenderType;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerProfileRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 
@@ -126,6 +127,12 @@ public class Trainer {
 		this.bank = request.bank();
 		this.account = request.account();
 		this.profile = request.profile();
+		this.intro = request.intro();
+		this.career = request.career();
+		this.field = request.field();
+	}
+
+	public void updateTrainerProfile(TrainerProfileRequest request) {
 		this.intro = request.intro();
 		this.career = request.career();
 		this.field = request.field();
