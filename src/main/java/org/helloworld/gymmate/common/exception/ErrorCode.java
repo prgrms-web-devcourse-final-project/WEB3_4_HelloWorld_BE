@@ -43,7 +43,6 @@ public enum ErrorCode {
 	// 인증 관련
 	AUTH_REQUIRED(HttpStatus.UNAUTHORIZED, "AUTH-001", "인증이 필요합니다. 로그인 후 다시 시도해주세요."),
 	USER_NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "USER-002", "권한이 부족합니다."),
-	MUST_BE_USER(HttpStatus.FORBIDDEN, "USER-003", "회원만 가능한 기능입니다."),
 
 	// 이미지 관련
 	IMAGE_TOO_LARGE(HttpStatus.PAYLOAD_TOO_LARGE, "IMAGE-002", "업로드한 파일 크기가 너무 큽니다. 최대 5MB까지 가능합니다."),
@@ -53,12 +52,8 @@ public enum ErrorCode {
 	S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3-001", "이미지 업로드 중 오류가 발생했습니다. 다시 시도해주세요."),
 
 	// API 관련
-	API_UNEXPECTED_RESPONSE(HttpStatus.INTERNAL_SERVER_ERROR, "API-001", "API 응답이 올바르지 않습니다."),
+	API_UNEXPECTED_RESPONSE(HttpStatus.INTERNAL_SERVER_ERROR, "API-001", "API 응답이 올바르지 않습니다.");
 
-	// PAGE 관련
-	NEGATIVE_PAGE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "PAGE-001", "음수 페이지를 요청할 수 없습니다."),
-	PAGE_SIZE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "PAGE-001", "페이지 크기는 1~50까지 가능합니다.");
-	
 	private final HttpStatus httpStatus;
 	private final String errorCode;
 	private final String message;
