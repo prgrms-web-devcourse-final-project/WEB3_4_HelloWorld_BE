@@ -6,7 +6,7 @@ import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
 import org.helloworld.gymmate.common.util.StringUtil;
-import org.helloworld.gymmate.domain.gym.facility.service.FacilityService;
+import org.helloworld.gymmate.domain.gym.facility.entity.Facility;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.RegisterGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.UpdateGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
@@ -30,7 +30,6 @@ public class GymService {
 	private final PartnerGymRepository partnerGymRepository;
 	private final GymRepository gymRepository;
 	private final FileManager fileManager;
-	private final FacilityService facilityService;
 	private final TrainerRepository trainerRepository;
 
 	// 헬스장 조회(공통 코드)
@@ -59,9 +58,9 @@ public class GymService {
 		GymMapper.updateEntity(existingGym, request.gymInfoRequest().gymRequest());
 
 		// facility 업데이트
-		facilityService.updateFacility(existingGym.getGymId(),
-			request.gymInfoRequest().facilityRequest());
-
+		Facility facility = existingGym.getFacility();
+		facility.update(request.gymInfoRequest().facilityRequest());
+		
 		// gymImage 업데이트
 		//TODO: 메소드 호출 seyeon
 
