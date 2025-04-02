@@ -35,20 +35,20 @@ public class Member {
 	@Column(name = "member_id")
 	private Long memberId;
 
-	@Column(name = "phone_number", nullable = false, unique = true)
+	@Column(name = "phone_number", unique = true)
 	private String phoneNumber;
 
-	@Column(name = "member_name", nullable = false)
+	@Column(name = "member_name")
 	private String memberName;
 
-	@Column(name = "email", nullable = false)
+	@Column(name = "email")
 	private String email;
 
-	@Column(name = "birthday", nullable = false)
+	@Column(name = "birthday")
 	private String birthday;
 
 	@Enumerated(value = EnumType.STRING)
-	@Column(name = "genderType", nullable = false)
+	@Column(name = "genderType")
 	private GenderType genderType;
 
 	//신체정보
