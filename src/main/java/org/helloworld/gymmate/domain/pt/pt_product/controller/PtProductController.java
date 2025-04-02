@@ -12,6 +12,8 @@ import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductResponse;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductsResponse;
 import org.helloworld.gymmate.domain.pt.pt_product.service.PtProductService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
+import org.springframework.http.HttpStatus;
+import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -38,34 +40,32 @@ public class PtProductController {
 	private final PtProductService ptProductService;
 
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Map<String, Long>> createPtProduct(
+	public ResponseEntity<Long> createPtProduct(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@RequestPart("ptProductData") @Valid PtProductCreateRequest request,
 		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images
 	) {
-		// TODO : userDetail 넘겨줘야 함
-
-		return ResponseEntity.ok(
-			Map.of("ptClassId", ptProductService.createPtProduct(request, images)));
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(ptProductService.createPtProduct(request, images, customOAuth2User.getUserId()));
 	}
 
 	@PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Map<String, Long>> modifyPtProduct(
+	public ResponseEntity<Long> modifyPtProduct(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@PathVariable Long productId,
 		@RequestPart("ptProductData") @Valid PtProductModifyRequest request,
 		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images
 	) {
-		// TODO : userDetail 넘겨줘야 함
-
-		return ResponseEntity.ok(
-			Map.of("ptClassId", ptProductService.modifyPtProduct(productId, request, images)));
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(ptProductService.modifyPtProduct(productId, request, images, customOAuth2User.getUserId()));
 	}
 
 	@DeleteMapping(value = "/{productId}")
-	public ResponseEntity<Map<String, Long>> deletePtProduct(
+	public ResponseEntity<Void> deletePtProduct(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@PathVariable Long productId
 	) {
-		// TODO : userDetail 넘겨줘야 함
-		ptProductService.deletePtProduct(productId);
+		ptProductService.deletePtProduct(productId, customOAuth2User.getUserId());
 		return ResponseEntity.ok().build();
 	}
 

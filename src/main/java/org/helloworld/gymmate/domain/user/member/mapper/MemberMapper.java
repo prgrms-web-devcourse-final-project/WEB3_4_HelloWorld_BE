@@ -1,6 +1,8 @@
 package org.helloworld.gymmate.domain.user.member.mapper;
 
 import org.helloworld.gymmate.domain.user.enums.GenderType;
+import org.helloworld.gymmate.domain.user.enums.UserType;
+import org.helloworld.gymmate.domain.user.member.dto.MemberCheckResponse;
 import org.helloworld.gymmate.domain.user.member.dto.MemberResponse;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
@@ -37,6 +39,12 @@ public class MemberMapper {
 			member.getLevel(),
 			member.getIsAccountNonLocked(),
 			member.getCash()
+		);
+	}
+
+	public static MemberCheckResponse toCheckResponse(Member member) {
+		return new MemberCheckResponse(
+			UserType.MEMBER.toString()
 		);
 	}
 }
