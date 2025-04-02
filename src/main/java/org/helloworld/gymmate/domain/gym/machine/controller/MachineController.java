@@ -1,6 +1,6 @@
 package org.helloworld.gymmate.domain.gym.machine.controller;
 
-import org.helloworld.gymmate.common.validate.custom.ValidSingleImageFile;
+import org.helloworld.gymmate.common.validate.custom.ValidImageFile;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineCreateRequest;
 import org.helloworld.gymmate.domain.gym.machine.service.MachineService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
@@ -28,7 +28,7 @@ public class MachineController {
 	public ResponseEntity<Long> createMachine(
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@RequestPart("machineData") @Valid MachineCreateRequest request,
-		@RequestPart(required = false) @ValidSingleImageFile MultipartFile image
+		@RequestPart(required = false) @ValidImageFile MultipartFile image
 	) {
 		return ResponseEntity.ok().body(
 			machineService.createMachine(customOAuth2User.getUserId(), request, image));
