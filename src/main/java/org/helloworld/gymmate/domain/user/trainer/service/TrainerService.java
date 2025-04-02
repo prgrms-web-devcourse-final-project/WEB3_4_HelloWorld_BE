@@ -9,9 +9,11 @@ import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.trainer.business.service.BusinessValidateService;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerCheckResponse;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerProfileRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerResponse;
 import org.helloworld.gymmate.domain.user.trainer.mapper.TrainerMapper;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
@@ -78,6 +80,18 @@ public class TrainerService {
 	@Transactional
 	public void deleteTrainer(Trainer trainer) {
 		trainerRepository.delete(trainer);
+	}
+
+	// 마이페이지 정보
+	@Transactional(readOnly = true)
+	public TrainerResponse getInfo(Trainer trainer) {
+		return TrainerMapper.toResponse(trainer);
+	}
+
+	// 사장여부
+	@Transactional(readOnly = true)
+	public TrainerCheckResponse check(Trainer trainer) {
+		return TrainerMapper.toCheckResponse(trainer);
 	}
 
 	@Transactional(readOnly = true)

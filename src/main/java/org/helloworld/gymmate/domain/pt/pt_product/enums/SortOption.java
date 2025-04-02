@@ -6,7 +6,8 @@ import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 
 public enum SortOption {
-	LATEST, SCORE, NEAREST;
+	// TODO : 나중에 가격순 추가 가능
+	LATEST, SCORE, NEARBY;
 
 	public static SortOption from(String value) {
 		return Arrays.stream(values())

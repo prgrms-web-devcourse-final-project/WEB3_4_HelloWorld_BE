@@ -55,8 +55,8 @@ public class BigthreeService {
         bigthreeRepository.save(BigthreeMapper.toEntity(request, member, date));
     }
 
-    private Member getMember(Long bigthreeId) {
-        return memberService.findByUserId(bigthreeId);
+    private Member getMember(Long memberId) {
+        return memberService.findByUserId(memberId);
     }
 
     private Bigthree getExistingBigthree(Long bigthreeId) {
@@ -65,9 +65,9 @@ public class BigthreeService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.BIGTHREE_NOT_FOUND));
     }
 
-    private void validateBigthreeOwner(Bigthree Bigthree, Member member) {
+    private void validateBigthreeOwner(Bigthree bigthree, Member member) {
         // 본인의 3대 측정 기록이 아니면 예외 발생
-        if (Bigthree.getMember().equals(member)) {
+        if (!bigthree.getMember().equals(member)) {
             throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
         }
     }

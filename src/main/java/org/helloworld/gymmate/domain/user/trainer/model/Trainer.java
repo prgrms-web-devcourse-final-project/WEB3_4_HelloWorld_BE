@@ -43,7 +43,7 @@ public class Trainer {
 	@Column(name = "trainer_id")
 	private Long trainerId;
 
-	@Column(name = "traine_name")
+	@Column(name = "trainer_name")
 	private String trainerName;
 
 	@Column(name = "phone_number", unique = true)
