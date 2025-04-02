@@ -53,9 +53,6 @@ public class GymService {
 		// facility 업데이트
 		//TODO: 메소드 호출
 
-		// machine 업데이트
-		//TODO: 메소드 호출
-
 		// gymImage 업데이트
 		//TODO: 메소드 호출 seyeon
 		saveImages(images, existingGym);
@@ -83,9 +80,6 @@ public class GymService {
 		GymMapper.updateEntity(existingGym, request.gymInfoRequest().gymRequest());
 
 		// facility 업데이트
-		//TODO: 메소드 호출
-
-		// machine 업데이트
 		//TODO: 메소드 호출
 
 		// gymImage 업데이트

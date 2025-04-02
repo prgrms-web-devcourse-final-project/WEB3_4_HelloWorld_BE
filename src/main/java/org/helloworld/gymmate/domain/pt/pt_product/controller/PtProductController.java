@@ -1,7 +1,6 @@
 package org.helloworld.gymmate.domain.pt.pt_product.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.helloworld.gymmate.common.dto.PageDto;
 import org.helloworld.gymmate.common.mapper.PageMapper;
@@ -11,8 +10,13 @@ import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductModifyRequest;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductResponse;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductsResponse;
 import org.helloworld.gymmate.domain.pt.pt_product.service.PtProductService;
+import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,62 +29,81 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/ptProduct")
 @RequiredArgsConstructor
+@Slf4j
 public class PtProductController {
 	private final PtProductService ptProductService;
 
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Map<String,Long>> createPtProduct(
+	public ResponseEntity<Long> createPtProduct(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@RequestPart("ptProductData") @Valid PtProductCreateRequest request,
 		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images
-	){
-		// TODO : userDetail 넘겨줘야 함
-
-		return ResponseEntity.ok(
-			Map.of("ptClassId",ptProductService.createPtProduct(request, images)));
+	) {
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(ptProductService.createPtProduct(request, images, customOAuth2User.getUserId()));
 	}
 
 	@PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Map<String,Long>> modifyPtProduct(
+	public ResponseEntity<Long> modifyPtProduct(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@PathVariable Long productId,
 		@RequestPart("ptProductData") @Valid PtProductModifyRequest request,
 		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images
-	){
-		// TODO : userDetail 넘겨줘야 함
-
-		return ResponseEntity.ok(
-			Map.of("ptClassId",ptProductService.modifyPtProduct(productId, request, images)));
+	) {
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(ptProductService.modifyPtProduct(productId, request, images, customOAuth2User.getUserId()));
 	}
 
 	@DeleteMapping(value = "/{productId}")
-	public ResponseEntity<Map<String,Long>> deletePtProduct(
+	public ResponseEntity<Void> deletePtProduct(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@PathVariable Long productId
-	){
-		// TODO : userDetail 넘겨줘야 함
-		ptProductService.deletePtProduct(productId);
+	) {
+		ptProductService.deletePtProduct(productId, customOAuth2User.getUserId());
 		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping
+	@Validated
 	public ResponseEntity<PageDto<PtProductsResponse>> getProducts(
 		@RequestParam(defaultValue = "score") String sortOption,
-		@RequestParam String searchOption,
-		@RequestParam String searchTerm,
-		@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "10") int pageSize
-	){
+		@RequestParam(required = false) String searchOption,
+		@RequestParam(defaultValue = "") String searchTerm,
+		@RequestParam(defaultValue = "0") @Min(0) int page,
+		@RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize,
+		@RequestParam(required = false, defaultValue = "127.0276") Double x,
+		@RequestParam(required = false, defaultValue = "37.4979") Double y
+	) {
 		return ResponseEntity.ok(PageMapper.toPageDto(
-			ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize)));
+			ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize, x, y)));
+	}
+
+	@GetMapping("/nearby")
+	@Validated
+	@PreAuthorize("hasRole('ROLE_MEMBER')")
+	public ResponseEntity<PageDto<PtProductsResponse>> getNearByProducts(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+		@RequestParam(required = false) String searchOption,
+		@RequestParam(defaultValue = "") String searchTerm,
+		@RequestParam(defaultValue = "0") @Min(0) int page,
+		@RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize
+	) {
+		return ResponseEntity.ok(PageMapper.toPageDto(
+			ptProductService.fetchNearbyProducts(searchOption, searchTerm, page, pageSize, customOAuth2User)));
 	}
 
 	@GetMapping("/{ptProductId}")
 	public ResponseEntity<PtProductResponse> getProduct(
 		@PathVariable Long ptProductId
-	){
+	) {
 		return ResponseEntity.ok(ptProductService.getProduct(ptProductId));
 	}
 }

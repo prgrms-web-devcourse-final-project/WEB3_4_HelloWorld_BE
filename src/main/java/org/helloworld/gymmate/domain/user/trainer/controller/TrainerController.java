@@ -1,15 +1,18 @@
 package org.helloworld.gymmate.domain.user.trainer.controller;
 
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerCheckResponse;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerProfileRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerResponse;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -71,6 +74,21 @@ public class TrainerController {
 		return ResponseEntity.ok()
 			.body(trainerService.updateTrainerProfile(trainerService.findByUserId(customOAuth2User.getUserId()),
 				profileRequest));
+	}
+
+	// 마이페이지 정보
+	@GetMapping
+	public ResponseEntity<TrainerResponse> getInfo(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+		return ResponseEntity.ok()
+			.body(trainerService.getInfo(trainerService.findByUserId(customOAuth2User.getUserId())));
+	}
+
+	// 트레이너인지 check -> 메인페이지 활용
+	@GetMapping("/check")
+	public ResponseEntity<TrainerCheckResponse> check(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+		return ResponseEntity.ok()
+			.body(trainerService.check(trainerService.findByUserId(customOAuth2User.getUserId())));
+
 	}
 
 }
