@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
-import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
-import org.helloworld.gymmate.domain.gym.gym.repository.GymRepository;
+import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductCreateRequest;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductModifyRequest;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductResponse;
@@ -166,7 +166,7 @@ public class PtProductService {
 	}
 
 	@Transactional(readOnly = true)
-	private Page<PtProductsResponse> fetchAndMapProducts(Page<PtProduct> ptProducts, Pageable pageable) {
+	protected Page<PtProductsResponse> fetchAndMapProducts(Page<PtProduct> ptProducts, Pageable pageable) {
 		// ptProducts에 해당하는 trainerIds 추출(Set으로 같은 id 중복문제 해결)
 		Set<Long> trainerIds = ptProducts.getContent().stream()
 			.map(PtProduct::getTrainerId)

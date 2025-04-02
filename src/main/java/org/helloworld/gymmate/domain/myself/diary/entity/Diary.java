@@ -1,10 +1,11 @@
-package org.helloworld.gymmate.domain.gym.machine.entity;
+package org.helloworld.gymmate.domain.myself.diary.entity;
 
-import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
+import java.time.LocalDate;
+
+import org.helloworld.gymmate.domain.user.member.entity.Member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,29 +17,31 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name = "machine")
-public class Machine {
+@Table(name = "diary")
+public class Diary {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "machine_id")
-	private Long machineId;
+	@Column(name = "diary_id")
+	private Long diaryId;
 
-	@Column(name = "machine_name", nullable = false)
-	private String machineName;
+	@Column(name = "date")
+	private LocalDate date;
 
-	@Column(name = "amount", nullable = false)
-	private Integer amount;
+	@Column(name = "title")
+	private String title;
 
-	@Column(name = "machineImage")
-	private String machineImage;
+	@Column(name = "content")
+	private String content;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "gym_id")
-	private Gym gym;
+	@Setter
+	@ManyToOne
+	@JoinColumn(name = "member_id")
+	private Member member;
 }

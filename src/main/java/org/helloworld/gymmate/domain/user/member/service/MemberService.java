@@ -6,6 +6,7 @@ import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.member.dto.MemberCheckResponse;
+import org.helloworld.gymmate.domain.user.member.dto.MemberModifyRequest;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
@@ -78,5 +79,12 @@ public class MemberService {
 	@Transactional(readOnly = true)
 	public MemberCheckResponse checkUserType(Member member) {
 		return MemberMapper.toCheckResponse(member);
+	}
+
+	// 멤버 정보 수정
+	@Transactional
+	public Long modifyMemberInfo(Member member, MemberModifyRequest request) {
+		member.modifyMemberInfo(request);
+		return memberRepository.save(member).getMemberId();
 	}
 }

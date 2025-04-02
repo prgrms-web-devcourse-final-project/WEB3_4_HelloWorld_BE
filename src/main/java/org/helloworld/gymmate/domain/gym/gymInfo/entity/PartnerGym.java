@@ -1,6 +1,4 @@
-package org.helloworld.gymmate.domain.gym.machine.entity;
-
-import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
+package org.helloworld.gymmate.domain.gym.gymInfo.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,23 +20,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name = "machine")
-public class Machine {
+@Table(name = "Partner_gym")
+public class PartnerGym {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "machine_id")
-	private Long machineId;
+	@Column(name = "partner_gym_id")
+	private Long partnerGymId;
 
-	@Column(name = "machine_name", nullable = false)
-	private String machineName;
-
-	@Column(name = "amount", nullable = false)
-	private Integer amount;
-
-	@Column(name = "machineImage")
-	private String machineImage;
+	@Column(name = "owner_id", nullable = false)
+	private Long ownerId; //헬스장 주인id
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "gym_id")
+	@JoinColumn(name = "gym_id", nullable = false)
 	private Gym gym;
 }

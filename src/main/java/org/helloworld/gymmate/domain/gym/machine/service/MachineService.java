@@ -1,8 +1,8 @@
 package org.helloworld.gymmate.domain.gym.machine.service;
 
 import org.helloworld.gymmate.common.s3.FileManager;
-import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
-import org.helloworld.gymmate.domain.gym.gym.service.GymService;
+import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gymInfo.service.GymService;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineCreateRequest;
 import org.helloworld.gymmate.domain.gym.machine.entity.Machine;
 import org.helloworld.gymmate.domain.gym.machine.mapper.MachineMapper;

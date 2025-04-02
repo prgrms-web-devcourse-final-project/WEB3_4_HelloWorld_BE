@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
-import org.helloworld.gymmate.domain.gym.gym.entity.GymImage;
+import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gymInfo.entity.GymImage;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductCreateRequest;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductResponse;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductsResponse;

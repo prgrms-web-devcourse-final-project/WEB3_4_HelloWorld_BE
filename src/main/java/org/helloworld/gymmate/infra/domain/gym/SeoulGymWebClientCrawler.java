@@ -10,9 +10,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 import org.helloworld.gymmate.common.util.StringUtil;
-import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
-import org.helloworld.gymmate.domain.gym.gym.mapper.GymMapper;
-import org.helloworld.gymmate.domain.gym.gym.repository.GymRepository;
+import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gymInfo.mapper.GymMapper;
+import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.infra.service.KakaoMapWebClientService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;

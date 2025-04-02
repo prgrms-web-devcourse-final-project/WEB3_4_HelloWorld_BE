@@ -1,6 +1,6 @@
 package org.helloworld.gymmate.domain.gym.machine.mapper;
 
-import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineCreateRequest;
 import org.helloworld.gymmate.domain.gym.machine.entity.Machine;
 

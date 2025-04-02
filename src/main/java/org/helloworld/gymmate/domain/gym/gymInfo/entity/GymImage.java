@@ -1,8 +1,7 @@
-package org.helloworld.gymmate.domain.gym.machine.entity;
+package org.helloworld.gymmate.domain.gym.gymInfo.entity;
 
-import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -16,29 +15,27 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name = "machine")
-public class Machine {
+@Table(name = "gymImage")
+public class GymImage {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "machine_id")
-	private Long machineId;
+	private Long id;
 
-	@Column(name = "machine_name", nullable = false)
-	private String machineName;
+	private String url; // 이미지 경로
 
-	@Column(name = "amount", nullable = false)
-	private Integer amount;
-
-	@Column(name = "machineImage")
-	private String machineImage;
-
+	//제한된 setter 사용
+	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "gym_id")
+	@JsonIgnore
 	private Gym gym;
+
 }
