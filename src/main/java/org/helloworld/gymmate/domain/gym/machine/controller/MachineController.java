@@ -4,6 +4,7 @@ import org.helloworld.gymmate.common.validate.custom.ValidImageFile;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineCreateRequest;
 import org.helloworld.gymmate.domain.gym.machine.service.MachineService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,7 +31,7 @@ public class MachineController {
 		@RequestPart("machineData") @Valid MachineCreateRequest request,
 		@RequestPart(required = false) @ValidImageFile MultipartFile image
 	) {
-		return ResponseEntity.ok().body(
+		return ResponseEntity.status(HttpStatus.CREATED).body(
 			machineService.createMachine(customOAuth2User.getUserId(), request, image));
 	}
 }
