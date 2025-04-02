@@ -14,7 +14,6 @@ import org.helloworld.gymmate.domain.gym.gymInfo.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.gymInfo.mapper.GymMapper;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.PartnerGymRepository;
-import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -148,11 +147,6 @@ public class GymService {
 
 			gym.addImages(newImages);
 		}
-	}
-
-	public Gym findGymByTrainerId(Long trainerId) {
-		Trainer trainer = trainerService.findByUserId(trainerId);
-		return trainer.getGym();
 	}
 }
 
