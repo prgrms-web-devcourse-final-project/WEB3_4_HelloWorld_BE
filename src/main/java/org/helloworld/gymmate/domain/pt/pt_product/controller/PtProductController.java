@@ -14,7 +14,9 @@ import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,11 +29,15 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/ptProduct")
 @RequiredArgsConstructor
+@Slf4j
 public class PtProductController {
 	private final PtProductService ptProductService;
 
@@ -66,15 +72,32 @@ public class PtProductController {
 	}
 
 	@GetMapping
+	@Validated
 	public ResponseEntity<PageDto<PtProductsResponse>> getProducts(
 		@RequestParam(defaultValue = "score") String sortOption,
-		@RequestParam String searchOption,
-		@RequestParam String searchTerm,
-		@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "10") int pageSize
+		@RequestParam(required = false) String searchOption,
+		@RequestParam(defaultValue = "") String searchTerm,
+		@RequestParam(defaultValue = "0") @Min(0) int page,
+		@RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize,
+		@RequestParam(required = false, defaultValue = "127.0276") Double x,
+		@RequestParam(required = false, defaultValue = "37.4979") Double y
 	) {
 		return ResponseEntity.ok(PageMapper.toPageDto(
-			ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize)));
+			ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize, x, y)));
+	}
+
+	@GetMapping("/nearby")
+	@Validated
+	@PreAuthorize("hasRole('ROLE_MEMBER')")
+	public ResponseEntity<PageDto<PtProductsResponse>> getNearByProducts(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+		@RequestParam(required = false) String searchOption,
+		@RequestParam(defaultValue = "") String searchTerm,
+		@RequestParam(defaultValue = "0") @Min(0) int page,
+		@RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize
+	) {
+		return ResponseEntity.ok(PageMapper.toPageDto(
+			ptProductService.fetchNearbyProducts(searchOption, searchTerm, page, pageSize, customOAuth2User)));
 	}
 
 	@GetMapping("/{ptProductId}")

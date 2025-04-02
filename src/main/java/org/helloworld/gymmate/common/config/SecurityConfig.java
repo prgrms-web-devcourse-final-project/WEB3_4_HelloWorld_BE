@@ -74,7 +74,7 @@ public class SecurityConfig {
 				// 이하는 개발환경에서만 허용해야 함
 				"/gym/**", "/crawl/**"
 			)
-			.requestMatchers(HttpMethod.GET, "/ptProduct", "/ptProduct/**")
+			.requestMatchers(HttpMethod.GET, "/ptProduct", "/ptProduct/{id:\\d+}")
 			//.requestMatchers(HttpMethod.GET, "/similar")
 			//.requestMatchers(HttpMethod.GET, "/reviews/{reviewId}/comments")
 			.requestMatchers(PathRequest.toH2Console());

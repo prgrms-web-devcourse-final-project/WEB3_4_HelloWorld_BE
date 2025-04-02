@@ -7,8 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class SpatialIndexService {
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -20,7 +22,7 @@ public class SpatialIndexService {
 
 		List<?> result = entityManager.createNativeQuery(checkIndexQuery).getResultList();
 		if (!result.isEmpty()) {
-			System.out.println("Spatial Index already exists, skipping creation.");
+			log.debug("Spatial Index already exists, skipping creation.");
 			return; // 이미 존재하면 생성하지 않음
 		}
 
