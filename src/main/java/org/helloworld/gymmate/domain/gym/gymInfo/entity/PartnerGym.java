@@ -25,6 +25,7 @@ public class PartnerGym {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "partner_gym_id")
 	private Long partnerGymId;
 
 	@Column(name = "owner_id", nullable = false)
