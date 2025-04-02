@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -57,6 +58,7 @@ public class RecordController {
 
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     @GetMapping
+    @Validated
     public ResponseEntity<PageDto<RecordResponse>> getRecords(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @RequestParam @Min(0) int page,
