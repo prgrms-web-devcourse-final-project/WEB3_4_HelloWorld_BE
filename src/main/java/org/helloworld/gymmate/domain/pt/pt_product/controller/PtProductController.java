@@ -75,10 +75,12 @@ public class PtProductController {
 		@RequestParam(required = false) String searchOption,
 		@RequestParam(defaultValue = "") String searchTerm,
 		@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "10") int pageSize
+		@RequestParam(defaultValue = "10") int pageSize,
+		@RequestParam(required = false, defaultValue = "127.0276") Double x,
+		@RequestParam(required = false, defaultValue = "37.4979") Double y
 	) {
 		return ResponseEntity.ok(PageMapper.toPageDto(
-			ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize)));
+			ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize, x, y)));
 	}
 
 	@GetMapping("/nearby")

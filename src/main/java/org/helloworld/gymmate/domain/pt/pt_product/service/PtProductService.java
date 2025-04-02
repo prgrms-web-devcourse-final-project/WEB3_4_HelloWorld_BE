@@ -121,7 +121,7 @@ public class PtProductService {
 	}
 
 	public Page<PtProductsResponse> getProducts(String sortOption, String searchOption, String searchTerm,
-		int page, int pageSize) {
+		int page, int pageSize, Double x, Double y) {
 		SortOption sort = SortOption.from(sortOption);
 		SearchOption search = SearchOption.from(searchOption);
 		Pageable pageable = PageRequest.of(page, pageSize);
@@ -129,7 +129,7 @@ public class PtProductService {
 		return switch (sort) {
 			case LATEST -> fetchLatestProducts(search, searchTerm, pageable);
 			case SCORE -> fetchScoreSortedProducts(search, searchTerm, pageable);
-			default -> throw new BusinessException(ErrorCode.UNSUPPORTED_SORT_OPTION);
+			case NEARBY -> fetchNearbyProductsUsingXY(search, searchTerm, pageable, x, y);
 		};
 	}
 
@@ -156,25 +156,28 @@ public class PtProductService {
 		return fetchAndMapProducts(ptProducts, pageable);
 	}
 
+	private Page<PtProductsResponse> fetchNearbyProductsUsingXY(SearchOption searchOption, String searchTerm,
+		Pageable pageable, Double x, Double y) {
+		String searchValue = (searchOption == SearchOption.NONE) ? "" : searchTerm;
+		Page<PtProduct> ptProducts = ptProductRepository.findNearestPtProductsWithSearch(x, y, searchOption.name(),
+			searchValue, pageable);
+		return fetchAndMapProducts(ptProducts, pageable);
+	}
+
 	public Page<PtProductsResponse> fetchNearbyProducts(String searchOption, String searchTerm,
 		int page, int pageSize, CustomOAuth2User customOAuth2User) {
 
 		SearchOption search = SearchOption.from(searchOption);
-		String searchValue = (search == SearchOption.NONE) ? "" : searchTerm;
-		Pageable pageable = PageRequest.of(page, pageSize);
-
 		System.out.println(customOAuth2User.getUserType());
 		if (!customOAuth2User.getUserType().equals(UserType.MEMBER)) {
 			throw new BusinessException(ErrorCode.MUST_BE_USER);
 		}
-
 		Member member = memberService.findByUserId(customOAuth2User.getUserId());
 		Double x = Double.valueOf(member.getXField());
 		Double y = Double.valueOf(member.getYField());
+		Pageable pageable = PageRequest.of(page, pageSize);
 
-		Page<PtProduct> ptProducts = ptProductRepository.findNearestPtProductsWithSearch(x, y, search.name(),
-			searchValue, pageable);
-		return fetchAndMapProducts(ptProducts, pageable);
+		return fetchNearbyProductsUsingXY(search, searchTerm, pageable, x, y);
 	}
 
 	@Transactional(readOnly = true)
