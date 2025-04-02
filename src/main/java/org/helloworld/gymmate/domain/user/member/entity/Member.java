@@ -1,6 +1,7 @@
 package org.helloworld.gymmate.domain.user.member.entity;
 
 import org.helloworld.gymmate.domain.user.enums.GenderType;
+import org.helloworld.gymmate.domain.user.member.dto.MemberModifyRequest;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 
@@ -35,20 +36,20 @@ public class Member {
 	@Column(name = "member_id")
 	private Long memberId;
 
-	@Column(name = "phone_number", nullable = false, unique = true)
+	@Column(name = "phone_number", unique = true)
 	private String phoneNumber;
 
-	@Column(name = "member_name", nullable = false)
+	@Column(name = "member_name")
 	private String memberName;
 
-	@Column(name = "email", nullable = false)
+	@Column(name = "email")
 	private String email;
 
-	@Column(name = "birthday", nullable = false)
+	@Column(name = "birthday")
 	private String birthday;
 
 	@Enumerated(value = EnumType.STRING)
-	@Column(name = "genderType", nullable = false)
+	@Column(name = "genderType")
 	private GenderType genderType;
 
 	//신체정보
@@ -95,7 +96,6 @@ public class Member {
 	private Oauth oauth;
 
 	public void registerMemberInfo(MemberRequest request) {
-
 		this.phoneNumber = request.phoneNumber();
 		this.memberName = request.memberName();
 		this.email = request.email();
@@ -111,5 +111,22 @@ public class Member {
 		this.recentSquat = request.recentSquat();
 		this.additionalInfoCompleted = true;
 
+	}
+
+	public void modifyMemberInfo(MemberModifyRequest request) {
+		this.phoneNumber = request.phoneNumber();
+		this.memberName = request.memberName();
+		this.email = request.email();
+		this.birthday = request.birthday();
+		this.genderType = GenderType.fromString(request.gender());
+		this.height = request.height();
+		this.weight = request.weight();
+		this.address = request.address();
+		this.xField = request.xField();
+		this.yField = request.yField();
+		this.recentBench = request.recentBench();
+		this.recentDeadlift = request.recentDeadlift();
+		this.recentSquat = request.recentSquat();
+		this.additionalInfoCompleted = true;
 	}
 }

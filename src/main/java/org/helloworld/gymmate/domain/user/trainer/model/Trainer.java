@@ -3,7 +3,7 @@ package org.helloworld.gymmate.domain.user.trainer.model;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.helloworld.gymmate.domain.user.enums.GenderType;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
@@ -43,7 +43,7 @@ public class Trainer {
 	@Column(name = "trainer_id")
 	private Long trainerId;
 
-	@Column(name = "traine_name")
+	@Column(name = "trainer_name")
 	private String trainerName;
 
 	@Column(name = "phone_number", unique = true)
