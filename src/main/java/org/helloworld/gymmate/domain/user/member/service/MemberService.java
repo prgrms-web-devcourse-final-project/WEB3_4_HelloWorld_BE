@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.domain.user.enums.UserType;
+import org.helloworld.gymmate.domain.user.member.dto.MemberCheckResponse;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
@@ -87,5 +88,10 @@ public class MemberService {
 		memberRepository.deleteByMemberId(memberId);
 		log.debug("회원이 성공적으로 삭제되었습니다. memberId={}", memberId);
 
+	}
+
+	@Transactional(readOnly = true)
+	public MemberCheckResponse checkUserType(Member member) {
+		return MemberMapper.toCheckResponse(member);
 	}
 }

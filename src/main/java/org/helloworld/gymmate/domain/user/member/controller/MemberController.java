@@ -1,11 +1,13 @@
 package org.helloworld.gymmate.domain.user.member.controller;
 
+import org.helloworld.gymmate.domain.user.member.dto.MemberCheckResponse;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.domain.user.member.dto.MemberResponse;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
+import org.helloworld.gymmate.security.oauth.service.CustomOAuth2UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberController {
 
 	private final MemberService memberService;
+	private final CustomOAuth2UserService customOAuth2UserService;
 
 	//회원 추가정보 등록
 	@PostMapping("/member/register")
@@ -61,5 +64,15 @@ public class MemberController {
 		log.debug("회원 탈퇴 완료: userId={}", oAuth2User.getUserId());
 
 		return ResponseEntity.ok().build();
+	}
+
+	//마이페이지 정보
+	@GetMapping("/member/check")
+	public ResponseEntity<MemberCheckResponse> check(@AuthenticationPrincipal CustomOAuth2User oAuth2User) {
+		return ResponseEntity.ok()
+			.body(memberService.checkUserType(
+					memberService.findByUserId(oAuth2User.getUserId())
+				)
+			);
 	}
 }
