@@ -28,7 +28,7 @@ public class PartnerGym {
 	@Column(name = "partner_gym_id")
 	private Long partnerGymId;
 
-	@Column(name = "owner_id", nullable = false)
+	@Column(name = "owner_id", unique = true, nullable = false)
 	private Long ownerId; //헬스장 주인id
 
 	@OneToOne(fetch = FetchType.LAZY)
