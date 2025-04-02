@@ -13,6 +13,8 @@ import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gym.entity.GymImage;
 import org.helloworld.gymmate.domain.gym.gym.mapper.GymMapper;
 import org.helloworld.gymmate.domain.gym.gym.repository.GymRepository;
+import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
+import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GymService {
 
+	private final TrainerService trainerService;
 	private final GymRepository gymRepository;
 	private final FileManager fileManager;
 
@@ -107,6 +110,10 @@ public class GymService {
 		return gymRepository.findNearbyGyms(point, radiusInMeters, limit);
 	}
 
+	public Gym findGymByTrainerId(Long trainerId) {
+		Trainer trainer = trainerService.findByUserId(trainerId);
+		return trainer.getGym();
+	}
 }
 
 
