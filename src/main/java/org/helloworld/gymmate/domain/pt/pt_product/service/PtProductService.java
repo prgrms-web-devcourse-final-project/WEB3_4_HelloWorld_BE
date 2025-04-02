@@ -21,7 +21,6 @@ import org.helloworld.gymmate.domain.pt.pt_product.enums.SearchOption;
 import org.helloworld.gymmate.domain.pt.pt_product.enums.SortOption;
 import org.helloworld.gymmate.domain.pt.pt_product.mapper.PtProductMapper;
 import org.helloworld.gymmate.domain.pt.pt_product.repository.PtProductRepository;
-import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
@@ -158,9 +157,6 @@ public class PtProductService {
 		int page, int pageSize, CustomOAuth2User customOAuth2User) {
 
 		SearchOption search = SearchOption.from(searchOption);
-		if (!customOAuth2User.getUserType().equals(UserType.MEMBER)) {
-			throw new BusinessException(ErrorCode.MUST_BE_USER);
-		}
 		Member member = memberService.findByUserId(customOAuth2User.getUserId());
 		Double x = Double.valueOf(member.getXField());
 		Double y = Double.valueOf(member.getYField());

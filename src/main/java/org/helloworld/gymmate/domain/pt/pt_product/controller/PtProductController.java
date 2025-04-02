@@ -1,7 +1,6 @@
 package org.helloworld.gymmate.domain.pt.pt_product.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.helloworld.gymmate.common.dto.PageDto;
 import org.helloworld.gymmate.common.mapper.PageMapper;
@@ -13,9 +12,9 @@ import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductsResponse;
 import org.helloworld.gymmate.domain.pt.pt_product.service.PtProductService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.HttpStatus;
-import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -84,6 +83,7 @@ public class PtProductController {
 	}
 
 	@GetMapping("/nearby")
+	@PreAuthorize("hasRole('ROLE_MEMBER')")
 	public ResponseEntity<PageDto<PtProductsResponse>> getNearByProducts(
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@RequestParam(required = false) String searchOption,
