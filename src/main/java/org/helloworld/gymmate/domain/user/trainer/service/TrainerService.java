@@ -4,8 +4,8 @@ import java.util.Optional;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
-import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
-import org.helloworld.gymmate.domain.gym.gym.repository.GymRepository;
+import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.trainer.business.service.BusinessValidateService;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
