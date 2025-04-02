@@ -26,9 +26,14 @@ public class MachineService {
 		String imageUrl = (image != null && !image.isEmpty())
 			? fileManager.uploadFile(image, "machine")
 			: null; // TODO : 이미지 무조건 받을건지
+		return insertMachine(request, imageUrl, gym).getMachineId();
+	}
+
+	@Transactional // 크롤러 용도로도 사용
+	public Machine insertMachine(MachineCreateRequest request, String imageUrl, Gym gym) {
 		Machine machine = MachineMapper.toEntity(request, imageUrl, gym);
 		machineRepository.save(machine);
-		return machine.getMachineId();
+		return machine;
 	}
 
 }
