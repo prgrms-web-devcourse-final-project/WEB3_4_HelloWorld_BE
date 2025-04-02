@@ -78,18 +78,12 @@ public class Gym {
 	}
 
 	public void updateInfo(
-		String gymName,
 		String startTime,
 		String endTime,
-		String phoneNumber,
-		String address,
 		String intro
 	) {
-		this.gymName = gymName;
 		this.startTime = startTime;
 		this.endTime = endTime;
-		this.phoneNumber = phoneNumber;
-		this.address = address;
 		this.intro = intro;
 	}
 }
