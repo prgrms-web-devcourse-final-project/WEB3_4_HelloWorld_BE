@@ -43,6 +43,7 @@ public enum ErrorCode {
 	// 인증 관련
 	AUTH_REQUIRED(HttpStatus.UNAUTHORIZED, "AUTH-001", "인증이 필요합니다. 로그인 후 다시 시도해주세요."),
 	USER_NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "USER-002", "권한이 부족합니다."),
+	MUST_BE_USER(HttpStatus.FORBIDDEN, "USER-003", "회원만 가능한 기능입니다."),
 
 	// 이미지 관련
 	IMAGE_TOO_LARGE(HttpStatus.PAYLOAD_TOO_LARGE, "IMAGE-002", "업로드한 파일 크기가 너무 큽니다. 최대 5MB까지 가능합니다."),

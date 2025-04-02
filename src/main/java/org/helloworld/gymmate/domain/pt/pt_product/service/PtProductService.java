@@ -21,6 +21,8 @@ import org.helloworld.gymmate.domain.pt.pt_product.enums.SearchOption;
 import org.helloworld.gymmate.domain.pt.pt_product.enums.SortOption;
 import org.helloworld.gymmate.domain.pt.pt_product.mapper.PtProductMapper;
 import org.helloworld.gymmate.domain.pt.pt_product.repository.PtProductRepository;
+import org.helloworld.gymmate.domain.user.enums.UserType;
+import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
 import org.helloworld.gymmate.domain.user.trainer.award.repository.AwardRepository;
@@ -119,7 +121,7 @@ public class PtProductService {
 	}
 
 	public Page<PtProductsResponse> getProducts(String sortOption, String searchOption, String searchTerm,
-		int page, int pageSize, CustomOAuth2User customOAuth2User) {
+		int page, int pageSize) {
 		SortOption sort = SortOption.from(sortOption);
 		SearchOption search = SearchOption.from(searchOption);
 		Pageable pageable = PageRequest.of(page, pageSize);
@@ -127,7 +129,6 @@ public class PtProductService {
 		return switch (sort) {
 			case LATEST -> fetchLatestProducts(search, searchTerm, pageable);
 			case SCORE -> fetchScoreSortedProducts(search, searchTerm, pageable);
-			case NEAREST -> fetchNearestProducts(search, searchTerm, pageable, 1L);
 			default -> throw new BusinessException(ErrorCode.UNSUPPORTED_SORT_OPTION);
 		};
 	}
@@ -146,9 +147,7 @@ public class PtProductService {
 	private Page<PtProductsResponse> fetchScoreSortedProducts(SearchOption search, String searchTerm,
 		Pageable pageable) {
 		Page<PtProduct> ptProducts = switch (search) {
-			// 검색어 없이 순수 평점순으로만 ptProduct 조회
 			case NONE -> ptProductRepository.findAllOrderByTrainerScoreDesc(pageable);
-			// 트레이너명으로 검색된 결과에서 Score 순으로 조회
 			case TRAINER -> ptProductRepository.findByTrainerNameOrderByScoreDesc(searchTerm, pageable);
 			case PTPRODUCT -> ptProductRepository.findByPtProductNameOrderByScoreDesc(searchTerm, pageable);
 			case DISTRICT -> ptProductRepository.findByGymAddressOrderByScoreDesc(searchTerm, pageable);
@@ -157,16 +156,23 @@ public class PtProductService {
 		return fetchAndMapProducts(ptProducts, pageable);
 	}
 
-	private Page<PtProductsResponse> fetchNearestProducts(SearchOption search, String searchTerm,
-		Pageable pageable, Long memberId) {
-		// Member member = memberService.findByUserId(memberId);
-		// Double x = Double.valueOf(member.getXField());
-		// Double y = Double.valueOf(member.getYField());
-		Double x = 126.33;
-		Double y = 37.22;
-		String searchOption = search.name();
+	public Page<PtProductsResponse> fetchNearbyProducts(String searchOption, String searchTerm,
+		int page, int pageSize, CustomOAuth2User customOAuth2User) {
+
+		SearchOption search = SearchOption.from(searchOption);
 		String searchValue = (search == SearchOption.NONE) ? "" : searchTerm;
-		Page<PtProduct> ptProducts = ptProductRepository.findNearestPtProductsWithSearch(x, y, searchOption,
+		Pageable pageable = PageRequest.of(page, pageSize);
+
+		System.out.println(customOAuth2User.getUserType());
+		if (!customOAuth2User.getUserType().equals(UserType.MEMBER)) {
+			throw new BusinessException(ErrorCode.MUST_BE_USER);
+		}
+
+		Member member = memberService.findByUserId(customOAuth2User.getUserId());
+		Double x = Double.valueOf(member.getXField());
+		Double y = Double.valueOf(member.getYField());
+
+		Page<PtProduct> ptProducts = ptProductRepository.findNearestPtProductsWithSearch(x, y, search.name(),
 			searchValue, pageable);
 		return fetchAndMapProducts(ptProducts, pageable);
 	}

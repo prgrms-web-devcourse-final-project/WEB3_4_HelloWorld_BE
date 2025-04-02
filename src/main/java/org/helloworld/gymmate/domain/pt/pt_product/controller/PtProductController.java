@@ -69,10 +69,8 @@ public class PtProductController {
 		return ResponseEntity.ok().build();
 	}
 
-	// TODO : 인증정보 null인 문제.. 이게 permitAll() 때문인지 확인 필요함
 	@GetMapping
 	public ResponseEntity<PageDto<PtProductsResponse>> getProducts(
-		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@RequestParam(defaultValue = "score") String sortOption,
 		@RequestParam(required = false) String searchOption,
 		@RequestParam(defaultValue = "") String searchTerm,
@@ -80,7 +78,19 @@ public class PtProductController {
 		@RequestParam(defaultValue = "10") int pageSize
 	) {
 		return ResponseEntity.ok(PageMapper.toPageDto(
-			ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize, customOAuth2User)));
+			ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize)));
+	}
+
+	@GetMapping("/nearby")
+	public ResponseEntity<PageDto<PtProductsResponse>> getNearByProducts(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+		@RequestParam(required = false) String searchOption,
+		@RequestParam(defaultValue = "") String searchTerm,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int pageSize
+	) {
+		return ResponseEntity.ok(PageMapper.toPageDto(
+			ptProductService.fetchNearbyProducts(searchOption, searchTerm, page, pageSize, customOAuth2User)));
 	}
 
 	@GetMapping("/{ptProductId}")
