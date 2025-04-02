@@ -1,6 +1,7 @@
 package org.helloworld.gymmate.domain.user.member.entity;
 
 import org.helloworld.gymmate.domain.user.enums.GenderType;
+import org.helloworld.gymmate.domain.user.member.dto.MemberModifyRequest;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 
@@ -111,5 +112,22 @@ public class Member {
 		this.recentSquat = request.recentSquat();
 		this.additionalInfoCompleted = true;
 
+	}
+
+	public void modifyMemberInfo(MemberModifyRequest request) {
+		this.phoneNumber = request.phoneNumber();
+		this.memberName = request.memberName();
+		this.email = request.email();
+		this.birthday = request.birthday();
+		this.genderType = GenderType.fromString(request.gender());
+		this.height = request.height();
+		this.weight = request.weight();
+		this.address = request.address();
+		this.xField = request.xField();
+		this.yField = request.yField();
+		this.recentBench = request.recentBench();
+		this.recentDeadlift = request.recentDeadlift();
+		this.recentSquat = request.recentSquat();
+		this.additionalInfoCompleted = true;
 	}
 }
