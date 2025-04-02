@@ -9,7 +9,6 @@ import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
 import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
-import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 import org.helloworld.gymmate.security.oauth.repository.OauthRepository;
@@ -69,20 +68,6 @@ public class MemberService {
 	@Transactional
 	public void deleteMember(Long memberId) {
 		log.debug("회원 삭제 시작: memberId={}", memberId);
-
-		Member member = this.findByUserId(memberId);
-
-		//TODO: trainer와의 외래키 제약조건 해결 시 아래 Oauth 관련 코드 삭제
-
-		//OAuth ID 가져오기
-		Oauth oauth = member.getOauth();
-
-		// Trainer 테이블에서 해당 OAuth 관련 데이터가 있는지 확인 및 처리
-		Optional<Trainer> trainer = trainerRepository.findByOauth(oauth);
-		if (trainer.isPresent()) {
-			log.debug("연관된 Trainer 데이터 삭제: trainerId={}", trainer.get().getTrainerId());
-			trainerRepository.delete(trainer.get());
-		}
 
 		memberRepository.deleteByMemberId(memberId);
 		log.debug("회원이 성공적으로 삭제되었습니다. memberId={}", memberId);
