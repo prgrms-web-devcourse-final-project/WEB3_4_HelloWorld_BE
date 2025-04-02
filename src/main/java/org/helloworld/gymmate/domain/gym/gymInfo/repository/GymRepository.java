@@ -1,9 +1,9 @@
-package org.helloworld.gymmate.domain.gym.gym.repository;
+package org.helloworld.gymmate.domain.gym.gymInfo.repository;
 
 import java.util.List;
 import java.util.Optional;
 
-import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;

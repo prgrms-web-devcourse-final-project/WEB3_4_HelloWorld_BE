@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.gym.gym.entity;
+package org.helloworld.gymmate.domain.gym.gymInfo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

@@ -1,10 +1,8 @@
-package org.helloworld.gymmate.domain.gym.gym.dto;
-
-import java.util.List;
+package org.helloworld.gymmate.domain.gym.gymInfo.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record GymCreateRequest(
+public record GymRequest(
 	@NotBlank(message = "헬스장 이름을 입력해주세요.")
 	String gymName,
 
@@ -20,16 +18,7 @@ public record GymCreateRequest(
 	@NotBlank(message = "주소를 입력해주세요.")
 	String address,
 
-	@NotBlank(message = "x 좌표를 입력해주세요.")
-	Double xField,
-
-	@NotBlank(message = "y 좌표를 입력해주세요.")
-	Double yField,
-
 	@NotBlank(message = "헬스장 소개를 입력해주세요.")
-	String intro,
-
-	List<String> imageUrls
+	String intro
 ) {
-
 }
