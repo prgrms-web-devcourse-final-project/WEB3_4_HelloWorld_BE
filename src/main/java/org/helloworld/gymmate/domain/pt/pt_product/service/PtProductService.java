@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -46,7 +45,7 @@ public class PtProductService {
 	private final FileManager fileManager;
 
 	@Transactional
-	public Long createPtProduct(@Valid PtProductCreateRequest request, List<MultipartFile> images, Long trainerId) {
+	public Long createPtProduct(PtProductCreateRequest request, List<MultipartFile> images, Long trainerId) {
 		PtProduct ptProduct = PtProductMapper.toEntity(request, trainerId);
 		ptProduct = ptProductRepository.save(ptProduct);
 		if (images != null && !images.isEmpty()) {
@@ -56,7 +55,7 @@ public class PtProductService {
 	}
 
 	@Transactional
-	public Long modifyPtProduct(Long productId, @Valid PtProductModifyRequest request, List<MultipartFile> images,
+	public Long modifyPtProduct(Long productId, PtProductModifyRequest request, List<MultipartFile> images,
 		Long trainerId) {
 		PtProduct ptProduct = findProductOrThrow(productId);
 		validateOwnership(ptProduct, trainerId);
@@ -78,6 +77,7 @@ public class PtProductService {
 		ptProductRepository.delete(ptProduct);
 	}
 
+	@Transactional
 	private void saveProductImages(PtProduct ptProduct, List<MultipartFile> images) {
 		List<String> imageUrls = fileManager.uploadFiles(images, "ptProduct");
 		List<PtProductImage> ptProductImages = imageUrls.stream()
