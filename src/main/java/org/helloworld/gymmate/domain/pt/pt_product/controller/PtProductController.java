@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.helloworld.gymmate.common.dto.PageDto;
 import org.helloworld.gymmate.common.mapper.PageMapper;
+import org.helloworld.gymmate.common.util.PageUtil;
 import org.helloworld.gymmate.common.validate.custom.ValidImageFile;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductCreateRequest;
 import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductModifyRequest;
@@ -78,6 +79,7 @@ public class PtProductController {
 		@RequestParam(required = false, defaultValue = "127.0276") Double x,
 		@RequestParam(required = false, defaultValue = "37.4979") Double y
 	) {
+		PageUtil.validatePageParams(page, pageSize);
 		return ResponseEntity.ok(PageMapper.toPageDto(
 			ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize, x, y)));
 	}
@@ -91,6 +93,7 @@ public class PtProductController {
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int pageSize
 	) {
+		PageUtil.validatePageParams(page, pageSize);
 		return ResponseEntity.ok(PageMapper.toPageDto(
 			ptProductService.fetchNearbyProducts(searchOption, searchTerm, page, pageSize, customOAuth2User)));
 	}
