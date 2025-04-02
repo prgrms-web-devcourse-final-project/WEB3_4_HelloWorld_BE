@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.helloworld.gymmate.common.util.GeometryUtil;
+import org.helloworld.gymmate.domain.gym.facility.entity.Facility;
 import org.helloworld.gymmate.domain.gym.gym.dto.GymCreateRequest;
 import org.helloworld.gymmate.domain.gym.gym.dto.GymResponse;
 import org.helloworld.gymmate.domain.gym.gym.dto.GymUpdateRequest;
@@ -25,6 +26,19 @@ public class GymMapper {
 			.avgScore(0.0)
 			.build();
 
+		Facility facility = Facility.builder()
+			.parking(false)
+			.showerRoom(false)
+			.inBody(false)
+			.locker(false)
+			.wifi(false)
+			.sportsWear(false)
+			.towel(false)
+			.sauna(false)
+			.build();
+
+		gym.assignFacility(facility);
+
 		if (request.imageUrls() != null && !request.imageUrls().isEmpty()) {
 			List<GymImage> imageEntities = request.imageUrls().stream()
 				.map(url -> GymImage.builder().url(url).build())
@@ -41,7 +55,19 @@ public class GymMapper {
 	public static Gym toEntity(Map<String, Object> response) {
 		double x = parseToDouble(response.get("x"));
 		double y = parseToDouble(response.get("y"));
-		return Gym.builder()
+
+		Facility facility = Facility.builder()
+			.parking(false)
+			.showerRoom(false)
+			.inBody(false)
+			.locker(false)
+			.wifi(false)
+			.sportsWear(false)
+			.towel(false)
+			.sauna(false)
+			.build();
+
+		Gym gym = Gym.builder()
 			.gymName((String)response.get("place_name"))
 			.startTime("영업시간이 등록되지 않았습니다.")
 			.endTime("영업시간이 등록되지 않았습니다.")
@@ -53,6 +79,10 @@ public class GymMapper {
 			.avgScore(0.0)
 			.placeUrl((String)response.get("place_url"))
 			.build();
+
+		gym.assignFacility(facility);
+
+		return gym;
 	}
 
 	private static double parseToDouble(Object value) {
