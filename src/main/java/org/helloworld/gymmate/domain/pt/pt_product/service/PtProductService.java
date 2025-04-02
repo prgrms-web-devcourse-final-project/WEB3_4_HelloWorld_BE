@@ -168,7 +168,6 @@ public class PtProductService {
 		int page, int pageSize, CustomOAuth2User customOAuth2User) {
 
 		SearchOption search = SearchOption.from(searchOption);
-		System.out.println(customOAuth2User.getUserType());
 		if (!customOAuth2User.getUserType().equals(UserType.MEMBER)) {
 			throw new BusinessException(ErrorCode.MUST_BE_USER);
 		}
