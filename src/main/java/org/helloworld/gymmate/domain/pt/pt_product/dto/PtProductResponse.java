@@ -4,6 +4,7 @@ import java.util.List;
 
 public record PtProductResponse(
 	Long ptProductId,
+	String productName,
 	Trainer trainer,
 	String ptInfo,
 	Long fee,

@@ -30,6 +30,9 @@ public class PtProduct {
 	@Column(name = "pt_product_id", nullable = false)
 	private Long ptProductId;
 
+	@Column(name = "pt_product_name", nullable = false)
+	private String ptProductName;
+
 	@Column(name = "info", nullable = false)
 	private String info;
 

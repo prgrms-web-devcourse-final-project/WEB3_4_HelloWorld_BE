@@ -2,6 +2,7 @@ package org.helloworld.gymmate.domain.pt.pt_product.dto;
 
 public record PtProductsResponse(
 	Long ptProductId,
+	String productName,
 	PtTrainerResponse trainer,
 	String info,
 	Long ptProductFee
@@ -12,5 +13,6 @@ public record PtProductsResponse(
 		String gender,
 		String profile,
 		Double score
-	) {}
+	) {
+	}
 }
