@@ -65,7 +65,7 @@ public class GymService {
 		//TODO: 메소드 호출 seyeon
 		saveImages(images, existingGym);
 
-		//machineImage 업데이트
+		//machine 업데이트 (이미지 포함)
 		//TODO: 메소드 호출
 
 		//gymProduct 업데이트
