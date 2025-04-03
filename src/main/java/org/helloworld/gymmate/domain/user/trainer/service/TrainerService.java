@@ -140,10 +140,15 @@ public class TrainerService {
 		return fetchAndMapTrainers(trainers, pageable);
 	}
 
-	// TODO :
 	private Page<TrainerListResponse> fetchScoreSortedTrainers(TrainerSearchOption search, String searchTerm,
 		Pageable pageable) {
-		return null;
+		Page<Trainer> trainers = switch (search) {
+			case NONE -> trainerRepository.findAllByOrderByScoreDesc(pageable);
+			case TRAINER ->
+				trainerRepository.findByTrainerNameContainingIgnoreCaseOrderByScoreDesc(searchTerm, pageable);
+			case DISTRICT -> trainerRepository.findByGymAddressOrderByScoreDesc(searchTerm, pageable);
+		};
+		return fetchAndMapTrainers(trainers, pageable);
 	}
 
 	public Page<TrainerListResponse> getNearbyTrainers(String searchOption, String searchTerm, int page,
