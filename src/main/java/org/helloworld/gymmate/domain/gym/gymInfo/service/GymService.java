@@ -1,13 +1,14 @@
 package org.helloworld.gymmate.domain.gym.gymInfo.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
 import org.helloworld.gymmate.common.util.StringUtil;
+import org.helloworld.gymmate.domain.gym.facility.dto.FacilityResponse;
 import org.helloworld.gymmate.domain.gym.facility.entity.Facility;
+import org.helloworld.gymmate.domain.gym.facility.mapper.FacilityMapper;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.GymInfoRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.RegisterGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.UpdateGymRequest;
@@ -17,11 +18,10 @@ import org.helloworld.gymmate.domain.gym.gymInfo.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.gymInfo.mapper.GymMapper;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.PartnerGymRepository;
-import org.helloworld.gymmate.domain.gym.gymProduct.entity.GymProduct;
-import org.helloworld.gymmate.domain.gym.gymProduct.mapper.GymProductMapper;
-import org.helloworld.gymmate.domain.gym.gymProduct.repository.GymProductRepository;
+import org.helloworld.gymmate.domain.gym.gymProduct.service.GymProductService;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
+import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +36,8 @@ public class GymService {
 	private final GymRepository gymRepository;
 	private final FileManager fileManager;
 	private final TrainerRepository trainerRepository;
-	private final GymProductRepository gymProductRepository;
+	private final GymProductService gymProductService;
+	private final TrainerService trainerService;
 
 	// 헬스장 조회
 	public Gym getExistingGym(Long gymId) {
@@ -55,7 +56,7 @@ public class GymService {
 	@Transactional
 	public Long registerPartnerGym(RegisterGymRequest request, List<MultipartFile> images, Long ownerId) {
 		// 운영자 맞는지 확인
-		Trainer owner = findByOwnerId(ownerId);
+		Trainer owner = trainerService.findByUserId(ownerId);
 		if (!owner.getIsOwner()) {
 			throw new BusinessException(ErrorCode.GYM_REGISTRATION_FORBIDDEN);
 		}
@@ -77,19 +78,11 @@ public class GymService {
 		// gymImage 업데이트
 		saveImages(images, existingGym);
 
-		//gymProduct 업데이트
-		List<GymProduct> gymProducts = request.gymProductRequest().stream()
-			.map(GymProductMapper::toEntityWithoutPartnerGym) // partnerGym 없이 생성
-			.collect(Collectors.toList());
-
-		gymProductRepository.saveAll(gymProducts);  // DB에는 partner_gym_id = null로 저장
-
 		// partnerGym 저장
 		PartnerGym partnerGym = createPartnerGym(ownerId, existingGym);
 
-		for (GymProduct gymProduct : gymProducts) {
-			partnerGym.addGymProduct(gymProduct);
-		}
+		//gymProduct 업데이트
+		gymProductService.registerGymProducts(request.gymProductRequest(), partnerGym);
 
 		return partnerGym.getPartnerGymId();
 	}
@@ -137,7 +130,12 @@ public class GymService {
 		return partnerGymRepository.save(partnerGym);
 	}
 
-	// 이미지 업로드 & 매핑 로직
+	// 편의시설 조회
+	@Transactional(readOnly = true)
+	public FacilityResponse getFacility(Long gymId) {
+		return FacilityMapper.toDto(getExistingGym(gymId).getFacility());
+	}
+
 	private List<GymImage> uploadAndMapImages(List<MultipartFile> images, String tableName) {
 		if (images == null || images.isEmpty())
 			return List.of();
@@ -191,5 +189,6 @@ public class GymService {
 		facility.update(request.facilityRequest());
 	}
 }
+
 
 

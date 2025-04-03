@@ -1,6 +1,7 @@
 package org.helloworld.gymmate.domain.gym.facility.mapper;
 
 import org.helloworld.gymmate.domain.gym.facility.dto.FacilityRequest;
+import org.helloworld.gymmate.domain.gym.facility.dto.FacilityResponse;
 import org.helloworld.gymmate.domain.gym.facility.entity.Facility;
 
 public class FacilityMapper {
@@ -29,5 +30,18 @@ public class FacilityMapper {
 			.towel(false)
 			.sauna(false)
 			.build();
+	}
+
+	public static FacilityResponse toDto(Facility facility) {
+		return new FacilityResponse(
+			facility.getParking(),
+			facility.getShowerRoom(),
+			facility.getInBody(),
+			facility.getLocker(),
+			facility.getWifi(),
+			facility.getSportsWear(),
+			facility.getTowel(),
+			facility.getSauna()
+		);
 	}
 }

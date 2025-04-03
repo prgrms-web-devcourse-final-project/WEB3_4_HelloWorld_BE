@@ -39,11 +39,7 @@ public class GymProduct {
 	@Column(name = "on_sale", nullable = false)
 	private Boolean onSale;
 
-	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "partner_gym_id")
 	private PartnerGym partnerGym;
-
-	public void assignTo(PartnerGym partnerGym) {
-		this.partnerGym = partnerGym;
-	}
 }
