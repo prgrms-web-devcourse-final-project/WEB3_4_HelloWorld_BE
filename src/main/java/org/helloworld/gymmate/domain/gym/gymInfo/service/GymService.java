@@ -123,8 +123,8 @@ public class GymService {
 
 	// 편의시설 조회
 	@Transactional(readOnly = true)
-	public FacilityResponse getFacility(Long gymId) {
-		return FacilityMapper.toDto(getExistingGym(gymId).getFacility());
+	public FacilityResponse getFacility(Gym gym) {
+		return FacilityMapper.toDto(gym.getFacility());
 	}
 
 	//신규 이미지 저장만 처리
