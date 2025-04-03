@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -35,5 +37,15 @@ public class MachineController {
 			machineService.createMachine(customOAuth2User.getUserId(), request, image));
 	}
 
-	// TODO : Machine + Facility 조회
+	@DeleteMapping("/{machineId}")
+	@PreAuthorize("hasRole('ROLE_TRAINER')")
+	public ResponseEntity<Void> deleteMachine(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+		@PathVariable Long machineId
+	) {
+		machineService.deleteMachines(customOAuth2User.getUserId(), machineId);
+		return ResponseEntity.ok().build();
+	}
+
+	// TODO : Machine + Facility 조회 추가 필요
 }

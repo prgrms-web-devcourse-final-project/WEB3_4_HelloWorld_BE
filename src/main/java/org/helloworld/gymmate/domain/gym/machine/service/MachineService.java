@@ -27,8 +27,7 @@ public class MachineService {
 
 	@Transactional
 	public Long createMachine(Long trainerId, MachineCreateRequest request, MultipartFile image) {
-		Trainer trainer = trainerService.findByUserId(trainerId);
-		ownerCheck(trainer);
+		Trainer trainer = ownerCheck(trainerId);
 		String imageUrl = (image != null && !image.isEmpty())
 			? fileManager.uploadFile(image, "machine")
 			: null; // TODO : 이미지 무조건 받을건지
@@ -38,13 +37,28 @@ public class MachineService {
 	@Transactional // 크롤러 용도로도 사용
 	public Machine insertMachine(MachineCreateRequest request, String imageUrl, Gym gym) {
 		Machine machine = MachineMapper.toEntity(request, imageUrl, gym);
-		machineRepository.save(machine);
-		return machine;
+		return machineRepository.save(machine);
 	}
 
-	public void ownerCheck(Trainer trainer) {
+	private Trainer ownerCheck(Long trainerId) {
+		Trainer trainer = trainerService.findByUserId(trainerId);
 		if (!trainer.getIsOwner()) {
 			throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
 		}
+		return trainer;
+	}
+
+	@Transactional
+	public void deleteMachines(Long trainerId, Long machineId) {
+		Trainer trainer = ownerCheck(trainerId);
+		Machine machine = findByMachineId(machineId);
+		if (!trainer.getGym().getMachines().remove(machine)) { // 해당 gym에 머신이 속하지 않았을 경우
+			throw new BusinessException(ErrorCode.MACHINE_FORBIDDEN);
+		}
+	}
+
+	public Machine findByMachineId(Long machineId) {
+		return machineRepository.findById(machineId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.MACHINE_NOT_FOUND));
 	}
 }

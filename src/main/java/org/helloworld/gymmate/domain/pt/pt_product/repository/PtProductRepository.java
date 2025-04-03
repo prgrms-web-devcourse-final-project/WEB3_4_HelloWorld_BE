@@ -85,10 +85,10 @@ public interface PtProductRepository extends JpaRepository<PtProduct, Long> {
 		FROM pt_product p
 		JOIN gymmate_trainer t ON p.trainer_id = t.trainer_id
 		JOIN gym g ON t.gym_id = g.gym_id
-		WHERE (:searchOption = 'NONE' OR
-		       (:searchOption = 'TRAINER' AND t.trainer_name LIKE CONCAT('%', :searchTerm, '%')) OR
-		       (:searchOption = 'PTPRODUCT' AND p.info LIKE CONCAT('%', :searchTerm, '%')) OR
-		       (:searchOption = 'DISTRICT' AND g.address LIKE CONCAT('%', :searchTerm, '%')))
+		WHERE (:ptProductSearchOption = 'NONE' OR
+		       (:ptProductSearchOption = 'TRAINER' AND t.trainer_name LIKE CONCAT('%', :searchTerm, '%')) OR
+		       (:ptProductSearchOption = 'PTPRODUCT' AND p.info LIKE CONCAT('%', :searchTerm, '%')) OR
+		       (:ptProductSearchOption = 'DISTRICT' AND g.address LIKE CONCAT('%', :searchTerm, '%')))
 		ORDER BY ST_Distance_Sphere(
 		    ST_GeomFromText(CONCAT('POINT(', :y, ' ', :x, ')'), 4326), g.location
 		) ASC
@@ -98,14 +98,14 @@ public interface PtProductRepository extends JpaRepository<PtProduct, Long> {
 			FROM pt_product p
 			JOIN gymmate_trainer t ON p.trainer_id = t.trainer_id
 			JOIN gym g ON t.gym_id = g.gym_id
-			WHERE (:searchOption = 'NONE' OR
-			       (:searchOption = 'TRAINER' AND t.trainer_name LIKE CONCAT('%', :searchTerm, '%')) OR
-			       (:searchOption = 'PTPRODUCT' AND p.info LIKE CONCAT('%', :searchTerm, '%')) OR
-			       (:searchOption = 'DISTRICT' AND g.address LIKE CONCAT('%', :searchTerm, '%')))
+			WHERE (:ptProductSearchOption = 'NONE' OR
+			       (:ptProductSearchOption = 'TRAINER' AND t.trainer_name LIKE CONCAT('%', :searchTerm, '%')) OR
+			       (:ptProductSearchOption = 'PTPRODUCT' AND p.info LIKE CONCAT('%', :searchTerm, '%')) OR
+			       (:ptProductSearchOption = 'DISTRICT' AND g.address LIKE CONCAT('%', :searchTerm, '%')))
 			""",
 		nativeQuery = true)
 	Page<PtProduct> findNearestPtProductsWithSearch(
 		@Param("x") Double x, @Param("y") Double y,
-		@Param("searchOption") String searchOption, @Param("searchTerm") String searchTerm,
+		@Param("ptProductSearchOption") String ptProductSearchOption, @Param("searchTerm") String searchTerm,
 		Pageable pageable);
 }
