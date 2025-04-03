@@ -16,11 +16,11 @@ import org.helloworld.gymmate.domain.gym.gymInfo.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.gymInfo.mapper.GymMapper;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.PartnerGymRepository;
-import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
-import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.helloworld.gymmate.domain.gym.gymProduct.entity.GymProduct;
 import org.helloworld.gymmate.domain.gym.gymProduct.mapper.GymProductMapper;
 import org.helloworld.gymmate.domain.gym.gymProduct.repository.GymProductRepository;
+import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
+import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,11 +67,7 @@ public class GymService {
 		facility.update(request.gymInfoRequest().facilityRequest());
 
 		// gymImage 업데이트
-		//TODO: 메소드 호출 seyeon
 		saveImages(images, existingGym);
-
-		//machineImage 업데이트
-		//TODO: 메소드 호출
 
 		//gymProduct 업데이트
 		List<GymProduct> gymProducts = request.gymProductRequest().stream()
