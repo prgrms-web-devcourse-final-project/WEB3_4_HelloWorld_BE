@@ -30,9 +30,15 @@ public class MachineService {
 	private final MachineRepository machineRepository;
 	private final GymService gymService;
 
+	// 환경변수화 할지
+	private final int MACHINE_MAX_SIZE = 30;
+
 	@Transactional
 	public Long createMachine(Long trainerId, MachineCreateRequest request, MultipartFile image) {
 		Trainer trainer = ownerCheck(trainerId);
+		if (machineRepository.countByGymId(trainer.getGym().getGymId()) >= MACHINE_MAX_SIZE) {
+			throw new BusinessException(ErrorCode.MACHINE_MAX_UPLOAD);
+		}
 		String imageUrl = (image != null && !image.isEmpty())
 			? fileManager.uploadFile(image, "machine")
 			: null; // TODO : 이미지 무조건 받을건지
@@ -77,6 +83,7 @@ public class MachineService {
 	@Transactional(readOnly = true)
 	public FacilityAndMachineResponse getOwnFacilitiesAndMachines(Long gymId) {
 		FacilityResponse facilityResponse = gymService.getFacility(gymId);
+		// TODO : gym 조회가 두번 일어나서 뭔가 수정하고 싶음.
 		List<MachineResponse> machineResponses = MachineMapper.toDtoList(
 			gymService.getExistingGym(gymId).getMachines());
 		return new FacilityAndMachineResponse(facilityResponse, machineResponses);
