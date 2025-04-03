@@ -6,6 +6,7 @@ import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
 import org.helloworld.gymmate.common.util.StringUtil;
+import org.helloworld.gymmate.domain.gym.facility.entity.Facility;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.RegisterGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.UpdateGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
@@ -14,6 +15,8 @@ import org.helloworld.gymmate.domain.gym.gymInfo.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.gymInfo.mapper.GymMapper;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.PartnerGymRepository;
+import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
+import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,8 +30,9 @@ public class GymService {
 	private final PartnerGymRepository partnerGymRepository;
 	private final GymRepository gymRepository;
 	private final FileManager fileManager;
+	private final TrainerRepository trainerRepository;
 
-	//헬스장 조회(공통 코드)
+	// 헬스장 조회(공통 코드)
 	public Gym getExistingGym(Long gymId) {
 		return gymRepository.findById(gymId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.GYM_NOT_FOUND));
@@ -37,7 +41,10 @@ public class GymService {
 	@Transactional
 	public Long registerPartnerGym(RegisterGymRequest request, List<MultipartFile> images, Long ownerId) {
 		// 운영자 맞는지 확인
-		// TODO: 메소드 호출 (trainer테이블에서 isOwner가 true인지 파악) seyeon
+		Trainer owner = findByOwnerId(ownerId);
+		if (!owner.getIsOwner()) {
+			throw new BusinessException(ErrorCode.GYM_REGISTRATION_FORBIDDEN);
+		}
 
 		// 중복 등록 방지
 		if (partnerGymRepository.existsByOwnerIdAndGym_GymId(ownerId, request.gymId())) {
@@ -51,8 +58,9 @@ public class GymService {
 		GymMapper.updateEntity(existingGym, request.gymInfoRequest().gymRequest());
 
 		// facility 업데이트
-		//TODO: 메소드 호출
-
+		Facility facility = existingGym.getFacility();
+		facility.update(request.gymInfoRequest().facilityRequest());
+		
 		// gymImage 업데이트
 		//TODO: 메소드 호출 seyeon
 
@@ -67,7 +75,10 @@ public class GymService {
 	@Transactional
 	public Long updatePartnerGym(Long gymId, UpdateGymRequest request, List<MultipartFile> images, Long ownerId) {
 		// 운영자 맞는지 확인
-		// TODO: 메소드 호출 (trainer테이블에서 isOwner가 true인지 파악) seyeon
+		Trainer owner = findByOwnerId(ownerId);
+		if (!owner.getIsOwner()) {
+			throw new BusinessException(ErrorCode.GYM_REGISTRATION_FORBIDDEN);
+		}
 
 		// 기존 gym 가져오기
 		Gym existingGym = getExistingGym(gymId);
@@ -76,7 +87,6 @@ public class GymService {
 		GymMapper.updateEntity(existingGym, request.gymInfoRequest().gymRequest());
 
 		// facility 업데이트
-		//TODO: 메소드 호출
 
 		// gymImage 업데이트
 		updateImages(request, images, existingGym);
@@ -145,6 +155,11 @@ public class GymService {
 
 			gym.addImages(newImages);
 		}
+	}
+
+	private Trainer findByOwnerId(Long ownerId) {
+		return trainerRepository.findByTrainerId(ownerId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 	}
 }
 
