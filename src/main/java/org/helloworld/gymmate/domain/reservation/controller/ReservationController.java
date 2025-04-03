@@ -4,6 +4,7 @@ import org.helloworld.gymmate.domain.reservation.dto.ReservationRequest;
 import org.helloworld.gymmate.domain.reservation.service.ReservationService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +33,7 @@ public class ReservationController {
 	 1. ptProduct_id로 ptProduct 정보 조회
 	 2. ptProduct 정보, reservationRequest 정보, member_id 로 reservation객체 생성&저장
 	 */
+	@PreAuthorize("hasRole('ROLE_MEMBER')")
 	@PostMapping("/ptProduct/{ptProductId}")
 	public ResponseEntity<Long> register(
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
