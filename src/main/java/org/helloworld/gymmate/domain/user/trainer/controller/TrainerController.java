@@ -91,4 +91,9 @@ public class TrainerController {
 
 	}
 
+	// 트레이너 전체조회 & 검색
+	// @GetMapping("/list")
+	// public ResponseEntity<TrainerListResponse> getTrainserList(){
+	//
+	// }
 }
