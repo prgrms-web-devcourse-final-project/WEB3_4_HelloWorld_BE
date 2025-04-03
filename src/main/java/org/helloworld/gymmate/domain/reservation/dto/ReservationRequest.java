@@ -8,7 +8,7 @@ public record ReservationRequest(
 	String productName,
 	LocalDate date,
 	LocalTime time,
-	Integer price,
+	Long price,
 	LocalDate cancelDate,
 	LocalDate completedDate
 ) {
