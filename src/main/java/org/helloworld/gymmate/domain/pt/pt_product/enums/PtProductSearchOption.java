@@ -5,11 +5,12 @@ import java.util.Arrays;
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 
-public enum SearchOption {
+public enum PtProductSearchOption {
 	NONE, TRAINER, PTPRODUCT, DISTRICT;
 
-	public static SearchOption from(String value) {
-		if (value == null) return NONE;
+	public static PtProductSearchOption from(String value) {
+		if (value == null)
+			return NONE;
 		return Arrays.stream(values())
 			.filter(option -> option.name().equalsIgnoreCase(value))
 			.findFirst()
