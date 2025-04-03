@@ -31,7 +31,6 @@ public class MachineService {
 	private final MachineRepository machineRepository;
 	private final GymService gymService;
 
-	// 환경변수화 할지
 	private final int MACHINE_MAX_SIZE = 30;
 
 	@Transactional
@@ -83,10 +82,9 @@ public class MachineService {
 
 	@Transactional(readOnly = true)
 	public FacilityAndMachineResponse getOwnFacilitiesAndMachines(Long gymId) {
-		FacilityResponse facilityResponse = gymService.getFacility(gymId);
-		// TODO : gym 조회가 두번 일어나서 뭔가 수정하고 싶음.
-		List<MachineResponse> machineResponses = MachineMapper.toDtoList(
-			gymService.getExistingGym(gymId).getMachines());
+		Gym gym = gymService.getExistingGym(gymId);
+		FacilityResponse facilityResponse = gymService.getFacility(gym);
+		List<MachineResponse> machineResponses = MachineMapper.toDtoList(gym.getMachines());
 		return new FacilityAndMachineResponse(facilityResponse, machineResponses);
 	}
 
