@@ -9,7 +9,7 @@ import jakarta.validation.Valid;
 public class MachineMapper {
 	public static Machine toEntity(@Valid MachineCreateRequest request, String imageUrl, Gym gym) {
 		return Machine.builder()
-			.machineName(request.name())
+			.machineName(request.machineName())
 			.amount(request.amount())
 			.machineImage(imageUrl)
 			.gym(gym)
