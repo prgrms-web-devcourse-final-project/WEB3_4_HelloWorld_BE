@@ -18,6 +18,8 @@ import org.helloworld.gymmate.domain.gym.gymInfo.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.gymInfo.mapper.GymMapper;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.PartnerGymRepository;
+import org.helloworld.gymmate.domain.gym.gymProduct.repository.GymProductRepository;
+import org.helloworld.gymmate.domain.gym.gymProduct.service.GymProductService;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,8 @@ public class GymService {
 	private final GymRepository gymRepository;
 	private final FileManager fileManager;
 	private final TrainerRepository trainerRepository;
+	private final GymProductRepository gymProductRepository;
+	private final GymProductService gymProductService;
 
 	// 헬스장 조회(공통 코드)
 	public Gym getExistingGym(Long gymId) {
@@ -64,18 +68,15 @@ public class GymService {
 		updateFacility(existingGym, request.gymInfoRequest());
 
 		// gymImage 업데이트
-		//TODO: 메소드 호출 seyeon
 		saveImages(images, existingGym);
 
-		//machine 업데이트 (이미지 포함)
-		//TODO: 메소드 호출
+		// partnerGym 저장
+		PartnerGym partnerGym = createPartnerGym(ownerId, existingGym);
 
 		//gymProduct 업데이트
-		//TODO: 메소드 호출(seyeon담당)
+		gymProductService.registerGymProducts(request.gymProductRequest(), partnerGym);
 
-		// partnerGym 저장
-		return createPartnerGym(ownerId, existingGym).getPartnerGymId();
-
+		return partnerGym.getPartnerGymId();
 	}
 
 	@Transactional

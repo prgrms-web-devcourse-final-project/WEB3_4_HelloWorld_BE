@@ -1,6 +1,7 @@
 package org.helloworld.gymmate.domain.gym.gymInfo.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.RegisterGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.UpdateGymRequest;
@@ -37,13 +38,15 @@ public class GymController {
 	// 제휴 헬스장 등록
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Long> registerPartnerGym(
+	public ResponseEntity<Map<String, Long>> registerPartnerGym(
 		@RequestPart("request") @Valid RegisterGymRequest request,
 		@RequestPart(value = "images", required = false) List<MultipartFile> images,
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(
-			gymService.registerPartnerGym(request, images, customOAuth2User.getUserId()));
+		Long partnerGymId = gymService.registerPartnerGym(request, images, customOAuth2User.getUserId());
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(Map.of("partnerGymId", partnerGymId));
+
 	}
 
 	// 제휴 헬스장 수정
