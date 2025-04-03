@@ -17,6 +17,7 @@ import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 public class PtProductMapper {
 	public static PtProduct toEntity(PtProductCreateRequest request, Long trainerId) {
 		return PtProduct.builder()
+			.ptProductName(request.ptProductName())
 			.info(request.info())
 			.ptProductFee(request.ptProductFee())
 			.trainerId(trainerId)
@@ -44,6 +45,7 @@ public class PtProductMapper {
 		Map<Long, PtProductsResponse.PtTrainerResponse> trainerMap) {
 		return new PtProductsResponse(
 			ptProduct.getPtProductId(),
+			ptProduct.getPtProductName(),
 			trainerMap.get(ptProduct.getTrainerId()), // 트레이너 정보 매핑
 			ptProduct.getInfo(),
 			ptProduct.getPtProductFee()
@@ -53,6 +55,7 @@ public class PtProductMapper {
 	public static PtProductResponse toDto(PtProduct ptProduct, Trainer trainer, List<Award> awards, Gym gym) {
 		return new PtProductResponse(
 			ptProduct.getPtProductId(),
+			ptProduct.getPtProductName(),
 			new PtProductResponse.Trainer(
 				trainer.getTrainerId(),
 				trainer.getTrainerName(),
