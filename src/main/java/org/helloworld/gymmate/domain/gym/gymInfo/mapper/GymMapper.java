@@ -9,12 +9,8 @@ import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 public class GymMapper {
 	public static void updateEntity(Gym gym, GymRequest request) {
 		gym.updateInfo(
-			request.gymName(),
 			request.startTime(),
 			request.endTime(),
-			request.phoneNumber(),
-			request.address(),
-			// TODO : 프론트 확인 후, 필요없으면 제거: address() -> x, y 좌표 -> point 변환하는 메소드 호출
 			request.intro()
 		);
 	}

@@ -6,7 +6,10 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record PtProductModifyRequest (
+public record PtProductModifyRequest(
+	@NotBlank(message = "이름은 필수 입력 값입니다.")
+	String ptProductName,
+
 	@NotBlank(message = "정보는 필수 입력 값입니다.")
 	String info,
 
@@ -15,4 +18,5 @@ public record PtProductModifyRequest (
 	Long ptProductFee,
 
 	List<String> deleteImageIds
-){}
+) {
+}
