@@ -96,7 +96,6 @@ public class Member {
 	private Oauth oauth;
 
 	public void registerMemberInfo(MemberRequest request) {
-
 		this.phoneNumber = request.phoneNumber();
 		this.memberName = request.memberName();
 		this.email = request.email();

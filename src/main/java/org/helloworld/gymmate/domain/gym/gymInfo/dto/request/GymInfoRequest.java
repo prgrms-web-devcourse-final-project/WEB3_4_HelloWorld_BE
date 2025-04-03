@@ -1,7 +1,9 @@
 package org.helloworld.gymmate.domain.gym.gymInfo.dto.request;
 
+import org.helloworld.gymmate.domain.gym.facility.dto.FacilityRequest;
+
 public record GymInfoRequest(
-	GymRequest gymRequest
-	//편의시설 dto 추가
+	GymRequest gymRequest,
+	FacilityRequest facilityRequest
 ) {
 }

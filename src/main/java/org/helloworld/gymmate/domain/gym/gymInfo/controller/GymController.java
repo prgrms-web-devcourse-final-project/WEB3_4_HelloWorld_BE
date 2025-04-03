@@ -29,7 +29,7 @@ public class GymController {
 
 	private final GymService gymService;
 
-	//제휴 헬스장 등록
+	// 제휴 헬스장 등록
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<Long> registerPartnerGym(
