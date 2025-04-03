@@ -7,6 +7,7 @@ import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
 import org.helloworld.gymmate.common.util.StringUtil;
 import org.helloworld.gymmate.domain.gym.facility.entity.Facility;
+import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.GymInfoRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.RegisterGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.UpdateGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
@@ -58,9 +59,8 @@ public class GymService {
 		GymMapper.updateEntity(existingGym, request.gymInfoRequest().gymRequest());
 
 		// facility 업데이트
-		Facility facility = existingGym.getFacility();
-		facility.update(request.gymInfoRequest().facilityRequest());
-		
+		updateFacility(existingGym, request.gymInfoRequest());
+
 		// gymImage 업데이트
 		//TODO: 메소드 호출 seyeon
 
@@ -87,6 +87,7 @@ public class GymService {
 		GymMapper.updateEntity(existingGym, request.gymInfoRequest().gymRequest());
 
 		// facility 업데이트
+		updateFacility(existingGym, request.gymInfoRequest());
 
 		// gymImage 업데이트
 		updateImages(request, images, existingGym);
@@ -160,6 +161,11 @@ public class GymService {
 	private Trainer findByOwnerId(Long ownerId) {
 		return trainerRepository.findByTrainerId(ownerId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+	}
+
+	private void updateFacility(Gym existingGym, GymInfoRequest request) {
+		Facility facility = existingGym.getFacility();
+		facility.update(request.facilityRequest());
 	}
 }
 
