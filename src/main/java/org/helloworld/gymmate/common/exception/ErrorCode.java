@@ -39,6 +39,7 @@ public enum ErrorCode {
 	// Machine
 	MACHINE_NOT_FOUND(HttpStatus.NOT_FOUND, "MACHINE-001", "해당 기구가 존재하지 않습니다."),
 	MACHINE_FORBIDDEN(HttpStatus.FORBIDDEN, "MACHINE-002", "해당 기구에 대한 권한이 없습니다."),
+	MACHINE_MAX_UPLOAD(HttpStatus.FORBIDDEN, "MACHINE-003", "기구정보는 최대 30개 등록 가능합니다."),
 	
 	// Myself
 	BIGTHREE_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-BIGTHREE-001", "해당 3대 측정 기록을 찾을 수 없습니다."),
