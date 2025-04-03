@@ -2,6 +2,7 @@ package org.helloworld.gymmate.domain.gym.gymInfo.controller;
 
 import java.util.List;
 
+import org.helloworld.gymmate.domain.gym.facility.dto.FacilityResponse;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.RegisterGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.UpdateGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.service.GymService;
@@ -11,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -52,5 +54,13 @@ public class GymController {
 
 		return ResponseEntity.ok(
 			gymService.updatePartnerGym(gymId, request, images, customOAuth2User.getUserId()));
+	}
+
+	// 편의 시설 조회
+	@GetMapping("/{gymId}/facility")
+	public ResponseEntity<FacilityResponse> getFacility(
+		@PathVariable Long gymId
+	) {
+		return ResponseEntity.ok().body(gymService.getFacility(gymId));
 	}
 }
