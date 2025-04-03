@@ -45,9 +45,4 @@ public class PartnerGym {
 	@OneToMany(mappedBy = "partnerGym", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<GymProduct> gymProducts = new ArrayList<>();
-
-	public void addGymProduct(GymProduct gymProduct) {
-		this.gymProducts.add(gymProduct);
-		gymProduct.assignTo(this);
-	}
 }

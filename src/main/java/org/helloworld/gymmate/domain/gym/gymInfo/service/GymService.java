@@ -1,7 +1,6 @@
 package org.helloworld.gymmate.domain.gym.gymInfo.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
@@ -17,9 +16,8 @@ import org.helloworld.gymmate.domain.gym.gymInfo.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.gymInfo.mapper.GymMapper;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.PartnerGymRepository;
-import org.helloworld.gymmate.domain.gym.gymProduct.entity.GymProduct;
-import org.helloworld.gymmate.domain.gym.gymProduct.mapper.GymProductMapper;
 import org.helloworld.gymmate.domain.gym.gymProduct.repository.GymProductRepository;
+import org.helloworld.gymmate.domain.gym.gymProduct.service.GymProductService;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.springframework.stereotype.Service;
@@ -37,6 +35,7 @@ public class GymService {
 	private final FileManager fileManager;
 	private final TrainerRepository trainerRepository;
 	private final GymProductRepository gymProductRepository;
+	private final GymProductService gymProductService;
 
 	// 헬스장 조회(공통 코드)
 	public Gym getExistingGym(Long gymId) {
@@ -69,19 +68,11 @@ public class GymService {
 		// gymImage 업데이트
 		saveImages(images, existingGym);
 
-		//gymProduct 업데이트
-		List<GymProduct> gymProducts = request.gymProductRequest().stream()
-			.map(GymProductMapper::toEntityWithoutPartnerGym) // partnerGym 없이 생성
-			.collect(Collectors.toList());
-
-		gymProductRepository.saveAll(gymProducts);  // DB에는 partner_gym_id = null로 저장
-
 		// partnerGym 저장
 		PartnerGym partnerGym = createPartnerGym(ownerId, existingGym);
 
-		for (GymProduct gymProduct : gymProducts) {
-			partnerGym.addGymProduct(gymProduct);
-		}
+		//gymProduct 업데이트
+		gymProductService.registerGymProducts(request.gymProductRequest(), partnerGym);
 
 		return partnerGym.getPartnerGymId();
 	}
