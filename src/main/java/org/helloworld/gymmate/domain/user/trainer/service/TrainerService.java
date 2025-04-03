@@ -139,7 +139,7 @@ public class TrainerService {
 	}
 
 	@Transactional(readOnly = true)
-	private Page<TrainerListResponse> fetchLatestTrainers(TrainerSearchOption search, String searchTerm,
+	public Page<TrainerListResponse> fetchLatestTrainers(TrainerSearchOption search, String searchTerm,
 		Pageable pageable) {
 		Page<Trainer> trainers = switch (search) {
 			case NONE -> trainerRepository.findAllByOrderByTrainerIdDesc(pageable);
@@ -151,7 +151,7 @@ public class TrainerService {
 	}
 
 	@Transactional(readOnly = true)
-	private Page<TrainerListResponse> fetchScoreSortedTrainers(TrainerSearchOption search, String searchTerm,
+	public Page<TrainerListResponse> fetchScoreSortedTrainers(TrainerSearchOption search, String searchTerm,
 		Pageable pageable) {
 		Page<Trainer> trainers = switch (search) {
 			case NONE -> trainerRepository.findAllByOrderByScoreDesc(pageable);
@@ -173,7 +173,8 @@ public class TrainerService {
 		return fetchNearbyTrainersUsingXY(search, searchTerm, pageable, x, y);
 	}
 
-	private Page<TrainerListResponse> fetchNearbyTrainersUsingXY(TrainerSearchOption trainerSearchOption,
+	@Transactional(readOnly = true)
+	public Page<TrainerListResponse> fetchNearbyTrainersUsingXY(TrainerSearchOption trainerSearchOption,
 		String searchTerm, Pageable pageable, Double x, Double y) {
 		String searchValue = (trainerSearchOption == TrainerSearchOption.NONE) ? "" : searchTerm;
 		Page<Trainer> trainers = trainerRepository.findNearbyTrainersWithSearch(x, y,
@@ -183,7 +184,7 @@ public class TrainerService {
 	}
 
 	@Transactional(readOnly = true)
-	protected Page<TrainerListResponse> fetchAndMapTrainers(Page<Trainer> trainers, Pageable pageable) {
+	public Page<TrainerListResponse> fetchAndMapTrainers(Page<Trainer> trainers, Pageable pageable) {
 		List<Long> trainerIds = trainers.stream()
 			.map(Trainer::getTrainerId)
 			.toList();
