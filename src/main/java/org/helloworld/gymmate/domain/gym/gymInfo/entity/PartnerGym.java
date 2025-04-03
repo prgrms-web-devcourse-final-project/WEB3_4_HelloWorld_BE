@@ -7,7 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,10 +28,10 @@ public class PartnerGym {
 	@Column(name = "partner_gym_id")
 	private Long partnerGymId;
 
-	@Column(name = "owner_id", nullable = false)
+	@Column(name = "owner_id", unique = true, nullable = false)
 	private Long ownerId; //헬스장 주인id
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "gym_id", nullable = false)
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "gym_id", unique = true, nullable = false)
 	private Gym gym;
 }
