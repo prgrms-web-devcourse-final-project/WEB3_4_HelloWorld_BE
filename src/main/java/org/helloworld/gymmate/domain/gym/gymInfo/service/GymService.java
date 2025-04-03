@@ -38,10 +38,18 @@ public class GymService {
 	private final TrainerRepository trainerRepository;
 	private final GymProductRepository gymProductRepository;
 
-	// 헬스장 조회(공통 코드)
+	// 헬스장 조회
 	public Gym getExistingGym(Long gymId) {
 		return gymRepository.findById(gymId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.GYM_NOT_FOUND));
+	}
+
+	//파트너헬스장 조회
+	public Gym getGymByPartnerGymId(Long partnerGymId) {
+		PartnerGym partnerGym = partnerGymRepository.findById(partnerGymId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.PARTNER_GYM_NOT_FOUND));
+
+		return partnerGym.getGym();
 	}
 
 	@Transactional
@@ -87,15 +95,16 @@ public class GymService {
 	}
 
 	@Transactional
-	public Long updatePartnerGym(Long gymId, UpdateGymRequest request, List<MultipartFile> images, Long ownerId) {
+	public Long updatePartnerGym(Long partnerGymId, UpdateGymRequest request, List<MultipartFile> images,
+		Long ownerId) {
 		// 운영자 맞는지 확인
 		Trainer owner = findByOwnerId(ownerId);
 		if (!owner.getIsOwner()) {
 			throw new BusinessException(ErrorCode.GYM_REGISTRATION_FORBIDDEN);
 		}
 
-		// 기존 gym 가져오기
-		Gym existingGym = getExistingGym(gymId);
+		// partnerGymId로 Gym 가져오기
+		Gym existingGym = getGymByPartnerGymId(partnerGymId);
 
 		// gym 업데이트
 		GymMapper.updateEntity(existingGym, request.gymInfoRequest().gymRequest());
@@ -106,10 +115,10 @@ public class GymService {
 		// gymImage 업데이트
 		updateImages(request, images, existingGym);
 
-		//machineImage 업데이트
+		// gymProduct 업데이트
 		//TODO: 메소드 호출
 
-		return gymRepository.save(existingGym).getGymId();
+		return partnerGymId;
 	}
 
 	// 가까운 헬스장 조회
