@@ -34,4 +34,6 @@ public class MachineController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(
 			machineService.createMachine(customOAuth2User.getUserId(), request, image));
 	}
+
+	// TODO : Machine + Facility 조회
 }
