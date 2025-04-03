@@ -58,6 +58,7 @@ public class GymController {
 			gymService.updatePartnerGym(gymId, request, images, customOAuth2User.getUserId()));
 	}
 
+	// 제휴 헬스장 머신 리스트 조회
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
 	@GetMapping(value = "/machine")
 	public ResponseEntity<List<MachineResponse>> getMachines(

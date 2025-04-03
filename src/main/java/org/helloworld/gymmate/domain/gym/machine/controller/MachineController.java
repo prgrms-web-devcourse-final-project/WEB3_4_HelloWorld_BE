@@ -46,4 +46,6 @@ public class MachineController {
 		machineService.deleteMachines(customOAuth2User.getUserId(), machineId);
 		return ResponseEntity.ok().build();
 	}
+
+	// TODO : Machine + Facility 조회 추가 필요
 }

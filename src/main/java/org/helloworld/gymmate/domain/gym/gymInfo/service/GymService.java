@@ -6,7 +6,9 @@ import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
 import org.helloworld.gymmate.common.util.StringUtil;
+import org.helloworld.gymmate.domain.gym.facility.dto.FacilityResponse;
 import org.helloworld.gymmate.domain.gym.facility.entity.Facility;
+import org.helloworld.gymmate.domain.gym.facility.mapper.FacilityMapper;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.GymInfoRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.RegisterGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.UpdateGymRequest;
@@ -118,6 +120,12 @@ public class GymService {
 		return partnerGymRepository.save(partnerGym);
 	}
 
+	// 편의시설 조회
+	@Transactional(readOnly = true)
+	public FacilityResponse getFacility(Long gymId) {
+		return FacilityMapper.toDto(getExistingGym(gymId).getFacility());
+	}
+
 	//신규 이미지 저장만 처리
 	private void saveImages(List<MultipartFile> images, Gym gym) {
 		if (images == null || images.isEmpty())
@@ -204,6 +212,7 @@ public class GymService {
 		Facility facility = existingGym.getFacility();
 		facility.update(request.facilityRequest());
 	}
+
 }
 
 
