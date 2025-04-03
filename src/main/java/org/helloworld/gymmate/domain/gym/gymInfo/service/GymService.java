@@ -208,7 +208,7 @@ public class GymService {
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 	}
 
-	public void updateFacility(Gym existingGym, GymInfoRequest request) {
+	private void updateFacility(Gym existingGym, GymInfoRequest request) {
 		Facility facility = existingGym.getFacility();
 		facility.update(request.facilityRequest());
 	}
