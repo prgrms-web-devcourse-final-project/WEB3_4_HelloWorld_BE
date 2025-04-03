@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.helloworld.gymmate.domain.gym.facility.entity.Facility;
+import org.helloworld.gymmate.domain.gym.machine.entity.Machine;
 import org.locationtech.jts.geom.Point;
 
 import jakarta.persistence.CascadeType;
@@ -68,6 +69,10 @@ public class Gym {
 	@OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<GymImage> images = new ArrayList<>();  //이미지의 경우 default이미지 표시
+
+	@OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<Machine> machines = new ArrayList<>();
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "facility_id")
