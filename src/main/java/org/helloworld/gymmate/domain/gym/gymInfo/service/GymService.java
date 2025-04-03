@@ -1,6 +1,7 @@
 package org.helloworld.gymmate.domain.gym.gymInfo.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
@@ -14,6 +15,9 @@ import org.helloworld.gymmate.domain.gym.gymInfo.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.gymInfo.mapper.GymMapper;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.PartnerGymRepository;
+import org.helloworld.gymmate.domain.gym.gymProduct.entity.GymProduct;
+import org.helloworld.gymmate.domain.gym.gymProduct.mapper.GymProductMapper;
+import org.helloworld.gymmate.domain.gym.gymProduct.repository.GymProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +31,7 @@ public class GymService {
 	private final PartnerGymRepository partnerGymRepository;
 	private final GymRepository gymRepository;
 	private final FileManager fileManager;
+	private final GymProductRepository gymProductRepository;
 
 	//헬스장 조회(공통 코드)
 	public Gym getExistingGym(Long gymId) {
@@ -61,11 +66,20 @@ public class GymService {
 		//TODO: 메소드 호출
 
 		//gymProduct 업데이트
-		//TODO: 메소드 호출(seyeon담당)
+		List<GymProduct> gymProducts = request.gymProductRequest().stream()
+			.map(GymProductMapper::toEntityWithoutPartnerGym) // partnerGym 없이 생성
+			.collect(Collectors.toList());
+
+		gymProductRepository.saveAll(gymProducts);  // DB에는 partner_gym_id = null로 저장
 
 		// partnerGym 저장
-		return createPartnerGym(ownerId, existingGym).getPartnerGymId();
+		PartnerGym partnerGym = createPartnerGym(ownerId, existingGym);
 
+		for (GymProduct gymProduct : gymProducts) {
+			partnerGym.addGymProduct(gymProduct);
+		}
+
+		return partnerGym.getPartnerGymId();
 	}
 
 	@Transactional

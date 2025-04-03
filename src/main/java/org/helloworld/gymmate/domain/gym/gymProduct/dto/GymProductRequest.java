@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.gym.gymInfo.dto.request;
+package org.helloworld.gymmate.domain.gym.gymProduct.dto;
 
 import jakarta.validation.constraints.NotNull;
 
