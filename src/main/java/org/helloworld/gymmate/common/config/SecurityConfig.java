@@ -75,6 +75,7 @@ public class SecurityConfig {
 				"/crawl/**"
 			)
 			.requestMatchers(HttpMethod.GET, "/ptProduct", "/ptProduct/{id:\\d+}")
+			.requestMatchers(HttpMethod.GET, "/trainer/list")
 			//.requestMatchers(HttpMethod.GET, "/similar")
 			//.requestMatchers(HttpMethod.GET, "/reviews/{reviewId}/comments")
 			.requestMatchers(PathRequest.toH2Console());
