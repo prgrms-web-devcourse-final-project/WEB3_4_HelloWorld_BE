@@ -42,7 +42,7 @@ public class PartnerGym {
 	@JoinColumn(name = "gym_id", unique = true, nullable = false)
 	private Gym gym;
 
-	@OneToMany(mappedBy = "Partner_gym", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "partnerGym", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<GymProduct> gymProducts = new ArrayList<>();
 
