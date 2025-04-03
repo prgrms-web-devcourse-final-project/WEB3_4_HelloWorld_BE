@@ -5,12 +5,15 @@ import java.util.List;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.RegisterGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.UpdateGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.service.GymService;
+import org.helloworld.gymmate.domain.gym.machine.dto.MachineResponse;
+import org.helloworld.gymmate.domain.gym.machine.service.MachineService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class GymController {
 
 	private final GymService gymService;
+	private final MachineService machineService;
 
 	// 제휴 헬스장 등록
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
@@ -52,5 +56,13 @@ public class GymController {
 
 		return ResponseEntity.ok(
 			gymService.updatePartnerGym(gymId, request, images, customOAuth2User.getUserId()));
+	}
+
+	@PreAuthorize("hasRole('ROLE_TRAINER')")
+	@GetMapping(value = "/machine")
+	public ResponseEntity<List<MachineResponse>> getMachines(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+
+		return ResponseEntity.ok(machineService.getOwnMachines(customOAuth2User.getUserId()));
 	}
 }

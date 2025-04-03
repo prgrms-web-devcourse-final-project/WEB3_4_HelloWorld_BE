@@ -1,11 +1,14 @@
 package org.helloworld.gymmate.domain.gym.machine.service;
 
+import java.util.List;
+
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gymInfo.service.GymService;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineCreateRequest;
+import org.helloworld.gymmate.domain.gym.machine.dto.MachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.entity.Machine;
 import org.helloworld.gymmate.domain.gym.machine.mapper.MachineMapper;
 import org.helloworld.gymmate.domain.gym.machine.repository.MachineRepository;
@@ -60,5 +63,10 @@ public class MachineService {
 	public Machine findByMachineId(Long machineId) {
 		return machineRepository.findById(machineId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.MACHINE_NOT_FOUND));
+	}
+
+	public List<MachineResponse> getOwnMachines(Long trainerId) {
+		Trainer trainer = ownerCheck(trainerId);
+		return MachineMapper.toDtoList(trainer.getGym().getMachines());
 	}
 }
