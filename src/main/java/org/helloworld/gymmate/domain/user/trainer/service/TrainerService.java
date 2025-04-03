@@ -7,18 +7,27 @@ import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.user.enums.UserType;
+import org.helloworld.gymmate.domain.user.member.entity.Member;
+import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.domain.user.trainer.business.service.BusinessValidateService;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerCheckResponse;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerListResponse;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerProfileRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerResponse;
+import org.helloworld.gymmate.domain.user.trainer.enums.TrainerSearchOption;
+import org.helloworld.gymmate.domain.user.trainer.enums.TrainerSortOption;
 import org.helloworld.gymmate.domain.user.trainer.mapper.TrainerMapper;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
+import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 import org.helloworld.gymmate.security.oauth.repository.OauthRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +42,7 @@ public class TrainerService {
 	private final EntityManager entityManager;
 	private final GymRepository gymRepository;
 	private final BusinessValidateService businessValidateService;
+	private final MemberService memberService;
 
 	@Transactional
 	public Long createTrainer(Oauth oauth) {
@@ -104,5 +114,57 @@ public class TrainerService {
 	public Trainer findByUserId(Long userId) {
 		return trainerRepository.findByTrainerId(userId).orElseThrow(() -> new BusinessException(
 			ErrorCode.USER_NOT_FOUND));
+	}
+
+	public Page<TrainerListResponse> getTrainers(String sortOption, String searchOption, String searchTerm,
+		int page, int pageSize, Double x, Double y) {
+		TrainerSortOption sort = TrainerSortOption.from(sortOption);
+		TrainerSearchOption search = TrainerSearchOption.from(searchOption);
+		Pageable pageable = PageRequest.of(page, pageSize);
+
+		return switch (sort) {
+			case LATEST -> fetchLatestTrainers(search, searchTerm, pageable);
+			case SCORE -> fetchScoreSortedTrainers(search, searchTerm, pageable);
+			case NEARBY -> fetchNearbyTrainersUsingXY(search, searchTerm, pageable, x, y);
+		};
+	}
+
+	// TODO :
+	private Page<TrainerListResponse> fetchScoreSortedTrainers(TrainerSearchOption search, String searchTerm,
+		Pageable pageable) {
+		return null;
+	}
+
+	// TODO : 
+	private Page<TrainerListResponse> fetchLatestTrainers(TrainerSearchOption search, String searchTerm,
+		Pageable pageable) {
+		return null;
+	}
+
+	public Page<TrainerListResponse> getNearbyTrainers(String searchOption, String searchTerm, int page,
+		int pageSize, CustomOAuth2User customOAuth2User) {
+		TrainerSearchOption search = TrainerSearchOption.from(searchOption);
+		Member member = memberService.findByUserId(customOAuth2User.getUserId());
+		Double x = Double.valueOf(member.getXField());
+		Double y = Double.valueOf(member.getYField());
+		Pageable pageable = PageRequest.of(page, pageSize);
+
+		return fetchNearbyTrainersUsingXY(search, searchTerm, pageable, x, y);
+	}
+
+	private Page<TrainerListResponse> fetchNearbyTrainersUsingXY(TrainerSearchOption trainerSearchOption,
+		String searchTerm, Pageable pageable, Double x, Double y) {
+		String searchValue = (trainerSearchOption == TrainerSearchOption.NONE) ? "" : searchTerm;
+		Page<Trainer> trainers = trainerRepository.findNearbyTrainersWithSearch(x, y,
+			trainerSearchOption.name(),
+			searchValue, pageable);
+		return fetchAndMapTrainers(trainers, pageable);
+	}
+
+	// TODO :
+	@Transactional(readOnly = true)
+	protected Page<TrainerListResponse> fetchAndMapTrainers(Page<Trainer> trainers, Pageable pageable) {
+		// 트레이너 정보 + 수상이력 = DTO 변환해서 반환
+		return null;
 	}
 }

@@ -1,7 +1,10 @@
 package org.helloworld.gymmate.domain.user.trainer.controller;
 
+import org.helloworld.gymmate.common.dto.PageDto;
+import org.helloworld.gymmate.common.mapper.PageMapper;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerCheckResponse;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerListResponse;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerProfileRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
@@ -11,15 +14,19 @@ import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -92,8 +99,33 @@ public class TrainerController {
 	}
 
 	// 트레이너 전체조회 & 검색
-	// @GetMapping("/list")
-	// public ResponseEntity<TrainerListResponse> getTrainserList(){
-	//
-	// }
+	@GetMapping("/list")
+	@Validated
+	public ResponseEntity<PageDto<TrainerListResponse>> getTrainerList(
+		@RequestParam(defaultValue = "score") String sortOption,
+		@RequestParam(required = false) String searchOption,
+		@RequestParam(defaultValue = "") String searchTerm,
+		@RequestParam(defaultValue = "0") @Min(0) int page,
+		@RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize,
+		@RequestParam(required = false, defaultValue = "127.0276") Double x,
+		@RequestParam(required = false, defaultValue = "37.4979") Double y
+	) {
+		return ResponseEntity.ok(PageMapper.toPageDto(
+			trainerService.getTrainers(sortOption, searchOption, searchTerm, page, pageSize, x, y)));
+	}
+
+	// (회원) 트레이너 가까운순 전체조회 & 검색
+	@GetMapping("/list/nearby")
+	@Validated
+	@PreAuthorize("hasRole('ROLE_MEMBER')")
+	public ResponseEntity<PageDto<TrainerListResponse>> getTrainerList(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+		@RequestParam(required = false) String searchOption,
+		@RequestParam(defaultValue = "") String searchTerm,
+		@RequestParam(defaultValue = "0") @Min(0) int page,
+		@RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize
+	) {
+		return ResponseEntity.ok(PageMapper.toPageDto(
+			trainerService.getNearbyTrainers(searchOption, searchTerm, page, pageSize, customOAuth2User)));
+	}
 }
