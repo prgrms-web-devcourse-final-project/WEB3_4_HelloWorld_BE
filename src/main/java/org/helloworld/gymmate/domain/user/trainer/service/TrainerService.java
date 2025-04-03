@@ -129,14 +129,19 @@ public class TrainerService {
 		};
 	}
 
-	// TODO :
-	private Page<TrainerListResponse> fetchScoreSortedTrainers(TrainerSearchOption search, String searchTerm,
+	private Page<TrainerListResponse> fetchLatestTrainers(TrainerSearchOption search, String searchTerm,
 		Pageable pageable) {
-		return null;
+		Page<Trainer> trainers = switch (search) {
+			case NONE -> trainerRepository.findAllByOrderByTrainerIdDesc(pageable);
+			case TRAINER ->
+				trainerRepository.findByTrainerNameContainingIgnoreCaseOrderByTrainerIdDesc(searchTerm, pageable);
+			case DISTRICT -> trainerRepository.findByGymAddressOrderByTrainerIdDesc(searchTerm, pageable);
+		};
+		return fetchAndMapTrainers(trainers, pageable);
 	}
 
-	// TODO : 
-	private Page<TrainerListResponse> fetchLatestTrainers(TrainerSearchOption search, String searchTerm,
+	// TODO :
+	private Page<TrainerListResponse> fetchScoreSortedTrainers(TrainerSearchOption search, String searchTerm,
 		Pageable pageable) {
 		return null;
 	}

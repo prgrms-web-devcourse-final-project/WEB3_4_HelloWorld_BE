@@ -21,6 +21,13 @@ public interface TrainerRepository extends JpaRepository<Trainer, Long> {
 
 	Optional<Trainer> findByTrainerId(Long trainerId);
 
+	Page<Trainer> findAllByOrderByTrainerIdDesc(Pageable pageable);
+
+	Page<Trainer> findByTrainerNameContainingIgnoreCaseOrderByTrainerIdDesc(String searchTerm, Pageable pageable);
+
+	@Query("SELECT t FROM Trainer t JOIN t.gym g WHERE g.address LIKE CONCAT('%', :searchTerm, '%') ORDER BY t.trainerId DESC")
+	Page<Trainer> findByGymAddressOrderByTrainerIdDesc(@Param("searchTerm") String searchTerm, Pageable pageable);
+
 	@Query(value = """
 		SELECT t.*
 		FROM gymmate_trainer t
