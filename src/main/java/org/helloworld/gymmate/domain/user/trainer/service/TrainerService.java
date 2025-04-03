@@ -1,14 +1,20 @@
 package org.helloworld.gymmate.domain.user.trainer.service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
+import org.helloworld.gymmate.common.util.StringUtil;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
+import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
+import org.helloworld.gymmate.domain.user.trainer.award.repository.AwardRepository;
 import org.helloworld.gymmate.domain.user.trainer.business.service.BusinessValidateService;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerCheckResponse;
@@ -26,6 +32,7 @@ import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 import org.helloworld.gymmate.security.oauth.repository.OauthRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,6 +46,7 @@ import lombok.RequiredArgsConstructor;
 public class TrainerService {
 	private final TrainerRepository trainerRepository;
 	private final OauthRepository oauthRepository;
+	private final AwardRepository awardRepository;
 	private final EntityManager entityManager;
 	private final GymRepository gymRepository;
 	private final BusinessValidateService businessValidateService;
@@ -111,6 +119,7 @@ public class TrainerService {
 				.map(Trainer::getTrainerId));
 	}
 
+	@Transactional(readOnly = true)
 	public Trainer findByUserId(Long userId) {
 		return trainerRepository.findByTrainerId(userId).orElseThrow(() -> new BusinessException(
 			ErrorCode.USER_NOT_FOUND));
@@ -129,6 +138,7 @@ public class TrainerService {
 		};
 	}
 
+	@Transactional(readOnly = true)
 	private Page<TrainerListResponse> fetchLatestTrainers(TrainerSearchOption search, String searchTerm,
 		Pageable pageable) {
 		Page<Trainer> trainers = switch (search) {
@@ -140,6 +150,7 @@ public class TrainerService {
 		return fetchAndMapTrainers(trainers, pageable);
 	}
 
+	@Transactional(readOnly = true)
 	private Page<TrainerListResponse> fetchScoreSortedTrainers(TrainerSearchOption search, String searchTerm,
 		Pageable pageable) {
 		Page<Trainer> trainers = switch (search) {
@@ -171,10 +182,29 @@ public class TrainerService {
 		return fetchAndMapTrainers(trainers, pageable);
 	}
 
-	// TODO :
 	@Transactional(readOnly = true)
 	protected Page<TrainerListResponse> fetchAndMapTrainers(Page<Trainer> trainers, Pageable pageable) {
-		// 트레이너 정보 + 수상이력 = DTO 변환해서 반환
-		return null;
+		List<Long> trainerIds = trainers.stream()
+			.map(Trainer::getTrainerId)
+			.toList();
+
+		// trainerId에 해당하는 모든 Award 조회
+		List<Award> awards = awardRepository.findByTrainerIdIn(trainerIds);
+
+		// 트레이너 ID 기준으로 수상 경력을 매핑
+		Map<Long, List<String>> awardsMap = awards.stream()
+			.collect(Collectors.groupingBy(
+				Award::getTrainerId,
+				Collectors.mapping(
+					award -> StringUtil.format("{} {}", award.getAwardYear(), award.getAwardName()),
+					Collectors.toList()
+				)
+			));
+
+		List<TrainerListResponse> responses = trainers.stream()
+			.map(trainer -> TrainerMapper.toListResponse(trainer, awardsMap))
+			.toList();
+
+		return new PageImpl<>(responses, pageable, trainers.getTotalElements());
 	}
 }
