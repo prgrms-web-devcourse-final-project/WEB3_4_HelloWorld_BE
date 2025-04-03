@@ -60,7 +60,7 @@ public class GymService {
 		// facility 업데이트
 		Facility facility = existingGym.getFacility();
 		facility.update(request.gymInfoRequest().facilityRequest());
-		
+
 		// gymImage 업데이트
 		//TODO: 메소드 호출 seyeon
 		saveImages(images, existingGym);
