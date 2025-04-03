@@ -63,9 +63,13 @@ public class GymService {
 		
 		// gymImage 업데이트
 		//TODO: 메소드 호출 seyeon
+		saveImages(images, existingGym);
 
 		//machineImage 업데이트
 		//TODO: 메소드 호출
+
+		//gymProduct 업데이트
+		//TODO: 메소드 호출(seyeon담당)
 
 		// partnerGym 저장
 		return createPartnerGym(ownerId, existingGym).getPartnerGymId();
@@ -113,6 +117,39 @@ public class GymService {
 		return partnerGymRepository.save(partnerGym);
 	}
 
+	//신규 이미지 저장만 처리
+	private void saveImages(List<MultipartFile> images, Gym gym) {
+		if (images == null || images.isEmpty())
+			return;
+
+		// 유효성 검사
+		for (MultipartFile image : images) {
+			if (image.getSize() > 5 * 1024 * 1024) {
+				throw new BusinessException(ErrorCode.IMAGE_TOO_LARGE);
+			}
+			String contentType = image.getContentType();
+			if (!List.of("image/jpeg", "image/png", "image/gif").contains(contentType)) {
+				throw new BusinessException(ErrorCode.IMAGE_UNSUPPORTED_TYPE);
+			}
+		}
+
+		// 업로드
+		List<String> imageUrls;
+		try {
+			imageUrls = fileManager.uploadFiles(images, "gym");
+		} catch (Exception e) {
+			throw new BusinessException(ErrorCode.S3_UPLOAD_FAILED);
+		}
+
+		// DB 반영
+		List<GymImage> gymImages = imageUrls.stream()
+			.map(url -> GymImage.builder().url(url).build())
+			.toList();
+
+		gym.addImages(gymImages);
+	}
+
+	//	이미지 삭제 + 새 이미지 등록 둘 다 처리
 	private void updateImages(UpdateGymRequest request, List<MultipartFile> images, Gym gym) {
 		// 삭제할 이미지 ID 목록
 		List<Long> deleteImageIds = request.deleteImageIds() != null ? request.deleteImageIds() : List.of();
