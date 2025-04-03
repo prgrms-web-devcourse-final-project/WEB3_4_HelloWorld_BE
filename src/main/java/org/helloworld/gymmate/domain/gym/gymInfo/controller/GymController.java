@@ -53,4 +53,5 @@ public class GymController {
 		return ResponseEntity.ok(
 			gymService.updatePartnerGym(gymId, request, images, customOAuth2User.getUserId()));
 	}
+
 }
