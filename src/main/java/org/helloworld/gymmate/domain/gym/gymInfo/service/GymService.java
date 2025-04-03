@@ -137,81 +137,48 @@ public class GymService {
 		return partnerGymRepository.save(partnerGym);
 	}
 
-	//신규 이미지 저장만 처리
-	private void saveImages(List<MultipartFile> images, Gym gym) {
+	// 이미지 업로드 & 매핑 로직
+	private List<GymImage> uploadAndMapImages(List<MultipartFile> images, String tableName) {
 		if (images == null || images.isEmpty())
-			return;
+			return List.of();
 
-		// 유효성 검사
-		for (MultipartFile image : images) {
-			if (image.getSize() > 5 * 1024 * 1024) {
-				throw new BusinessException(ErrorCode.IMAGE_TOO_LARGE);
-			}
-			String contentType = image.getContentType();
-			if (!List.of("image/jpeg", "image/png", "image/gif").contains(contentType)) {
-				throw new BusinessException(ErrorCode.IMAGE_UNSUPPORTED_TYPE);
-			}
-		}
-
-		// 업로드
 		List<String> imageUrls;
 		try {
-			imageUrls = fileManager.uploadFiles(images, "gym");
+			imageUrls = fileManager.uploadFiles(images, tableName);
 		} catch (Exception e) {
 			throw new BusinessException(ErrorCode.S3_UPLOAD_FAILED);
 		}
 
-		// DB 반영
-		List<GymImage> gymImages = imageUrls.stream()
+		return imageUrls.stream()
 			.map(url -> GymImage.builder().url(url).build())
 			.toList();
+	}
 
+	// 신규 이미지 저장
+	private void saveImages(List<MultipartFile> images, Gym gym) {
+		List<GymImage> gymImages = uploadAndMapImages(images, "gym");
 		gym.addImages(gymImages);
 	}
 
-	//	이미지 삭제 + 새 이미지 등록 둘 다 처리
+	// 이미지 삭제 + 새 이미지 등록
 	private void updateImages(UpdateGymRequest request, List<MultipartFile> images, Gym gym) {
 		// 삭제할 이미지 ID 목록
 		List<Long> deleteImageIds = request.deleteImageIds() != null ? request.deleteImageIds() : List.of();
 
+		// 삭제할 이미지 필터링
 		List<GymImage> imagesToDelete = gym.getImages().stream()
 			.filter(img -> deleteImageIds.contains(img.getId()))
 			.toList();
 
-		// 삭제 (S3 + DB 관계 제거)
+		// S3 + 연관관계 제거
 		for (GymImage image : imagesToDelete) {
 			fileManager.deleteFile(image.getUrl());
 			gym.removeImage(image);
 		}
 
-		// 4. 이미지 처리
-		if (images != null && !images.isEmpty()) {
-
-			// 4-1. 이미지 유효성 검사
-			for (MultipartFile image : images) {
-				if (image.getSize() > 5 * 1024 * 1024) {
-					throw new BusinessException(ErrorCode.IMAGE_TOO_LARGE);
-				}
-				String contentType = image.getContentType();
-				if (!List.of("image/jpeg", "image/png", "image/gif").contains(contentType)) {
-					throw new BusinessException(ErrorCode.IMAGE_UNSUPPORTED_TYPE);
-				}
-			}
-
-			// 4-2. 이미지 업로드
-			List<String> imageUrls;
-			try {
-				imageUrls = fileManager.uploadFiles(images, "gym");
-			} catch (Exception e) {
-				throw new BusinessException(ErrorCode.S3_UPLOAD_FAILED);
-			}
-
-			List<GymImage> newImages = imageUrls.stream()
-				.map(url -> GymImage.builder().url(url).build())
-				.toList();
-
-			gym.addImages(newImages);
-		}
+		// 새 이미지 업로드 및 등록
+		List<GymImage> newImages = uploadAndMapImages(images, "gym");
+		gym.addImages(newImages);
 	}
 
 	private Trainer findByOwnerId(Long ownerId) {

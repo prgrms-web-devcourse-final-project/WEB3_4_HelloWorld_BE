@@ -2,6 +2,7 @@ package org.helloworld.gymmate.domain.gym.gymInfo.controller;
 
 import java.util.List;
 
+import org.helloworld.gymmate.common.validate.custom.ValidImageFile;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.RegisterGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.UpdateGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.service.GymService;
@@ -34,7 +35,7 @@ public class GymController {
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<Long> registerPartnerGym(
 		@RequestPart("request") @Valid RegisterGymRequest request,
-		@RequestPart(value = "images", required = false) List<MultipartFile> images,
+		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images,
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -47,7 +48,7 @@ public class GymController {
 	public ResponseEntity<Long> updatePartnerGym(
 		@PathVariable Long partnerGymId,
 		@RequestPart("request") @Valid UpdateGymRequest request,
-		@RequestPart(value = "images", required = false) List<MultipartFile> images,
+		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images,
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
 		return ResponseEntity.ok(
