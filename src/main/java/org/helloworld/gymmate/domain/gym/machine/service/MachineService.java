@@ -5,8 +5,10 @@ import java.util.List;
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
+import org.helloworld.gymmate.domain.gym.facility.dto.FacilityResponse;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gymInfo.service.GymService;
+import org.helloworld.gymmate.domain.gym.machine.dto.FacilityAndMachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineCreateRequest;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.entity.Machine;
@@ -60,13 +62,23 @@ public class MachineService {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public Machine findByMachineId(Long machineId) {
 		return machineRepository.findById(machineId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.MACHINE_NOT_FOUND));
 	}
 
+	@Transactional(readOnly = true)
 	public List<MachineResponse> getOwnMachines(Long trainerId) {
 		Trainer trainer = ownerCheck(trainerId);
 		return MachineMapper.toDtoList(trainer.getGym().getMachines());
+	}
+
+	@Transactional(readOnly = true)
+	public FacilityAndMachineResponse getOwnFacilitiesAndMachines(Long gymId) {
+		FacilityResponse facilityResponse = gymService.getFacility(gymId);
+		List<MachineResponse> machineResponses = MachineMapper.toDtoList(
+			gymService.getExistingGym(gymId).getMachines());
+		return new FacilityAndMachineResponse(facilityResponse, machineResponses);
 	}
 }

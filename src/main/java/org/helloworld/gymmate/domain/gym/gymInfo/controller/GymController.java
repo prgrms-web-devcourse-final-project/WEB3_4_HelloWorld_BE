@@ -5,6 +5,7 @@ import java.util.List;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.RegisterGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.UpdateGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.service.GymService;
+import org.helloworld.gymmate.domain.gym.machine.dto.FacilityAndMachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.service.MachineService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
@@ -60,10 +61,17 @@ public class GymController {
 
 	// 제휴 헬스장 머신 리스트 조회
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
-	@GetMapping(value = "/machine")
+	@GetMapping("/machine")
 	public ResponseEntity<List<MachineResponse>> getMachines(
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
 		return ResponseEntity.ok(machineService.getOwnMachines(customOAuth2User.getUserId()));
+	}
+
+	@GetMapping("/{gymId}/facility")
+	public ResponseEntity<FacilityAndMachineResponse> getFacilitiesAndMachines(
+		@PathVariable Long gymId
+	) {
+		return ResponseEntity.ok(machineService.getOwnFacilitiesAndMachines(gymId));
 	}
 }
