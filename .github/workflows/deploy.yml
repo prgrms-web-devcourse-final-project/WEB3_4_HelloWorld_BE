@@ -116,7 +116,7 @@ jobs:
           host: ${{ secrets.AWS_DEV_HOSTNAME }}
           key: ${{ secrets.AWS_DEV_PRIVATE_KEY }}
           script: |
-            # 1. Docker Compose 설치 (필요 시)
+            # Docker Compose 설치 (필요 시)
             if ! command -v docker-compose &> /dev/null
             then
               echo "Docker Compose not found. Installing..."
