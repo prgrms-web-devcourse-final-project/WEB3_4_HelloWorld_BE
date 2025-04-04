@@ -134,6 +134,7 @@ jobs:
             sudo cp /home/ec2-user/nginx/nginx.conf /home/ec2-user/src/main/resources/backend-config/nginx/nginx.conf
             
             # 기존 컨테이너 종료 및 새로운 컨테이너 실행
-            docker-compose -f docker-compose.deploy.yml down
+            docker-compose -f /home/ec2-user/docker/gymmate-deploy/docker-compose.deploy.yml down
             docker image prune -f
-            docker-compose -f docker-compose.deploy.yml up -d
+            docker-compose -f /home/ec2-user/docker/gymmate-deploy/docker-compose.deploy.yml up -d
+
