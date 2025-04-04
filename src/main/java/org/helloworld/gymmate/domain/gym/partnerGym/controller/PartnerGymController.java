@@ -46,7 +46,6 @@ public class PartnerGymController {
 
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(partnerGymService.registerPartnerGym(request, images, customOAuth2User.getUserId()));
-
 	}
 
 	// 제휴 헬스장 수정
