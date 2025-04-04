@@ -3,6 +3,7 @@ package org.helloworld.gymmate.domain.gym.gymInfo.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.helloworld.gymmate.common.validate.custom.ValidImageFile;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.RegisterGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.UpdateGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.service.GymService;
@@ -40,7 +41,7 @@ public class GymController {
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<Map<String, Long>> registerPartnerGym(
 		@RequestPart("request") @Valid RegisterGymRequest request,
-		@RequestPart(value = "images", required = false) List<MultipartFile> images,
+		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images,
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
 		Long partnerGymId = gymService.registerPartnerGym(request, images, customOAuth2User.getUserId());
@@ -51,15 +52,15 @@ public class GymController {
 
 	// 제휴 헬스장 수정
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
-	@PutMapping(value = "/{gymId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PutMapping(value = "/partnerGym/{partnerGymId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<Long> updatePartnerGym(
-		@PathVariable Long gymId,
+		@PathVariable Long partnerGymId,
 		@RequestPart("request") @Valid UpdateGymRequest request,
-		@RequestPart(value = "images", required = false) List<MultipartFile> images,
+		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images,
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
 		return ResponseEntity.ok(
-			gymService.updatePartnerGym(gymId, request, images, customOAuth2User.getUserId()));
+			gymService.updatePartnerGym(partnerGymId, request, images, customOAuth2User.getUserId()));
 	}
 
 	// 제휴 헬스장 머신 리스트 조회

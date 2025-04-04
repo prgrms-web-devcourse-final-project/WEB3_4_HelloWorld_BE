@@ -1,6 +1,7 @@
 package org.helloworld.gymmate.domain.gym.machine.entity;
 
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
+import org.helloworld.gymmate.domain.gym.machine.dto.MachineRequest;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,4 +43,13 @@ public class Machine {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "gym_id")
 	private Gym gym;
+
+	public void update(@Valid MachineRequest request) {
+		this.machineName = request.machineName();
+		this.amount = request.amount();
+	}
+
+	public void updateImage(String imageUrl) {
+		this.machineImage = imageUrl;
+	}
 }
