@@ -70,7 +70,7 @@ jobs:
           export DB_NAME=${{ secrets.DB_NAME }}
           export MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
           export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-          envsubst < ../src/main/resources/docs/application-deploy.template > ./src/main/resources/application-deploy.yml
+          envsubst < ./src/main/resources/docs/application-deploy.template > ./src/main/resources/application-deploy.yml
 
       # 도커 컴포즈 설정 파일 서버로 전달하기
       - name: Send docker-compose.deploy.yml
