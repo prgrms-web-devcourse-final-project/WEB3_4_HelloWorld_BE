@@ -143,13 +143,13 @@ public class PartnerGymService {
 		return partnerGymRepository.save(partnerGym);
 	}
 
-	private List<GymImage> uploadAndMapImages(List<MultipartFile> images, String tableName) {
+	private List<GymImage> uploadAndMapImages(List<MultipartFile> images) {
 		if (images == null || images.isEmpty())
 			return List.of();
 
 		List<String> imageUrls;
 		try {
-			imageUrls = fileManager.uploadFiles(images, tableName);
+			imageUrls = fileManager.uploadFiles(images, "gym");
 		} catch (Exception e) {
 			throw new BusinessException(ErrorCode.S3_UPLOAD_FAILED);
 		}
@@ -172,7 +172,7 @@ public class PartnerGymService {
 
 	// 신규 이미지 저장
 	private void saveImages(List<MultipartFile> images, Gym gym) {
-		List<GymImage> gymImages = uploadAndMapImages(images, "gym");
+		List<GymImage> gymImages = uploadAndMapImages(images);
 		gym.addImages(gymImages);
 	}
 
