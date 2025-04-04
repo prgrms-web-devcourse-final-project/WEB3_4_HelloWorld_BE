@@ -8,13 +8,15 @@ import org.helloworld.gymmate.domain.gym.machine.dto.MachineRequest;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.entity.Machine;
 
-import jakarta.validation.Valid;
-
 public class MachineMapper {
-	public static Machine toEntity(@Valid MachineRequest request, String imageUrl, Gym gym) {
+	public static Machine toEntity(MachineRequest request, String imageUrl, Gym gym) {
+		return toEntity(request.machineName(), request.amount(), imageUrl, gym);
+	}
+
+	public static Machine toEntity(String machineName, Integer amount, String imageUrl, Gym gym) {
 		return Machine.builder()
-			.machineName(request.machineName())
-			.amount(request.amount())
+			.machineName(machineName)
+			.amount(amount)
 			.machineImage(imageUrl)
 			.gym(gym)
 			.build();

@@ -16,6 +16,9 @@ import org.helloworld.gymmate.domain.gym.facility.mapper.FacilityMapper;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gymInfo.mapper.GymMapper;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
+import org.helloworld.gymmate.domain.gym.machine.entity.Machine;
+import org.helloworld.gymmate.domain.gym.machine.enums.GymMachine;
+import org.helloworld.gymmate.domain.gym.machine.mapper.MachineMapper;
 import org.helloworld.gymmate.infra.service.KakaoMapWebClientService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -111,6 +114,7 @@ public class SeoulGymWebClientCrawler {
 			if (gymBatch.size() >= BATCH_SIZE) {
 				saveGyms(List.copyOf(gymBatch));
 				saveFacilitiesForGyms(List.copyOf(gymBatch));
+				saveMachinesForGyms(List.copyOf(gymBatch));
 				gymBatch.clear();
 			}
 		}
@@ -193,4 +197,57 @@ public class SeoulGymWebClientCrawler {
 		log.debug("Gym에 연결된 Facility 데이터 저장 및 업데이트 완료!");
 	}
 
+	@Transactional
+	public void saveMachinesForGyms(List<Gym> gyms) {
+		if (gyms.isEmpty())
+			return;
+
+		String sqlFindGymId = "SELECT gym_id FROM gym WHERE place_url = ?";
+
+		List<Gym> gymsWithId = new ArrayList<>();
+
+		for (Gym gym : gyms) {
+			try {
+				Long gymId = jdbcTemplate.queryForObject(sqlFindGymId, Long.class, gym.getPlaceUrl());
+				Gym gymWithId = gym.withGymId(gymId);
+				gymsWithId.add(gymWithId);
+			} catch (Exception e) {
+				log.error("Gym ID 조회 실패! place_url: {}", gym.getPlaceUrl(), e);
+			}
+		}
+
+		List<Machine> machinesToInsert = new ArrayList<>();
+
+		for (Gym gym : gymsWithId) {
+			List<GymMachine> selectedMachines = GymMachine.getRandomMachines(3);
+
+			for (GymMachine gymMachine : selectedMachines) {
+				int amount = (int)(Math.random() * 5) + 1;
+
+				Machine machine = MachineMapper.toEntity(
+					gymMachine.getName(),
+					amount,
+					gymMachine.getImageUrl(),
+					gym
+				);
+
+				machinesToInsert.add(machine);
+			}
+		}
+
+		String sql = "INSERT INTO machine (machine_name, amount, machine_image, gym_id) VALUES (?, ?, ?, ?)";
+
+		try {
+			jdbcTemplate.batchUpdate(sql, machinesToInsert, BATCH_SIZE, (ps, machine) -> {
+				ps.setString(1, machine.getMachineName());
+				ps.setInt(2, machine.getAmount());
+				ps.setString(3, machine.getMachineImage());
+				ps.setLong(4, machine.getGym().getGymId());
+			});
+
+			log.debug("총 {}개의 Machine 데이터 저장 완료!", machinesToInsert.size());
+		} catch (Exception e) {
+			log.error("Machine 데이터 저장 중 오류 발생: ", e);
+		}
+	}
 }
