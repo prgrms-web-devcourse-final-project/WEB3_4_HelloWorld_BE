@@ -116,12 +116,23 @@ jobs:
           host: ${{ secrets.AWS_DEV_HOSTNAME }}
           key: ${{ secrets.AWS_DEV_PRIVATE_KEY }}
           script: |
+            # Docker Compose 설치 (필요 시)
+            if ! command -v docker-compose &> /dev/null
+            then
+              echo "Docker Compose not found. Installing..."
+              sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+            fi
+            
             # 최신 backend 및 nginx 이미지 가져오기
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker pull ${{ secrets.DOCKER_REPOSITORY }}:backend-${{ env.VERSION }}
             docker pull ${{ secrets.DOCKER_REPOSITORY }}:nginx
+            
             # nginx.conf 복사
+            mkdir -p /home/ec2-user/src/main/resources/backend-config/nginx/
             sudo cp /home/ec2-user/nginx/nginx.conf /home/ec2-user/src/main/resources/backend-config/nginx/nginx.conf
+            
             # 기존 컨테이너 종료 및 새로운 컨테이너 실행
             docker-compose -f docker-compose.deploy.yml down
             docker image prune -f
