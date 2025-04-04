@@ -37,7 +37,7 @@ jobs:
       - name: Copy jar
         run: cp ./build/libs/*.jar ./deploy/
 
-      # docker-compose.deploy.yml 환경 변수 전달 및 생성
+      # docker-compose.deploy.yml 환경 변수 포함 생성
       - name: Generate docker-compose.deploy.yml with version and secrets
         run: |
           export RDS_HOST=${{ secrets.RDS_HOST }}
@@ -45,10 +45,24 @@ jobs:
           export DB_NAME=${{ secrets.DB_NAME }}
           export MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
           export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-          export VERSION=${{ env.VERSION }}
-          envsubst < ./docker/gymmate-deploy/docker-compose.deploy.yml.template > ./docker/gymmate-deploy/docker-compose.deploy.yml
+          export VERSION=${{ github.ref_name }}
+          envsubst < ./docker/gymmate-deploy/docker-compose.deploy.template > ./docker/gymmate-deploy/docker-compose.deploy.yml
 
-      # application-deploy.yml 환경 변수 전달 및 생성
+      # application.yml 환경 변수 포함 생성
+      - name: Generate application-deploy.yml with secrets
+        run: |
+          export OAUTH_KAKAO_CLIENT_ID=${{ secrets.OAUTH_KAKAO_CLIENT_ID }}
+          export OAUTH_KAKAO_CLIENT_SECRET=${{ secrets.OAUTH_KAKAO_CLIENT_SECRET }}
+          export OAUTH_KAKAO_REDIRECT_URI_SUFFIX=${{ secrets.OAUTH_KAKAO_REDIRECT_URI_SUFFIX }}
+          export JWT_SECRET=${{ secrets.JWT_SECRET }}
+          export S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
+          export S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
+          export KAKAO_API_KEY=${{ secrets.KAKAO_API_KEY }}
+          export BUSINESS_URL=${{ secrets.BUSINESS_URL }}
+          export BUSINESS_KEY=${{ secrets.BUSINESS_KEY }}
+          envsubst < ./src/main/resources/docs/application.template > ../src/main/resources/application.yml
+
+      # application-deploy.yml 환경 변수 포함 생성
       - name: Generate application-deploy.yml with secrets
         run: |
           export RDS_HOST=${{ secrets.RDS_HOST }}
@@ -56,7 +70,7 @@ jobs:
           export DB_NAME=${{ secrets.DB_NAME }}
           export MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
           export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-          envsubst < ./docker/gymmate-deploy/application-deploy.yml.template > ./docker/gymmate-deploy/application-deploy.yml
+          envsubst < ../src/main/resources/docs/application-deploy.template > ./src/main/resources/application-deploy.yml
 
       # 도커 컴포즈 설정 파일 서버로 전달하기
       - name: Send docker-compose.deploy.yml
@@ -111,8 +125,4 @@ jobs:
             # 기존 컨테이너 종료 및 새로운 컨테이너 실행
             docker-compose -f docker-compose.deploy.yml down
             docker image prune -f
-            RDS_HOST=${{ secrets.RDS_HOST }} RDS_PORT=${{ secrets.RDS_PORT }} \
-            DB_NAME=${{ secrets.DB_NAME }} MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }} \
-            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
-            DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} DOCKER_REPOSITORY=${{ secrets.DOCKER_REPOSITORY }} \
-            VERSION=${{ env.VERSION }} docker-compose -f docker-compose.deploy.yml up -d
+            docker-compose -f docker-compose.deploy.yml up -d

@@ -1,4 +1,3 @@
-```
 api:
   title: 짐메이트 (GymMate)
   description: 헬스장 정보를 한 눈에! PT 수업 결제까지~
@@ -75,4 +74,3 @@ kakao-map:
 business:
   url: ${BUSINESS_URL}
   serviceKey: ${BUSINESS_KEY}
-```
