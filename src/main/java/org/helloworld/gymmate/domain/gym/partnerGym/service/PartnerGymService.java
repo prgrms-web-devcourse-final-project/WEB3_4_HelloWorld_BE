@@ -14,8 +14,8 @@ import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.gym.gymInfo.service.GymService;
 import org.helloworld.gymmate.domain.gym.gymProduct.service.GymProductService;
 import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.GymInfoRequest;
-import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.RegisterGymRequest;
-import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.UpdateGymRequest;
+import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.GymRegisterRequest;
+import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.GymUpdateRequest;
 import org.helloworld.gymmate.domain.gym.partnerGym.dto.response.PartnerGymDetailResponse;
 import org.helloworld.gymmate.domain.gym.partnerGym.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.partnerGym.mapper.PartnerGymMapper;
@@ -48,7 +48,7 @@ public class PartnerGymService {
 	}
 
 	@Transactional
-	public Long registerPartnerGym(RegisterGymRequest request, List<MultipartFile> images, Long ownerId) {
+	public Long registerPartnerGym(GymRegisterRequest request, List<MultipartFile> images, Long ownerId) {
 		// 운영자 맞는지 확인
 		validatePartnerGymOwner(ownerId);
 
@@ -73,13 +73,13 @@ public class PartnerGymService {
 		saveImages(images, existingGym);
 
 		//gymProduct 업데이트
-		gymProductService.updateGymProducts(request.gymProductRequest(), partnerGym);
+		gymProductService.updateGymProducts(request.gymInfoRequest(), partnerGym);
 
 		return partnerGym.getPartnerGymId();
 	}
 
 	@Transactional
-	public Long updatePartnerGym(UpdateGymRequest request, List<MultipartFile> images,
+	public Long updatePartnerGym(GymUpdateRequest request, List<MultipartFile> images,
 		Long ownerId) {
 		// 본인이 운영하는 제휴 헬스장 가져오기
 		PartnerGym partnerGym = getPartnerGymByOwnerId(ownerId);
@@ -97,7 +97,7 @@ public class PartnerGymService {
 		updateImages(request, images, existingGym);
 
 		// gymProduct 업데이트
-		gymProductService.updateGymProducts(request.gymProductRequest(), partnerGym);
+		gymProductService.updateGymProducts(request.gymInfoRequest(), partnerGym);
 
 		return existingGym.getGymId();
 	}
@@ -167,7 +167,7 @@ public class PartnerGymService {
 	}
 
 	// 이미지 삭제 + 새 이미지 등록
-	private void updateImages(UpdateGymRequest request, List<MultipartFile> images, Gym gym) {
+	private void updateImages(GymUpdateRequest request, List<MultipartFile> images, Gym gym) {
 		// 삭제할 이미지 ID 목록
 		List<Long> deleteImageIds = request.deleteImageIds() != null ? request.deleteImageIds() : List.of();
 
