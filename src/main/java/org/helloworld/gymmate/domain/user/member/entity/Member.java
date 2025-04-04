@@ -1,5 +1,9 @@
 package org.helloworld.gymmate.domain.user.member.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.helloworld.gymmate.domain.gym.gymTicket.entity.GymTicket;
 import org.helloworld.gymmate.domain.user.enums.GenderType;
 import org.helloworld.gymmate.domain.user.member.dto.MemberModifyRequest;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
@@ -15,6 +19,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -94,6 +99,9 @@ public class Member {
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "oauth_id")
 	private Oauth oauth;
+
+	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<GymTicket> gymTickets = new ArrayList<>();
 
 	public void registerMemberInfo(MemberRequest request) {
 		this.phoneNumber = request.phoneNumber();
