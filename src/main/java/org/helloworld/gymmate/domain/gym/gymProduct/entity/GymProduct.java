@@ -1,6 +1,7 @@
 package org.helloworld.gymmate.domain.gym.gymProduct.entity;
 
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.PartnerGym;
+import org.helloworld.gymmate.domain.gym.gymProduct.dto.GymProductRequest;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,4 +43,10 @@ public class GymProduct {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "partner_gym_id")
 	private PartnerGym partnerGym;
+
+	public void update(GymProductRequest request) {
+		this.gymProductFee = request.gymProductFee();
+		this.gymProductMonth = request.gymProductMonth();
+	}
+
 }

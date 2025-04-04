@@ -53,15 +53,18 @@ public class GymController {
 	// 제휴 헬스장 수정
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
 	@PutMapping(value = "/partnerGym/{partnerGymId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Long> updatePartnerGym(
-		@PathVariable Long partnerGymId,
+	public ResponseEntity<Map<String, Long>> updatePartnerGym(
 		@RequestPart("request") @Valid UpdateGymRequest request,
 		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images,
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-		return ResponseEntity.ok(
-			gymService.updatePartnerGym(partnerGymId, request, images, customOAuth2User.getUserId()));
+		Long partnerGymId = gymService.updatePartnerGym(request, images, customOAuth2User.getUserId());
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(Map.of("partnerGymId(modified)", partnerGymId));
 	}
+
+	// 제휴 헬스장 조회 > gymProductId, partnerGymId, reuqest, image,
 
 	// 제휴 헬스장 머신 리스트 조회
 	@PreAuthorize("hasRole('ROLE_TRAINER')")

@@ -88,7 +88,7 @@ public class GymService {
 	}
 
 	@Transactional
-	public Long updatePartnerGym(Long partnerGymId, UpdateGymRequest request, List<MultipartFile> images,
+	public Long updatePartnerGym(UpdateGymRequest request, List<MultipartFile> images,
 		Long ownerId) {
 		// 운영자 맞는지 확인
 		Trainer owner = findByOwnerId(ownerId);
@@ -97,7 +97,7 @@ public class GymService {
 		}
 
 		// partnerGymId로 Gym 가져오기
-		Gym existingGym = getGymByPartnerGymId(partnerGymId);
+		Gym existingGym = getGymByPartnerGymId(request.partnerGymId());
 
 		// gym 업데이트
 		GymMapper.updateEntity(existingGym, request.gymInfoRequest().gymRequest());
@@ -109,9 +109,8 @@ public class GymService {
 		updateImages(request, images, existingGym);
 
 		// gymProduct 업데이트
-		//TODO: 메소드 호출
 
-		return partnerGymId;
+		return request.partnerGymId();
 	}
 
 	// 가까운 헬스장 조회
