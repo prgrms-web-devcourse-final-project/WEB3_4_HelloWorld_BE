@@ -37,11 +37,28 @@ jobs:
       - name: Copy jar
         run: cp ./build/libs/*.jar ./deploy/
 
-      - name: Generate docker-compose.deploy.yml with version
+      # docker-compose.deploy.yml 환경 변수 전달 및 생성
+      - name: Generate docker-compose.deploy.yml with version and secrets
         run: |
-          VERSION=${{ env.VERSION }} envsubst < ./docker/gymmate-deploy/docker-compose.deploy.yml.template > ./docker/gymmate-deploy/docker-compose.deploy.yml
+          export RDS_HOST=${{ secrets.RDS_HOST }}
+          export RDS_PORT=${{ secrets.RDS_PORT }}
+          export DB_NAME=${{ secrets.DB_NAME }}
+          export MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
+          export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+          export VERSION=${{ env.VERSION }}
+          envsubst < ./docker/gymmate-deploy/docker-compose.deploy.yml.template > ./docker/gymmate-deploy/docker-compose.deploy.yml
 
-      # 도커 컴포즈 설정 파일 서버로 전달하기(복사 후 붙여넣기)
+      # application-deploy.yml 환경 변수 전달 및 생성
+      - name: Generate application-deploy.yml with secrets
+        run: |
+          export RDS_HOST=${{ secrets.RDS_HOST }}
+          export RDS_PORT=${{ secrets.RDS_PORT }}
+          export DB_NAME=${{ secrets.DB_NAME }}
+          export MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
+          export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+          envsubst < ./docker/gymmate-deploy/application-deploy.yml.template > ./docker/gymmate-deploy/application-deploy.yml
+
+      # 도커 컴포즈 설정 파일 서버로 전달하기
       - name: Send docker-compose.deploy.yml
         uses: appleboy/scp-action@master
         with:
@@ -51,7 +68,7 @@ jobs:
           source: "./docker/gymmate-deploy/docker-compose.deploy.yml"
           target: "/home/ec2-user/"
 
-      # nginx 설정 파일 서버로 전달하기(복사 후 붙여넣기)
+      # nginx 설정 파일 서버로 전달하기
       - name: Send nginx.conf
         uses: appleboy/scp-action@master
         with:
@@ -94,4 +111,8 @@ jobs:
             # 기존 컨테이너 종료 및 새로운 컨테이너 실행
             docker-compose -f docker-compose.deploy.yml down
             docker image prune -f
-            DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} DOCKER_REPOSITORY=${{ secrets.DOCKER_REPOSITORY }} VERSION=${{ env.VERSION }} docker-compose -f docker-compose.deploy.yml up -d
+            RDS_HOST=${{ secrets.RDS_HOST }} RDS_PORT=${{ secrets.RDS_PORT }} \
+            DB_NAME=${{ secrets.DB_NAME }} MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }} \
+            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
+            DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} DOCKER_REPOSITORY=${{ secrets.DOCKER_REPOSITORY }} \
+            VERSION=${{ env.VERSION }} docker-compose -f docker-compose.deploy.yml up -d
