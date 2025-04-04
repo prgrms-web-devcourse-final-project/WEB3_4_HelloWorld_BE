@@ -89,14 +89,18 @@ public class MachineService {
 	}
 
 	@Transactional
-	public Long modifyMachine(Long userId, @Valid MachineRequest request, MultipartFile image, Long machineId) {
+	public Long modifyMachine(Long trainerId, @Valid MachineRequest request, MultipartFile image, Long machineId) {
+		Trainer trainer = ownerCheck(trainerId);
 		Machine machine = findByMachineId(machineId);
+		if (!trainer.getGym().getGymId().equals(machine.getGym().getGymId())) {
+			throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
+		}
 		machine.update(request);
 		if (image != null) {
 			fileManager.deleteFile(machine.getMachineImage());
 			String imageUrl = fileManager.uploadFile(image, "machine");
 			machine.updateImage(imageUrl);
 		}
-		return machineId;
+		return machine.getMachineId();
 	}
 }
