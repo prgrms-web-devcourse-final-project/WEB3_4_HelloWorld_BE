@@ -63,14 +63,35 @@ public class ReservationController {
 	 */
 	@PreAuthorize("hasRole('ROLE_MEMBER')")
 	@GetMapping("/member")
-	public ResponseEntity<PageDto<ReservationResponse>> getReservations(
+	public ResponseEntity<PageDto<ReservationResponse>> getMemberReservations(
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@RequestParam(defaultValue = "0") @Min(0) int page,
 		@RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize
 	) {
 		return ResponseEntity.ok()
 			.body(PageMapper.toPageDto(
-				reservationService.getReservations(
+				reservationService.getMemberReservations(
+					customOAuth2User.getUserId(),
+					page,
+					pageSize
+				)
+			));
+	}
+
+	/*
+    트레이너의 예약 목록 조회 API
+    컨트롤러 -> 서비스 전달 정보 : 유저id
+   */
+	@PreAuthorize("hasRole('ROLE_TRAINER')")
+	@GetMapping("/trainer")
+	public ResponseEntity<PageDto<ReservationResponse>> getTrainerReservations(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+		@RequestParam(defaultValue = "0") @Min(0) int page,
+		@RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize
+	) {
+		return ResponseEntity.ok()
+			.body(PageMapper.toPageDto(
+				reservationService.getTrainerReservations(
 					customOAuth2User.getUserId(),
 					page,
 					pageSize
