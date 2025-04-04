@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.helloworld.gymmate.domain.gym.facility.entity.Facility;
 import org.helloworld.gymmate.domain.gym.machine.entity.Machine;
+import org.hibernate.annotations.BatchSize;
 import org.locationtech.jts.geom.Point;
 
 import jakarta.persistence.CascadeType;
@@ -69,6 +70,7 @@ public class Gym {
 	private String placeUrl;
 
 	@OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
+	@BatchSize(size = 20)
 	@Builder.Default
 	private List<GymImage> images = new ArrayList<>();  //이미지의 경우 default이미지 표시
 

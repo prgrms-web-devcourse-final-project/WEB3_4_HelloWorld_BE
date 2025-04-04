@@ -12,10 +12,12 @@ import org.helloworld.gymmate.domain.gym.facility.mapper.FacilityMapper;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.GymInfoRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.RegisterGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.UpdateGymRequest;
+import org.helloworld.gymmate.domain.gym.gymInfo.dto.response.PartnerGymDetailResponse;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.GymImage;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.gymInfo.mapper.GymMapper;
+import org.helloworld.gymmate.domain.gym.gymInfo.mapper.PartnerGymMapper;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.gym.gymInfo.repository.PartnerGymRepository;
 import org.helloworld.gymmate.domain.gym.gymProduct.service.GymProductService;
@@ -88,7 +90,7 @@ public class GymService {
 	}
 
 	@Transactional
-	public Long updatePartnerGym(UpdateGymRequest request, List<MultipartFile> images,
+	public Long updatePartnerGym(Long partnerGymId, UpdateGymRequest request, List<MultipartFile> images,
 		Long ownerId) {
 		// 운영자 맞는지 확인
 		Trainer owner = findByOwnerId(ownerId);
@@ -97,7 +99,7 @@ public class GymService {
 		}
 
 		// partnerGymId로 Gym 가져오기
-		Gym existingGym = getGymByPartnerGymId(request.partnerGymId());
+		Gym existingGym = getGymByPartnerGymId(partnerGymId);
 
 		// gym 업데이트
 		GymMapper.updateEntity(existingGym, request.gymInfoRequest().gymRequest());
@@ -110,7 +112,28 @@ public class GymService {
 
 		// gymProduct 업데이트
 
-		return request.partnerGymId();
+		return partnerGymId;
+	}
+
+	// 제휴 헬스장 조회
+	@Transactional(readOnly = true)
+	public PartnerGymDetailResponse getPartnerGymDetail(Long partnerGymId, Long ownerId) {
+
+		PartnerGym partnerGym = partnerGymRepository.findByIdWithGymAndProducts(partnerGymId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.PARTNER_GYM_NOT_FOUND));
+
+		// 운영자 맞는지 확인
+		Trainer owner = findByOwnerId(ownerId);
+		if (!owner.getIsOwner()) {
+			throw new BusinessException(ErrorCode.GYM_REGISTRATION_FORBIDDEN);
+		}
+
+		// Lazy 로딩 유도 (실제 접근 시 쿼리 발생)
+		partnerGym.getGym().getImages().size();
+		partnerGym.getGymProducts().size();
+
+		return PartnerGymMapper.toDto(partnerGym);
+
 	}
 
 	// 가까운 헬스장 조회
@@ -187,6 +210,7 @@ public class GymService {
 		Facility facility = existingGym.getFacility();
 		facility.update(request.facilityRequest());
 	}
+
 }
 
 

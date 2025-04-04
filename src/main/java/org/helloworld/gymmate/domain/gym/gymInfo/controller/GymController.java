@@ -6,6 +6,7 @@ import java.util.Map;
 import org.helloworld.gymmate.common.validate.custom.ValidImageFile;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.RegisterGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.UpdateGymRequest;
+import org.helloworld.gymmate.domain.gym.gymInfo.dto.response.PartnerGymDetailResponse;
 import org.helloworld.gymmate.domain.gym.gymInfo.service.GymService;
 import org.helloworld.gymmate.domain.gym.machine.dto.FacilityAndMachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineResponse;
@@ -53,18 +54,27 @@ public class GymController {
 	// 제휴 헬스장 수정
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
 	@PutMapping(value = "/partnerGym/{partnerGymId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Map<String, Long>> updatePartnerGym(
+	public ResponseEntity<Long> updatePartnerGym(
+		@PathVariable Long partnerGymId,
 		@RequestPart("request") @Valid UpdateGymRequest request,
 		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images,
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-		Long partnerGymId = gymService.updatePartnerGym(request, images, customOAuth2User.getUserId());
-
-		return ResponseEntity.status(HttpStatus.OK)
-			.body(Map.of("partnerGymId(modified)", partnerGymId));
+		return ResponseEntity.ok(
+			gymService.updatePartnerGym(partnerGymId, request, images, customOAuth2User.getUserId()));
 	}
 
-	// 제휴 헬스장 조회 > gymProductId, partnerGymId, reuqest, image,
+	// 제휴 헬스장 조회
+	@PreAuthorize("hasRole('ROLE_TRAINER')")
+	@GetMapping("/partnerGym/{partnerGymId}")
+	public ResponseEntity<PartnerGymDetailResponse> getPartnerGymDetail(
+		@PathVariable Long partnerGymId,
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
+	) {
+		return ResponseEntity.ok(
+			gymService.getPartnerGymDetail(partnerGymId, customOAuth2User.getUserId()));
+
+	}
 
 	// 제휴 헬스장 머신 리스트 조회
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
