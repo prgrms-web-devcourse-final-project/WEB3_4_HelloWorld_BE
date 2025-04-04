@@ -5,15 +5,13 @@ import java.util.List;
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
-import org.helloworld.gymmate.domain.gym.facility.dto.FacilityResponse;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
-import org.helloworld.gymmate.domain.gym.gymInfo.service.GymService;
-import org.helloworld.gymmate.domain.gym.machine.dto.FacilityAndMachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineRequest;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.entity.Machine;
 import org.helloworld.gymmate.domain.gym.machine.mapper.MachineMapper;
 import org.helloworld.gymmate.domain.gym.machine.repository.MachineRepository;
+import org.helloworld.gymmate.domain.gym.partnerGym.service.PartnerGymService;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.springframework.stereotype.Service;
@@ -29,7 +27,7 @@ public class MachineService {
 	private final TrainerService trainerService;
 	private final FileManager fileManager;
 	private final MachineRepository machineRepository;
-	private final GymService gymService;
+	private final PartnerGymService partnerGymService;
 
 	private final int MACHINE_MAX_SIZE = 30;
 
@@ -78,14 +76,6 @@ public class MachineService {
 	public List<MachineResponse> getOwnMachines(Long trainerId) {
 		Trainer trainer = ownerCheck(trainerId);
 		return MachineMapper.toDtoList(trainer.getGym().getMachines());
-	}
-
-	@Transactional(readOnly = true)
-	public FacilityAndMachineResponse getOwnFacilitiesAndMachines(Long gymId) {
-		Gym gym = gymService.getExistingGym(gymId);
-		FacilityResponse facilityResponse = gymService.getFacility(gym);
-		List<MachineResponse> machineResponses = MachineMapper.toDtoList(gym.getMachines());
-		return new FacilityAndMachineResponse(facilityResponse, machineResponses);
 	}
 
 	@Transactional

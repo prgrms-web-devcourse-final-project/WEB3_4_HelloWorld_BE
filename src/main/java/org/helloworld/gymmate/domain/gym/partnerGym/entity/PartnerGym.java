@@ -1,9 +1,11 @@
-package org.helloworld.gymmate.domain.gym.gymInfo.entity;
+package org.helloworld.gymmate.domain.gym.partnerGym.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gymProduct.entity.GymProduct;
+import org.hibernate.annotations.BatchSize;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -43,6 +45,7 @@ public class PartnerGym {
 	private Gym gym;
 
 	@OneToMany(mappedBy = "partnerGym", cascade = CascadeType.ALL, orphanRemoval = true)
+	@BatchSize(size = 20)
 	@Builder.Default
 	private List<GymProduct> gymProducts = new ArrayList<>();
 }
