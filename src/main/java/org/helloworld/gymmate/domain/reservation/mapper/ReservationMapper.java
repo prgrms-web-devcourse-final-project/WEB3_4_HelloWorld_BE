@@ -2,6 +2,7 @@ package org.helloworld.gymmate.domain.reservation.mapper;
 
 import org.helloworld.gymmate.domain.pt.pt_product.entity.PtProduct;
 import org.helloworld.gymmate.domain.reservation.dto.ReservationRequest;
+import org.helloworld.gymmate.domain.reservation.dto.ReservationResponse;
 import org.helloworld.gymmate.domain.reservation.entity.Reservation;
 
 public class ReservationMapper {
@@ -23,5 +24,18 @@ public class ReservationMapper {
 			.price(ptProduct.getPtProductFee())        // 스냅샷
 			.memberId(userId)
 			.build();
+	}
+
+	public static ReservationResponse toDto(Reservation reservation) {
+		return new ReservationResponse(
+			reservation.getReservationId(),
+			reservation.getProductName(),
+			reservation.getDate(),
+			reservation.getTime(),
+			reservation.getPrice(),
+			reservation.getCancelDate(),
+			reservation.getCompletedDate(),
+			reservation.getTrainerId()
+		);
 	}
 }

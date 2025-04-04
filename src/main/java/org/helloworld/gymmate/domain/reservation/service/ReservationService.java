@@ -3,9 +3,14 @@ package org.helloworld.gymmate.domain.reservation.service;
 import org.helloworld.gymmate.domain.pt.pt_product.entity.PtProduct;
 import org.helloworld.gymmate.domain.pt.pt_product.service.PtProductService;
 import org.helloworld.gymmate.domain.reservation.dto.ReservationRequest;
+import org.helloworld.gymmate.domain.reservation.dto.ReservationResponse;
 import org.helloworld.gymmate.domain.reservation.entity.Reservation;
 import org.helloworld.gymmate.domain.reservation.mapper.ReservationMapper;
 import org.helloworld.gymmate.domain.reservation.repository.ReservationRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,5 +38,27 @@ public class ReservationService {
 
 		// 3) 저장 및 ID 반환
 		return reservationRepository.save(reservation).getReservationId();
+	}
+
+	/*
+	  회원의 예약 목록 조회 로직
+	   - 매개변수 : 회원 ID
+	   - 리턴값 : 회원의 예약 목록
+	 */
+	@Transactional(readOnly = true)
+	public Page<ReservationResponse> getReservations(
+		Long memberId,
+		int page,
+		int pageSize
+	) {
+		// 정렬 조건 고정 (예약 날짜 내림차순)
+		Sort sort = Sort.by(Sort.Direction.DESC, "date");
+
+		// 페이징 요청 생성
+		Pageable pageable = PageRequest.of(page, pageSize, sort);
+
+		// 페이징된 데이터 조회 및 DTO 변환
+		return reservationRepository.findByMemberId(memberId, pageable)
+			.map(ReservationMapper::toDto);
 	}
 }
