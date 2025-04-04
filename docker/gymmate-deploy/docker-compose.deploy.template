@@ -33,8 +33,12 @@ services:
     image: ${DOCKER_REPOSITORY}:nginx
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - backend
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt:/etc/letsencrypt
     networks:
       - gymmate-deploy-network
 
