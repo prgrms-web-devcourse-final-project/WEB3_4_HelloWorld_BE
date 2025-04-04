@@ -90,7 +90,7 @@ public class PtProductService {
 		ptProduct.getPtProductImages().addAll(ptProductImages);
 	}
 
-	private PtProduct findProductOrThrow(Long productId) {
+	public PtProduct findProductOrThrow(Long productId) {
 		return ptProductRepository.findById(productId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.PTPRODUCT_NOT_FOUND));
 	}

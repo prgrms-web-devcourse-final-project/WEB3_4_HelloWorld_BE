@@ -3,6 +3,7 @@ package org.helloworld.gymmate.domain.reservation.controller;
 import org.helloworld.gymmate.domain.reservation.dto.ReservationRequest;
 import org.helloworld.gymmate.domain.reservation.service.ReservationService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,7 +42,7 @@ public class ReservationController {
 		@PathVariable Long ptProductId,
 		@Valid @RequestBody ReservationRequest request
 	) {
-		return ResponseEntity.ok()
+		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(reservationService.register(
 				customOAuth2User.getUserId(),
 				ptProductId,
