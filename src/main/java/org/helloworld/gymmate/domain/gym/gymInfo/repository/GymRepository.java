@@ -37,8 +37,10 @@ public interface GymRepository extends JpaRepository<Gym, Long> {
 	List<Gym> findNearbyGyms(@Param("point") String point, @Param("distance") double distance,
 		@Param("limit") int limit);
 
+	@Query("SELECT g FROM Gym g WHERE g.isPartner = :isPartner")
 	Page<Gym> findAllByIsPartnerOrderByAvgScoreDesc(Boolean isPartner, Pageable pageable);
 
+	@Query("SELECT g FROM Gym g WHERE g.gymName LIKE CONCAT('%', :searchTerm, '%') AND g.isPartner = :isPartner")
 	Page<Gym> findByGymNameContainingIgnoreCaseAndIsPartnerOrderByAvgScoreDesc(String searchTerm, Boolean isPartner,
 		Pageable pageable);
 
