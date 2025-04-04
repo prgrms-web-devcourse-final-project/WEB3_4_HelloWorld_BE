@@ -12,7 +12,7 @@ services:
 
   backend:
     container_name: gymmate-deploy-backend
-    image: ${DOCKER_USERNAME}/${DOCKER_REPOSITORY}:backend-${VERSION}
+    image: ${DOCKER_REPOSITORY}:backend-${VERSION}
     restart: always
     environment:
       # application-deploy.yml 사용
@@ -30,7 +30,7 @@ services:
 
   nginx:
     container_name: gymmate-deploy-nginx
-    image: ${DOCKER_USERNAME}/${DOCKER_REPOSITORY}:nginx
+    image: ${DOCKER_REPOSITORY}:nginx
     ports:
       - "80:80"
       - "443:443"
