@@ -30,7 +30,7 @@ services:
 
   nginx:
     container_name: gymmate-deploy-nginx
-    image: ${DOCKER_REPOSITORY}:nginx
+    image: ${DOCKER_USERNAME}/${DOCKER_REPOSITORY}:nginx
     ports:
       - "80:80"
       - "443:443"
