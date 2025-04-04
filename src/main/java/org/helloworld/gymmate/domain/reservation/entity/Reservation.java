@@ -1,7 +1,6 @@
 package org.helloworld.gymmate.domain.reservation.entity;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,7 +33,7 @@ public class Reservation {
 	private LocalDate date;
 
 	@Column(nullable = false)
-	private LocalTime time;
+	private Integer time;
 
 	@Column(nullable = false)
 	private Long price;

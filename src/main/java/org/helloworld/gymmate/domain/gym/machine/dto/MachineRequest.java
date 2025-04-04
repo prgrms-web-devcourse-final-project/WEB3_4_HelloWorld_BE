@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record MachineCreateRequest(
+public record MachineRequest(
 	@NotBlank(message = "머신 이름은 필수 입력 값입니다.")
 	String machineName,
 
