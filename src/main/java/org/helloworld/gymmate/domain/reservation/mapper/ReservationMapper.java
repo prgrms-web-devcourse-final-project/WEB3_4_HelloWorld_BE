@@ -6,9 +6,9 @@ import org.helloworld.gymmate.domain.reservation.entity.Reservation;
 
 public class ReservationMapper {
 
-	/**
-	 * PT 상품과 예약 요청과 유저Id로부터 예약 엔티티 생성
-	 * 예약 시점의 PT 상품 정보를 스냅샷으로 저장
+	/*
+	 PT 상품과 예약 요청과 유저Id로부터 예약 엔티티 생성
+	 예약 시점의 PT 상품 정보를 스냅샷으로 저장
 	 */
 	public static Reservation toEntity(
 		PtProduct ptProduct,
