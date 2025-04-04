@@ -120,7 +120,7 @@ jobs:
           host: ${{ secrets.AWS_DEV_HOSTNAME }}
           key: ${{ secrets.AWS_DEV_PRIVATE_KEY }}
           script: |
-            export VERSION=${{ github.ref_name }}
+            export VERSION=${{ env.VERSION }}
             export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
             export DOCKER_ACCESS_TOKEN=${{ secrets.DOCKER_ACCESS_TOKEN }}
             export DOCKER_REPOSITORY=${{ secrets.DOCKER_REPOSITORY }}
