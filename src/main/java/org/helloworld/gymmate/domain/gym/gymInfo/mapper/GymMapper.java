@@ -3,6 +3,7 @@ package org.helloworld.gymmate.domain.gym.gymInfo.mapper;
 import java.util.Map;
 
 import org.helloworld.gymmate.common.util.GeometryUtil;
+import org.helloworld.gymmate.domain.gym.gymInfo.dto.response.GymListResponse;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.GymRequest;
 
@@ -46,6 +47,19 @@ public class GymMapper {
 		} else {
 			throw new IllegalArgumentException("잘못된 좌표 타입: " + value);
 		}
+	}
+
+	public static GymListResponse toListResponse(Gym gym) {
+		return new GymListResponse(
+			gym.getGymId(),
+			gym.getGymName(),
+			gym.getStartTime(),
+			gym.getEndTime(),
+			gym.getPlaceUrl(),
+			gym.getAvgScore(),
+			gym.getIsPartner(),
+			gym.getImages().getFirst().getUrl()
+		);
 	}
 
 }
