@@ -1,8 +1,8 @@
-package org.helloworld.gymmate.domain.gym.gymInfo.repository;
+package org.helloworld.gymmate.domain.gym.partnerGym.repository;
 
 import java.util.Optional;
 
-import org.helloworld.gymmate.domain.gym.gymInfo.entity.PartnerGym;
+import org.helloworld.gymmate.domain.gym.partnerGym.entity.PartnerGym;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +18,6 @@ public interface PartnerGymRepository extends JpaRepository<PartnerGym, Long> {
 			WHERE pg.partnerGymId = :partnerGymId
 		""")
 	Optional<PartnerGym> findByIdWithGymAndProducts(@Param("partnerGymId") Long partnerGymId);
+
+	Optional<PartnerGym> findByOwnerId(Long ownerId);
 }

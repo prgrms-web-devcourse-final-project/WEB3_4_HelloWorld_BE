@@ -2,11 +2,11 @@ package org.helloworld.gymmate.domain.gym.gymProduct.service;
 
 import java.util.List;
 
-import org.helloworld.gymmate.domain.gym.gymInfo.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.gymProduct.dto.GymProductRequest;
 import org.helloworld.gymmate.domain.gym.gymProduct.entity.GymProduct;
 import org.helloworld.gymmate.domain.gym.gymProduct.mapper.GymProductMapper;
 import org.helloworld.gymmate.domain.gym.gymProduct.repository.GymProductRepository;
+import org.helloworld.gymmate.domain.gym.partnerGym.entity.PartnerGym;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class GymProductService {
 	private final GymProductRepository gymProductRepository;
 
 	// 헬스장 이용권 정보 등록
-	public void registerGymProducts(List<GymProductRequest> requests, PartnerGym partnerGym) {
+	public void updateGymProducts(List<GymProductRequest> requests, PartnerGym partnerGym) {
 		List<GymProduct> gymProducts = requests.stream()
 			.map(request -> GymProductMapper.toEntity(request, partnerGym))
 			.toList();

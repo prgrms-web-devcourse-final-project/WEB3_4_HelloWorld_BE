@@ -1,8 +1,9 @@
-package org.helloworld.gymmate.domain.gym.gymInfo.entity;
+package org.helloworld.gymmate.domain.gym.partnerGym.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gymProduct.entity.GymProduct;
 import org.hibernate.annotations.BatchSize;
 

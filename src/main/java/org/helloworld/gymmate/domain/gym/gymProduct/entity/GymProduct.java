@@ -1,7 +1,7 @@
 package org.helloworld.gymmate.domain.gym.gymProduct.entity;
 
-import org.helloworld.gymmate.domain.gym.gymInfo.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.gymProduct.dto.GymProductRequest;
+import org.helloworld.gymmate.domain.gym.partnerGym.entity.PartnerGym;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
