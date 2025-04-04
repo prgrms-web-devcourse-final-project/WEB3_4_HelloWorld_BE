@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -38,7 +39,7 @@ public class ReservationController {
 	public ResponseEntity<Long> register(
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@PathVariable Long ptProductId,
-		@RequestBody ReservationRequest request
+		@Valid @RequestBody ReservationRequest request
 	) {
 		return ResponseEntity.ok()
 			.body(reservationService.register(
