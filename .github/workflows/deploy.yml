@@ -40,7 +40,7 @@ jobs:
       # docker-compose.deploy.yml 환경 변수 포함 생성
       - name: Generate docker-compose.deploy.yml with version and secrets
         run: |
-          export RDS_HOST=${{ secrets.RDS_HOST }}
+          export RDS_HOST=${{ secrets.RDS_HOST }}          
           export RDS_PORT=${{ secrets.RDS_PORT }}
           export DB_NAME=${{ secrets.DB_NAME }}
           export MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
@@ -48,7 +48,10 @@ jobs:
           export VERSION=${{ github.ref_name }}
           export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
           export DOCKER_REPOSITORY=${{ secrets.DOCKER_REPOSITORY }}
-          envsubst < ./docker/gymmate-deploy/docker-compose.deploy.template > ./docker/gymmate-deploy/docker-compose.deploy.yml
+
+          envsubst '$RDS_HOST $RDS_PORT $DB_NAME $MYSQL_USERNAME $MYSQL_PASSWORD $VERSION $DOCKER_USERNAME $DOCKER_REPOSITORY' \
+          < ./docker/gymmate-deploy/docker-compose.deploy.template \
+          > ./docker/gymmate-deploy/docker-compose.deploy.yml
 
       # application.yml 환경 변수 포함 생성
       - name: Generate application-deploy.yml with secrets
