@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
-import org.helloworld.gymmate.domain.gym.machine.dto.MachineCreateRequest;
+import org.helloworld.gymmate.domain.gym.machine.dto.MachineRequest;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.entity.Machine;
 
 import jakarta.validation.Valid;
 
 public class MachineMapper {
-	public static Machine toEntity(@Valid MachineCreateRequest request, String imageUrl, Gym gym) {
+	public static Machine toEntity(@Valid MachineRequest request, String imageUrl, Gym gym) {
 		return Machine.builder()
 			.machineName(request.machineName())
 			.amount(request.amount())

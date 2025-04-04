@@ -9,7 +9,7 @@ import org.helloworld.gymmate.domain.gym.facility.dto.FacilityResponse;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gymInfo.service.GymService;
 import org.helloworld.gymmate.domain.gym.machine.dto.FacilityAndMachineResponse;
-import org.helloworld.gymmate.domain.gym.machine.dto.MachineCreateRequest;
+import org.helloworld.gymmate.domain.gym.machine.dto.MachineRequest;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.entity.Machine;
 import org.helloworld.gymmate.domain.gym.machine.mapper.MachineMapper;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -33,7 +34,7 @@ public class MachineService {
 	private final int MACHINE_MAX_SIZE = 30;
 
 	@Transactional
-	public Long createMachine(Long trainerId, MachineCreateRequest request, MultipartFile image) {
+	public Long createMachine(Long trainerId, MachineRequest request, MultipartFile image) {
 		Trainer trainer = ownerCheck(trainerId);
 		if (machineRepository.countByGymId(trainer.getGym().getGymId()) >= MACHINE_MAX_SIZE) {
 			throw new BusinessException(ErrorCode.MACHINE_MAX_UPLOAD);
@@ -45,7 +46,7 @@ public class MachineService {
 	}
 
 	@Transactional // 크롤러 용도로도 사용
-	public Machine insertMachine(MachineCreateRequest request, String imageUrl, Gym gym) {
+	public Machine insertMachine(MachineRequest request, String imageUrl, Gym gym) {
 		Machine machine = MachineMapper.toEntity(request, imageUrl, gym);
 		return machineRepository.save(machine);
 	}
@@ -85,5 +86,21 @@ public class MachineService {
 		FacilityResponse facilityResponse = gymService.getFacility(gym);
 		List<MachineResponse> machineResponses = MachineMapper.toDtoList(gym.getMachines());
 		return new FacilityAndMachineResponse(facilityResponse, machineResponses);
+	}
+
+	@Transactional
+	public Long modifyMachine(Long trainerId, @Valid MachineRequest request, MultipartFile image, Long machineId) {
+		Trainer trainer = ownerCheck(trainerId);
+		Machine machine = findByMachineId(machineId);
+		if (!trainer.getGym().getGymId().equals(machine.getGym().getGymId())) {
+			throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
+		}
+		machine.update(request);
+		if (image != null) {
+			fileManager.deleteFile(machine.getMachineImage());
+			String imageUrl = fileManager.uploadFile(image, "machine");
+			machine.updateImage(imageUrl);
+		}
+		return machine.getMachineId();
 	}
 }
