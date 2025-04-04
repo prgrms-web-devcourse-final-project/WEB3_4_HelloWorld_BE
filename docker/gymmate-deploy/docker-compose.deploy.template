@@ -41,6 +41,8 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt
     networks:
       - gymmate-deploy-network
+    profiles:
+      - with-nginx
 
 networks:
   gymmate-deploy-network:
