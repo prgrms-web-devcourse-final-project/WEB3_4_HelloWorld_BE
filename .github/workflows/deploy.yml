@@ -32,7 +32,7 @@ jobs:
         run: mkdir deploy
 
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean build -Dspring.profiles.active=test
 
       - name: Copy jar
         run: cp ./build/libs/*.jar ./deploy/
