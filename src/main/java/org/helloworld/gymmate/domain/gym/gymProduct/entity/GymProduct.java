@@ -31,6 +31,9 @@ public class GymProduct {
 	@Column(name = "gym_product_id")
 	private Long gymProductId;
 
+	@Column(name = "gym_product_name", nullable = false)
+	private String gymProductName;
+
 	@Column(name = "gym_product_fee", nullable = false)
 	private Integer gymProductFee;
 
@@ -45,6 +48,7 @@ public class GymProduct {
 	private PartnerGym partnerGym;
 
 	public void update(GymProductRequest request) {
+		this.gymProductName = request.gymProductName();
 		this.gymProductFee = request.gymProductFee();
 		this.gymProductMonth = request.gymProductMonth();
 	}

@@ -5,8 +5,8 @@ import java.util.List;
 import org.helloworld.gymmate.common.validate.custom.ValidImageFile;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.service.MachineService;
-import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.RegisterGymRequest;
-import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.UpdateGymRequest;
+import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.GymRegisterRequest;
+import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.GymUpdateRequest;
 import org.helloworld.gymmate.domain.gym.partnerGym.dto.response.PartnerGymDetailResponse;
 import org.helloworld.gymmate.domain.gym.partnerGym.service.PartnerGymService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
@@ -40,20 +40,19 @@ public class PartnerGymController {
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<Long> registerPartnerGym(
-		@RequestPart("request") @Valid RegisterGymRequest request,
+		@RequestPart("request") @Valid GymRegisterRequest request,
 		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images,
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(partnerGymService.registerPartnerGym(request, images, customOAuth2User.getUserId()));
-
 	}
 
 	// 제휴 헬스장 수정
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
 	@PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<Long> updatePartnerGym(
-		@RequestPart("request") @Valid UpdateGymRequest request,
+		@RequestPart("request") @Valid GymUpdateRequest request,
 		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images,
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 

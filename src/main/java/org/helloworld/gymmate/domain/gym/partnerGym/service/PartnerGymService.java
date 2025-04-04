@@ -14,8 +14,8 @@ import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.gym.gymInfo.service.GymService;
 import org.helloworld.gymmate.domain.gym.gymProduct.service.GymProductService;
 import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.GymInfoRequest;
-import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.RegisterGymRequest;
-import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.UpdateGymRequest;
+import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.GymRegisterRequest;
+import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.GymUpdateRequest;
 import org.helloworld.gymmate.domain.gym.partnerGym.dto.response.PartnerGymDetailResponse;
 import org.helloworld.gymmate.domain.gym.partnerGym.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.partnerGym.mapper.PartnerGymMapper;
@@ -48,7 +48,7 @@ public class PartnerGymService {
 	}
 
 	@Transactional
-	public Long registerPartnerGym(RegisterGymRequest request, List<MultipartFile> images, Long ownerId) {
+	public Long registerPartnerGym(GymRegisterRequest request, List<MultipartFile> images, Long ownerId) {
 		// 운영자 맞는지 확인
 		validatePartnerGymOwner(ownerId);
 
@@ -63,23 +63,14 @@ public class PartnerGymService {
 		// partnerGym 저장
 		PartnerGym partnerGym = createPartnerGym(ownerId, existingGym);
 
-		// gym 업데이트
-		GymMapper.updateEntity(existingGym, request.gymInfoRequest().gymRequest());
-
-		// facility 업데이트
-		updateFacility(existingGym, request.gymInfoRequest());
-
-		// gymImage 업데이트
-		saveImages(images, existingGym);
-
-		//gymProduct 업데이트
-		gymProductService.updateGymProducts(request.gymProductRequest(), partnerGym);
+		// 전체 정보 업데이트
+		updatePartnerGymInfos(request.gymInfoRequest(), null, images, existingGym, partnerGym);
 
 		return partnerGym.getPartnerGymId();
 	}
 
 	@Transactional
-	public Long updatePartnerGym(UpdateGymRequest request, List<MultipartFile> images,
+	public Long updatePartnerGym(GymUpdateRequest request, List<MultipartFile> images,
 		Long ownerId) {
 		// 본인이 운영하는 제휴 헬스장 가져오기
 		PartnerGym partnerGym = getPartnerGymByOwnerId(ownerId);
@@ -87,19 +78,27 @@ public class PartnerGymService {
 		// partnerGym 로 Gym 가져오기
 		Gym existingGym = getGymByPartnerGymId(partnerGym.getPartnerGymId());
 
-		// gym 업데이트
-		GymMapper.updateEntity(existingGym, request.gymInfoRequest().gymRequest());
-
-		// facility 업데이트
-		updateFacility(existingGym, request.gymInfoRequest());
-
-		// gymImage 업데이트
-		updateImages(request, images, existingGym);
-
-		// gymProduct 업데이트
-		gymProductService.updateGymProducts(request.gymProductRequest(), partnerGym);
+		// 전체 정보 업데이트
+		updatePartnerGymInfos(request.gymInfoRequest(), request.deleteImageIds(), images, existingGym, partnerGym);
 
 		return existingGym.getGymId();
+	}
+
+	private void updatePartnerGymInfos(GymInfoRequest gymInfoRequest, List<Long> deleteImageIds,
+		List<MultipartFile> images,
+		Gym existingGym,
+		PartnerGym partnerGym) {
+		// gym 업데이트
+		GymMapper.updateEntity(existingGym, gymInfoRequest.gymRequest());
+
+		// facility 업데이트
+		updateFacility(existingGym, gymInfoRequest);
+
+		// gymImage 업데이트
+		updateImages(deleteImageIds, images, existingGym);
+
+		// gymProduct 업데이트
+		gymProductService.updateGymProducts(gymInfoRequest, partnerGym);
 	}
 
 	// 제휴 헬스장 조회
@@ -144,13 +143,13 @@ public class PartnerGymService {
 		return partnerGymRepository.save(partnerGym);
 	}
 
-	private List<GymImage> uploadAndMapImages(List<MultipartFile> images, String tableName) {
+	private List<GymImage> uploadAndMapImages(List<MultipartFile> images) {
 		if (images == null || images.isEmpty())
 			return List.of();
 
 		List<String> imageUrls;
 		try {
-			imageUrls = fileManager.uploadFiles(images, tableName);
+			imageUrls = fileManager.uploadFiles(images, "gym");
 		} catch (Exception e) {
 			throw new BusinessException(ErrorCode.S3_UPLOAD_FAILED);
 		}
@@ -160,17 +159,24 @@ public class PartnerGymService {
 			.toList();
 	}
 
+	// 이미지 삭제 + 새 이미지 등록
+	private void updateImages(List<Long> deleteImageIds, List<MultipartFile> images, Gym gym) {
+		// 이미지 삭제 호출
+		if (deleteImageIds != null) {
+			deleteImages(deleteImageIds, gym);
+		}
+
+		// 새 이미지 등록 호출
+		saveImages(images, gym);
+	}
+
 	// 신규 이미지 저장
 	private void saveImages(List<MultipartFile> images, Gym gym) {
-		List<GymImage> gymImages = uploadAndMapImages(images, "gym");
+		List<GymImage> gymImages = uploadAndMapImages(images);
 		gym.addImages(gymImages);
 	}
 
-	// 이미지 삭제 + 새 이미지 등록
-	private void updateImages(UpdateGymRequest request, List<MultipartFile> images, Gym gym) {
-		// 삭제할 이미지 ID 목록
-		List<Long> deleteImageIds = request.deleteImageIds() != null ? request.deleteImageIds() : List.of();
-
+	private void deleteImages(List<Long> deleteImageIds, Gym gym) {
 		// 삭제할 이미지 필터링
 		List<GymImage> imagesToDelete = gym.getImages().stream()
 			.filter(img -> deleteImageIds.contains(img.getId()))
@@ -181,10 +187,6 @@ public class PartnerGymService {
 			fileManager.deleteFile(image.getUrl());
 			gym.removeImage(image);
 		}
-
-		// 새 이미지 업로드 및 등록
-		List<GymImage> newImages = uploadAndMapImages(images, "gym");
-		gym.addImages(newImages);
 	}
 
 	private void updateFacility(Gym existingGym, GymInfoRequest request) {

@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 public class GymProductMapper {
 	public static GymProduct toEntity(@Valid GymProductRequest request, PartnerGym partnerGym) {
 		return GymProduct.builder()
+			.gymProductName(request.gymProductName())
 			.gymProductFee(request.gymProductFee())
 			.gymProductMonth(request.gymProductMonth())
 			.onSale(true)
