@@ -6,6 +6,7 @@ import java.util.Map;
 import org.helloworld.gymmate.common.validate.custom.ValidImageFile;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.RegisterGymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.UpdateGymRequest;
+import org.helloworld.gymmate.domain.gym.gymInfo.dto.response.PartnerGymDetailResponse;
 import org.helloworld.gymmate.domain.gym.gymInfo.service.GymService;
 import org.helloworld.gymmate.domain.gym.machine.dto.FacilityAndMachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineResponse;
@@ -61,6 +62,18 @@ public class GymController {
 
 		return ResponseEntity.ok(
 			gymService.updatePartnerGym(partnerGymId, request, images, customOAuth2User.getUserId()));
+	}
+
+	// 제휴 헬스장 조회
+	@PreAuthorize("hasRole('ROLE_TRAINER')")
+	@GetMapping("/partnerGym/{partnerGymId}")
+	public ResponseEntity<PartnerGymDetailResponse> getPartnerGymDetail(
+		@PathVariable Long partnerGymId,
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
+	) {
+		return ResponseEntity.ok(
+			gymService.getPartnerGymDetail(partnerGymId, customOAuth2User.getUserId()));
+
 	}
 
 	// 제휴 헬스장 머신 리스트 조회
