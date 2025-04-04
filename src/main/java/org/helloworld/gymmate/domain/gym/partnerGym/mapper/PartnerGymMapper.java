@@ -3,13 +3,13 @@ package org.helloworld.gymmate.domain.gym.partnerGym.mapper;
 import java.util.List;
 
 import org.helloworld.gymmate.domain.gym.facility.mapper.FacilityMapper;
-import org.helloworld.gymmate.domain.gym.gymInfo.dto.response.GymImageResponse;
-import org.helloworld.gymmate.domain.gym.gymInfo.dto.response.GymInfoResponse;
-import org.helloworld.gymmate.domain.gym.gymInfo.dto.response.GymProductResponse;
-import org.helloworld.gymmate.domain.gym.gymInfo.dto.response.PartnerGymDetailResponse;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.GymImage;
 import org.helloworld.gymmate.domain.gym.gymProduct.entity.GymProduct;
+import org.helloworld.gymmate.domain.gym.partnerGym.dto.response.GymImageResponse;
+import org.helloworld.gymmate.domain.gym.partnerGym.dto.response.GymInfoResponse;
+import org.helloworld.gymmate.domain.gym.partnerGym.dto.response.GymProductResponse;
+import org.helloworld.gymmate.domain.gym.partnerGym.dto.response.PartnerGymDetailResponse;
 import org.helloworld.gymmate.domain.gym.partnerGym.entity.PartnerGym;
 
 public class PartnerGymMapper {

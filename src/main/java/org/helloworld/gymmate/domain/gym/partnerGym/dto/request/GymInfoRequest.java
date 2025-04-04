@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.gym.gymInfo.dto.request;
+package org.helloworld.gymmate.domain.gym.partnerGym.dto.request;
 
 import org.helloworld.gymmate.domain.gym.facility.dto.FacilityRequest;
 
