@@ -46,6 +46,8 @@ jobs:
           export MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
           export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
           export VERSION=${{ github.ref_name }}
+          export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
+          export DOCKER_REPOSITORY=${{ secrets.DOCKER_REPOSITORY }}
           envsubst < ./docker/gymmate-deploy/docker-compose.deploy.template > ./docker/gymmate-deploy/docker-compose.deploy.yml
 
       # application.yml 환경 변수 포함 생성
