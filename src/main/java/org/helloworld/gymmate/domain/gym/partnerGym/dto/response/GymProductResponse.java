@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.gym.gymInfo.dto.response;
+package org.helloworld.gymmate.domain.gym.partnerGym.dto.response;
 
 public record GymProductResponse(
 	Long gymProductId,

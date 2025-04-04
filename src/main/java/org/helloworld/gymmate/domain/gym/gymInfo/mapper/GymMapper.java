@@ -3,8 +3,8 @@ package org.helloworld.gymmate.domain.gym.gymInfo.mapper;
 import java.util.Map;
 
 import org.helloworld.gymmate.common.util.GeometryUtil;
-import org.helloworld.gymmate.domain.gym.gymInfo.dto.request.GymRequest;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
+import org.helloworld.gymmate.domain.gym.partnerGym.dto.request.GymRequest;
 
 public class GymMapper {
 	public static void updateEntity(Gym gym, GymRequest request) {
