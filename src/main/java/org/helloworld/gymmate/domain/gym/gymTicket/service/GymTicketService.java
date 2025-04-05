@@ -26,6 +26,7 @@ public class GymTicketService {
 
 	@Transactional
 	public Long createTicket(Long userId, Long gymProductId) {
+		// TODO : 캐시로그 남겨야 함
 		Member member = memberService.findByUserId(userId);
 		GymProduct gymProduct = gymProductService.findByGymProductId(gymProductId);
 		isPurchasable(member, gymProduct);
