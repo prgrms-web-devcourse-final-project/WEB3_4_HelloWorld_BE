@@ -1,12 +1,12 @@
-package org.helloworld.gymmate.domain.reservation.service;
+package org.helloworld.gymmate.domain.pt.reservation.service;
 
 import org.helloworld.gymmate.domain.pt.ptProduct.entity.PtProduct;
 import org.helloworld.gymmate.domain.pt.ptProduct.service.PtProductService;
-import org.helloworld.gymmate.domain.reservation.dto.ReservationRequest;
-import org.helloworld.gymmate.domain.reservation.dto.ReservationResponse;
-import org.helloworld.gymmate.domain.reservation.entity.Reservation;
-import org.helloworld.gymmate.domain.reservation.mapper.ReservationMapper;
-import org.helloworld.gymmate.domain.reservation.repository.ReservationRepository;
+import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationRequest;
+import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationResponse;
+import org.helloworld.gymmate.domain.pt.reservation.entity.Reservation;
+import org.helloworld.gymmate.domain.pt.reservation.mapper.ReservationMapper;
+import org.helloworld.gymmate.domain.pt.reservation.repository.ReservationRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
