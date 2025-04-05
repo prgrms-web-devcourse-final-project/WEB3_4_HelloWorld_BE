@@ -1,6 +1,6 @@
-package org.helloworld.gymmate.domain.reservation.repository;
+package org.helloworld.gymmate.domain.pt.reservation.repository;
 
-import org.helloworld.gymmate.domain.reservation.entity.Reservation;
+import org.helloworld.gymmate.domain.pt.reservation.entity.Reservation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

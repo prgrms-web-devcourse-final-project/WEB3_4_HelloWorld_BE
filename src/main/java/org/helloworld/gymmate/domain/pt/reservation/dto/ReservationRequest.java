@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.reservation.dto;
+package org.helloworld.gymmate.domain.pt.reservation.dto;
 
 import java.time.LocalDate;
 

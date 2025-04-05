@@ -1,9 +1,9 @@
-package org.helloworld.gymmate.domain.reservation.mapper;
+package org.helloworld.gymmate.domain.pt.reservation.mapper;
 
 import org.helloworld.gymmate.domain.pt.ptProduct.entity.PtProduct;
-import org.helloworld.gymmate.domain.reservation.dto.ReservationRequest;
-import org.helloworld.gymmate.domain.reservation.dto.ReservationResponse;
-import org.helloworld.gymmate.domain.reservation.entity.Reservation;
+import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationRequest;
+import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationResponse;
+import org.helloworld.gymmate.domain.pt.reservation.entity.Reservation;
 
 public class ReservationMapper {
 
