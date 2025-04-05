@@ -1,6 +1,6 @@
-package org.helloworld.gymmate.domain.pt.pt_product.repository;
+package org.helloworld.gymmate.domain.pt.ptProduct.repository;
 
-import org.helloworld.gymmate.domain.pt.pt_product.entity.PtProduct;
+import org.helloworld.gymmate.domain.pt.ptProduct.entity.PtProduct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

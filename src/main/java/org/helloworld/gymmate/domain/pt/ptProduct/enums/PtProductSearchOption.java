@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.pt.pt_product.enums;
+package org.helloworld.gymmate.domain.pt.ptProduct.enums;
 
 import java.util.Arrays;
 

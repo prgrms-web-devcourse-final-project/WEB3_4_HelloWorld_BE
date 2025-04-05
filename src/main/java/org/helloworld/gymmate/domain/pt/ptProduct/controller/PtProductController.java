@@ -1,15 +1,15 @@
-package org.helloworld.gymmate.domain.pt.pt_product.controller;
+package org.helloworld.gymmate.domain.pt.ptProduct.controller;
 
 import java.util.List;
 
 import org.helloworld.gymmate.common.dto.PageDto;
 import org.helloworld.gymmate.common.mapper.PageMapper;
 import org.helloworld.gymmate.common.validate.custom.ValidImageFile;
-import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductCreateRequest;
-import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductModifyRequest;
-import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductResponse;
-import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductsResponse;
-import org.helloworld.gymmate.domain.pt.pt_product.service.PtProductService;
+import org.helloworld.gymmate.domain.pt.ptProduct.dto.PtProductCreateRequest;
+import org.helloworld.gymmate.domain.pt.ptProduct.dto.PtProductModifyRequest;
+import org.helloworld.gymmate.domain.pt.ptProduct.dto.PtProductResponse;
+import org.helloworld.gymmate.domain.pt.ptProduct.dto.PtProductsResponse;
+import org.helloworld.gymmate.domain.pt.ptProduct.service.PtProductService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

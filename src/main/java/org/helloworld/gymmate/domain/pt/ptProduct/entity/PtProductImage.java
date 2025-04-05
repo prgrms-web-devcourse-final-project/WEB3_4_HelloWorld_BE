@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.pt.pt_product.entity;
+package org.helloworld.gymmate.domain.pt.ptProduct.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

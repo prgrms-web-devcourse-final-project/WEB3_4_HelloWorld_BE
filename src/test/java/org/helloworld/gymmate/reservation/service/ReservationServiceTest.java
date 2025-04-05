@@ -7,8 +7,8 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.helloworld.gymmate.domain.pt.pt_product.entity.PtProduct;
-import org.helloworld.gymmate.domain.pt.pt_product.service.PtProductService;
+import org.helloworld.gymmate.domain.pt.ptProduct.entity.PtProduct;
+import org.helloworld.gymmate.domain.pt.ptProduct.service.PtProductService;
 import org.helloworld.gymmate.domain.reservation.dto.ReservationRequest;
 import org.helloworld.gymmate.domain.reservation.dto.ReservationResponse;
 import org.helloworld.gymmate.domain.reservation.entity.Reservation;
@@ -143,7 +143,7 @@ class ReservationServiceTest {
 		verify(ptProductService).findProductOrThrow(ptProductId);
 		verify(reservationRepository, never()).save(any(Reservation.class));
 	}
-	
+
 	@Test
 	@DisplayName("회원의 예약 목록 조회 - 성공")
 	void getReservationsSuccess() {
