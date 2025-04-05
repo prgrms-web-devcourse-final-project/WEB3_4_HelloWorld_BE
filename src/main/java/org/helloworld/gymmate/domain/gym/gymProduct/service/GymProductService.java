@@ -58,4 +58,9 @@ public class GymProductService {
 		}
 	}
 
+	public GymProduct findByGymProductId(Long gymProductId) {
+		return gymProductRepository.findById(gymProductId).orElseThrow(
+			() -> new BusinessException(ErrorCode.GYMPRODUCT_NOT_FOUND)
+		);
+	}
 }
