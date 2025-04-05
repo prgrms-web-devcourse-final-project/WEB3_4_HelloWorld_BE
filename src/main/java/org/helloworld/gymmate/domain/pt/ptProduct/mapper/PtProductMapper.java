@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.pt.pt_product.mapper;
+package org.helloworld.gymmate.domain.pt.ptProduct.mapper;
 
 import java.util.Collections;
 import java.util.List;
@@ -6,11 +6,11 @@ import java.util.Map;
 
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gymInfo.entity.GymImage;
-import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductCreateRequest;
-import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductResponse;
-import org.helloworld.gymmate.domain.pt.pt_product.dto.PtProductsResponse;
-import org.helloworld.gymmate.domain.pt.pt_product.entity.PtProduct;
-import org.helloworld.gymmate.domain.pt.pt_product.entity.PtProductImage;
+import org.helloworld.gymmate.domain.pt.ptProduct.dto.PtProductCreateRequest;
+import org.helloworld.gymmate.domain.pt.ptProduct.dto.PtProductResponse;
+import org.helloworld.gymmate.domain.pt.ptProduct.dto.PtProductsResponse;
+import org.helloworld.gymmate.domain.pt.ptProduct.entity.PtProduct;
+import org.helloworld.gymmate.domain.pt.ptProduct.entity.PtProductImage;
 import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 

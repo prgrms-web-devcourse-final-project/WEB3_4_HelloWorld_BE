@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.pt.pt_product.dto;
+package org.helloworld.gymmate.domain.pt.ptProduct.dto;
 
 import java.util.List;
 

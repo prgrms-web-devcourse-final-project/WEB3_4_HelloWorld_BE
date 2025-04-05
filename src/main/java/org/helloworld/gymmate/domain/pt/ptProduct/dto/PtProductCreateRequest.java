@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.pt.pt_product.dto;
+package org.helloworld.gymmate.domain.pt.ptProduct.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
