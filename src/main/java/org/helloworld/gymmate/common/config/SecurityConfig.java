@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -71,9 +72,11 @@ public class SecurityConfig {
 				"/v3/**", "/swagger-ui/**", "/api/logistics",
 				"h2-console/**", "/error",
 				// 이하는 개발환경에서만 허용해야 함
-				"/gym/**", "/ptProduct/**", "/classtime", "/crawl/**"
+				"/crawl/**"
 			)
-			//.requestMatchers(HttpMethod.GET, "/similar")
+			.requestMatchers(HttpMethod.GET, "/ptProduct", "/ptProduct/{id:\\d+}")
+			.requestMatchers(HttpMethod.GET, "/trainer/list")
+			.requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}/facility")
 			//.requestMatchers(HttpMethod.GET, "/reviews/{reviewId}/comments")
 			.requestMatchers(PathRequest.toH2Console());
 	}

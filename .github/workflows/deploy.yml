@@ -1,0 +1,166 @@
+name: Deploy to EC2 docker-compose
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # 예: v1.0.0
+
+env:
+  VERSION: ${{ github.ref_name }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{secrets.ACTION_TOKEN}}
+          submodules: true
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Make directory for deliver
+        run: mkdir deploy
+
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+
+      - name: Copy jar
+        run: cp ./build/libs/*.jar ./deploy/
+
+      # docker-compose.deploy.yml 환경 변수 포함 생성
+      - name: Generate docker-compose.deploy.yml with version and secrets
+        run: |
+          export RDS_HOST=${{ secrets.RDS_HOST }}          
+          export RDS_PORT=${{ secrets.RDS_PORT }}
+          export DB_NAME=${{ secrets.DB_NAME }}
+          export MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
+          export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+          export VERSION=${{ github.ref_name }}
+          export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
+          export DOCKER_REPOSITORY=${{ secrets.DOCKER_REPOSITORY }}
+
+          envsubst '$RDS_HOST $RDS_PORT $DB_NAME $MYSQL_USERNAME $MYSQL_PASSWORD $VERSION $DOCKER_USERNAME $DOCKER_REPOSITORY' \
+          < ./docker/gymmate-deploy/docker-compose.deploy.template \
+          > ./docker/gymmate-deploy/docker-compose.deploy.yml
+
+      # application.yml 환경 변수 포함 생성
+      - name: Generate application-deploy.yml with secrets
+        run: |
+          export OAUTH_KAKAO_CLIENT_ID=${{ secrets.OAUTH_KAKAO_CLIENT_ID }}
+          export OAUTH_KAKAO_CLIENT_SECRET=${{ secrets.OAUTH_KAKAO_CLIENT_SECRET }}
+          export OAUTH_KAKAO_REDIRECT_URI_SUFFIX=${{ secrets.OAUTH_KAKAO_REDIRECT_URI_SUFFIX }}
+          export JWT_SECRET=${{ secrets.JWT_SECRET }}
+          export S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
+          export S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
+          export KAKAO_API_KEY=${{ secrets.KAKAO_API_KEY }}
+          export BUSINESS_URL=${{ secrets.BUSINESS_URL }}
+          export BUSINESS_KEY=${{ secrets.BUSINESS_KEY }}
+          envsubst < ./src/main/resources/docs/application.template > ./src/main/resources/application.yml
+
+      # application-deploy.yml 환경 변수 포함 생성
+      - name: Generate application-deploy.yml with secrets
+        run: |
+          export RDS_HOST=${{ secrets.RDS_HOST }}
+          export RDS_PORT=${{ secrets.RDS_PORT }}
+          export DB_NAME=${{ secrets.DB_NAME }}
+          export MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
+          export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+          envsubst < ./src/main/resources/docs/application-deploy.template > ./src/main/resources/application-deploy.yml
+
+      # 도커 컴포즈 설정 파일 서버로 전달하기
+      - name: Send docker-compose.deploy.yml
+        uses: appleboy/scp-action@master
+        with:
+          username: ec2-user
+          host: ${{ secrets.AWS_DEV_HOSTNAME }}
+          key: ${{ secrets.AWS_DEV_PRIVATE_KEY }}
+          source: "./docker/gymmate-deploy/docker-compose.deploy.yml"
+          target: "/home/ec2-user/"
+
+      # nginx 설정 파일 서버로 전달하기
+      - name: Send nginx.conf
+        uses: appleboy/scp-action@master
+        with:
+          username: ec2-user
+          host: ${{ secrets.AWS_DEV_HOSTNAME }}
+          key: ${{ secrets.AWS_DEV_PRIVATE_KEY }}
+          source: "./nginx/nginx.conf"
+          target: "/home/ec2-user/"
+
+      ## 도커 로그인 하기
+      - name: Docker login
+        run: echo "${{ secrets.DOCKER_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      ## backend 도커 이미지 빌드 후 도커허브에 push하기
+      - name: Backend docker build and push
+        run: |
+          docker build -t ${{ secrets.DOCKER_REPOSITORY }}:backend-${{ env.VERSION }} -f docker/gymmate-deploy/Dockerfile-deploy-backend .
+          docker push ${{ secrets.DOCKER_REPOSITORY }}:backend-${{ env.VERSION }}
+
+      ## nginx 도커 이미지 빌드 후 도커허브에 push하기
+      - name: Nginx docker build and push
+        run: |
+          cd ./nginx
+          docker build -t ${{ secrets.DOCKER_REPOSITORY }}:nginx -f Dockerfile-nginx .
+          docker push ${{ secrets.DOCKER_REPOSITORY }}:nginx
+
+      # nginx.conf 경로 변경 후 도커 컴포즈 실행하기
+      # 도커 허브에서 jar파일 및 pull후에 컴포즈 up
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          username: ec2-user
+          host: ${{ secrets.AWS_DEV_HOSTNAME }}
+          key: ${{ secrets.AWS_DEV_PRIVATE_KEY }}
+          script: |
+            export VERSION=${{ env.VERSION }}
+            export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
+            export DOCKER_ACCESS_TOKEN=${{ secrets.DOCKER_ACCESS_TOKEN }}
+            export DOCKER_REPOSITORY=${{ secrets.DOCKER_REPOSITORY }}
+            
+            # Docker Compose 설치 (필요 시)
+            if ! command -v docker-compose &> /dev/null
+            then
+              echo "Docker Compose not found. Installing..."
+              sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+            fi
+            
+            # 최신 backend 및 nginx 이미지 가져오기
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_ACCESS_TOKEN }}
+            docker pull ${{ secrets.DOCKER_REPOSITORY }}:backend-${{ env.VERSION }}
+            docker pull ${{ secrets.DOCKER_REPOSITORY }}:nginx
+            
+            # 시스템에 이미 nginx가 실행 중인지 확인
+            if lsof -i:80 | grep -q nginx; then
+              echo "시스템 nginx 감지됨 - backend, redis 업데이트"
+              docker-compose -f /home/ec2-user/docker/gymmate-deploy/docker-compose.deploy.yml up -d backend redis
+            else
+              echo "시스템 nginx 미감지 - 전체 서비스 업데이트."
+              docker-compose -f /home/ec2-user/docker/gymmate-deploy/docker-compose.deploy.yml --profile with-nginx up -d
+            fi
+            
+            # 80번 포트 사용하는 프로세스 탐지 (시스템 nginx 또는 docker nginx 등)
+            if lsof -i:80 | grep -q LISTEN; then
+              echo "포트 80 사용 중 - 기존 프로세스 종료 시도"
+            
+              # 시스템 nginx 종료
+              sudo systemctl stop nginx || true
+              sudo systemctl disable nginx || true
+            
+              # Docker nginx 컨테이너 종료 및 삭제
+              docker rm -f gymmate-deploy-nginx || true
+            fi
+            echo "전체 서비스 업데이트"
+            docker-compose -f /home/ec2-user/docker/gymmate-deploy/docker-compose.deploy.yml --profile with-nginx up -d
+

@@ -30,12 +30,10 @@ import reactor.core.publisher.Mono;
 public class KakaoMapWebClientService {
 
 	private final WebClient.Builder webClientBuilder;
-	private WebClient webClient;
-
-	@Value("${kakao.api.key}")
-	private String kakaoApiKey;
-
 	private final Executor executor = Executors.newFixedThreadPool(10);
+	private WebClient webClient;
+	@Value("${kakao-map.api.key}")
+	private String kakaoApiKey;
 
 	@PostConstruct
 	public void init() {
@@ -48,7 +46,8 @@ public class KakaoMapWebClientService {
 		AtomicBoolean stopFlag = new AtomicBoolean(false); // 중단 여부를 관리하는 플래그
 
 		for (int page = 1; page <= 45; page++) {
-			if (stopFlag.get()) break;
+			if (stopFlag.get())
+				break;
 			futures.add(fetchPage(x, y, radius, page, stopFlag));
 		}
 
@@ -57,7 +56,7 @@ public class KakaoMapWebClientService {
 				.map(CompletableFuture::join)
 				.flatMap(Collection::stream)
 				.collect(Collectors.toMap(
-					item -> (String) item.get("place_url"),
+					item -> (String)item.get("place_url"),
 					Function.identity(),
 					(existing, replacement) -> existing
 				))
@@ -66,7 +65,8 @@ public class KakaoMapWebClientService {
 				.toList());
 	}
 
-	private CompletableFuture<List<Map<String, Object>>> fetchPage(double x, double y, int radius, int page, AtomicBoolean stopFlag) {
+	private CompletableFuture<List<Map<String, Object>>> fetchPage(double x, double y, int radius, int page,
+		AtomicBoolean stopFlag) {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
 				Thread.sleep(getRandomDelay()); // 랜덤 딜레이 추가
@@ -74,7 +74,8 @@ public class KakaoMapWebClientService {
 				Thread.currentThread().interrupt();
 			}
 
-			if (stopFlag.get()) return Collections.emptyList(); // 중단 플래그 체크
+			if (stopFlag.get())
+				return Collections.emptyList(); // 중단 플래그 체크
 
 			return webClient.get()
 				.uri(uriBuilder -> uriBuilder
@@ -99,12 +100,13 @@ public class KakaoMapWebClientService {
 				})
 				.blockOptional()
 				.map(responseMap -> {
-					List<Map<String, Object>> documents = (List<Map<String, Object>>) responseMap.getOrDefault("documents", Collections.emptyList());
+					List<Map<String, Object>> documents = (List<Map<String, Object>>)responseMap.getOrDefault(
+						"documents", Collections.emptyList());
 
 					Object metaObj = responseMap.get("meta");
 					if (metaObj instanceof Map) {
-						Map<String, Object> meta = (Map<String, Object>) metaObj;
-						boolean isEnd = (boolean) meta.getOrDefault("is_end", false);
+						Map<String, Object> meta = (Map<String, Object>)metaObj;
+						boolean isEnd = (boolean)meta.getOrDefault("is_end", false);
 						if (isEnd) {
 							stopFlag.set(true); // is_end 감지되면 중단 플래그 설정
 						}
@@ -116,6 +118,7 @@ public class KakaoMapWebClientService {
 
 		}, executor);
 	}
+
 	// 랜덤 딜레이 (500ms ~ 2000ms)
 	private long getRandomDelay() {
 		Random random = new Random();

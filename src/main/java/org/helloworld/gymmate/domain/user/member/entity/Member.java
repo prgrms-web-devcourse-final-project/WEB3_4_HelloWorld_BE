@@ -1,9 +1,12 @@
 package org.helloworld.gymmate.domain.user.member.entity;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.helloworld.gymmate.domain.gym.gymTicket.entity.GymTicket;
 import org.helloworld.gymmate.domain.user.enums.GenderType;
-import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
+import org.helloworld.gymmate.domain.user.member.dto.MemberModifyRequest;
+import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 
 import jakarta.persistence.CascadeType;
@@ -16,6 +19,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -37,65 +41,104 @@ public class Member {
 	@Column(name = "member_id")
 	private Long memberId;
 
-	@Column(name = "phone_number",nullable = false, unique = true)
+	@Column(name = "phone_number", unique = true)
 	private String phoneNumber;
 
-	@Column(name = "member_name",nullable = false)
+	@Column(name = "member_name")
 	private String memberName;
 
-	@Column(name="email",nullable = false)
+	@Column(name = "email")
 	private String email;
 
-	@Column(name="birthday",nullable = false)
+	@Column(name = "birthday")
 	private String birthday;
 
 	@Enumerated(value = EnumType.STRING)
-	@Column(name = "gender",nullable = false)
+	@Column(name = "genderType")
 	private GenderType genderType;
 
 	//신체정보
-	@Column(name="height")
+	@Column(name = "height")
 	private String height;
 
-	@Column(name="weight")
+	@Column(name = "weight")
 	private String weight;
 
 	//주소
-	@Column(name="address")
+	@Column(name = "address")
 	private String address;
 
-	@Column(name="x_field")
+	@Column(name = "x_field")
 	private String xField;
 
-	@Column(name="y_field")
+	@Column(name = "y_field")
 	private String yField;
 
 	//3대
-	@Column(name="recent_bench")
+	@Column(name = "recent_bench")
 	private Double recentBench;
 
-	@Column(name="recent_deadlift")
+	@Column(name = "recent_deadlift")
 	private Double recentDeadlift;
 
-	@Column(name="recent_squat")
+	@Column(name = "recent_squat")
 	private Double recentSquat;
 
+	@Column(name = "level")
+	private Integer level;
+
 	//계정잠김여부
-	@Column(name="is_account_nonloked")
+	@Column(name = "is_account_nonloked")
 	private Boolean isAccountNonLocked;
 
-	@Column(name="cash")
+	@Column(name = "cash")
 	private Long cash;
 
-	private LocalDate date;
+	private Boolean additionalInfoCompleted; // 추가 정보 입력 여부
+
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "oauth_id")
 	private Oauth oauth;
 
-	public void updateTrainerInfo(TrainerRegisterRequest request) { // 나중에 헬스장 추가해야함
-		this.phoneNumber = request.phoneNumber();
-		this.email = request.email();
-		this.genderType = GenderType.fromString(request.gender());
+	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<GymTicket> gymTickets = new ArrayList<>();
 
+	public void registerMemberInfo(MemberRequest request) {
+		this.phoneNumber = request.phoneNumber();
+		this.memberName = request.memberName();
+		this.email = request.email();
+		this.birthday = request.birthday();
+		this.genderType = GenderType.fromString(request.gender());
+		this.height = request.height();
+		this.weight = request.weight();
+		this.address = request.address();
+		this.xField = request.xField();
+		this.yField = request.yField();
+		this.recentBench = request.recentBench();
+		this.recentDeadlift = request.recentDeadlift();
+		this.recentSquat = request.recentSquat();
+		this.additionalInfoCompleted = true;
+
+	}
+
+	public void modifyMemberInfo(MemberModifyRequest request) {
+		this.phoneNumber = request.phoneNumber();
+		this.memberName = request.memberName();
+		this.email = request.email();
+		this.birthday = request.birthday();
+		this.genderType = GenderType.fromString(request.gender());
+		this.height = request.height();
+		this.weight = request.weight();
+		this.address = request.address();
+		this.xField = request.xField();
+		this.yField = request.yField();
+		this.recentBench = request.recentBench();
+		this.recentDeadlift = request.recentDeadlift();
+		this.recentSquat = request.recentSquat();
+		this.additionalInfoCompleted = true;
+	}
+
+	public void updateCash(Long updateCash) {
+		this.cash = updateCash;
 	}
 }

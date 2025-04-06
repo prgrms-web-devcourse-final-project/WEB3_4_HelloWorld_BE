@@ -1,0 +1,53 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: gymmate-deploy-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - gymmate-deploy-network
+    volumes:
+      - redis_data:/data
+
+  backend:
+    container_name: gymmate-deploy-backend
+    image: ${DOCKER_REPOSITORY}:backend-${VERSION}
+    restart: always
+    environment:
+      # application-deploy.yml 사용
+      - SPRING_PROFILES_ACTIVE=deploy
+      # RDS MySQL 연결 정보
+      - SPRING_DATASOURCE_URL=jdbc:mysql://${RDS_HOST}:${RDS_PORT}/${DB_NAME}?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    networks:
+      - gymmate-deploy-network
+
+  nginx:
+    container_name: gymmate-deploy-nginx
+    image: ${DOCKER_REPOSITORY}:nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt:/etc/letsencrypt
+    networks:
+      - gymmate-deploy-network
+    profiles:
+      - with-nginx
+
+networks:
+  gymmate-deploy-network:
+    driver: bridge
+
+volumes:
+  redis_data:
+    driver: local

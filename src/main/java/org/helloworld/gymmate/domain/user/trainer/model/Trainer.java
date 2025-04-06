@@ -3,10 +3,11 @@ package org.helloworld.gymmate.domain.user.trainer.model;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import org.helloworld.gymmate.domain.gym.gym.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
 import org.helloworld.gymmate.domain.user.enums.GenderType;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
+import org.helloworld.gymmate.domain.user.trainer.dto.TrainerProfileRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 
@@ -42,7 +43,7 @@ public class Trainer {
 	@Column(name = "trainer_id")
 	private Long trainerId;
 
-	@Column(name = "traine_name")
+	@Column(name = "trainer_name")
 	private String trainerName;
 
 	@Column(name = "phone_number", unique = true)
@@ -86,6 +87,7 @@ public class Trainer {
 	private Boolean additionalInfoCompleted; // 추가 정보 입력 여부
 
 	private LocalDate date;
+
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "oauth_id")
 	private Oauth oauth;
@@ -125,6 +127,12 @@ public class Trainer {
 		this.bank = request.bank();
 		this.account = request.account();
 		this.profile = request.profile();
+		this.intro = request.intro();
+		this.career = request.career();
+		this.field = request.field();
+	}
+
+	public void updateTrainerProfile(TrainerProfileRequest request) {
 		this.intro = request.intro();
 		this.career = request.career();
 		this.field = request.field();

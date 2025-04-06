@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.helloworld.gymmate.common.rq.Rq;
 import org.helloworld.gymmate.domain.user.enums.UserType;
+import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
@@ -49,13 +50,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		SocialUserInfo socialUserInfo = new SocialUserInfo(attributes);
 		String providerId = socialUserInfo.getProviderId();
 		String state = rq.getParameter("state");
-		log.info("state : {}", state);
+		log.debug("state : {}", state);
 
 		UserType userType = UserType.fromString(state);
 
 		// oauth 엔티티 조회 또는 신규 생성
-		Oauth oauth = oauthService.findOauthByProviderId(providerId)
-			.orElseGet(() -> oauthService.createOauth(providerId));
+		Oauth oauth = oauthService.findOauthByProviderIdAndUserType(providerId, userType)
+			.orElseGet(() -> oauthService.createOauth(providerId, userType));
 
 		Long userId = 0L;
 		// 가입 유형에 따른 사용자 등록 처리
@@ -68,7 +69,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 					);
 				});
 		}
-		// TODO : Member 사용자 등록 로직 구현
+		if (userType == UserType.MEMBER) {
+			userId = memberService.getMemberIdByOauth(oauth.getProviderId())
+				.orElseGet(() -> {
+					log.debug("신규 유저입니다. 등록을 진행합니다.");
+					return memberService.createMember(
+						oauth
+					);
+				});
+		}
 		return new CustomOAuth2User(oAuth2User, userId, userType);
 	}
 
@@ -80,7 +89,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		//  권한 부여 (ROLE_MEMBER 또는 ROLE_TRAINER)
 		Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + userTypeStr));
 
-		Trainer trainer = trainerService.findByUserId(userId);
+		// 사용자 타입에 따라 다른 서비스 호출
+		String userName;
+		if (userType == UserType.MEMBER) {
+			Member member = memberService.findByUserId(userId);
+			userName = member.getMemberName();
+		} else {
+			Trainer trainer = trainerService.findByUserId(userId);
+			userName = trainer.getTrainerName();
+		}
+
+		final String finalUserName = userName;
 
 		OAuth2User dummyOAuth2User = new OAuth2User() {
 			@Override
@@ -95,7 +114,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 			@Override
 			public String getName() {
-				return trainer.getTrainerName();
+				return finalUserName;
 			}
 		};
 

@@ -21,27 +21,22 @@ public class ClasstimeService {
 	private final ClasstimeRepository classtimeRepository;
 
 	@Transactional
-	public Classtime createClasstime(@Valid ClasstimeRequest request) {
-		// TODO : userDetail에서 id 가져와야 함
-		Long trainerId = 0L;
-		if( classtimeRepository.findByTrainerIdAndDayOfWeekAndTime(trainerId,request.dayOfWeek(),request.time()).isPresent()){
+	public Classtime createClasstime(@Valid ClasstimeRequest request, Long trainerId) {
+		if (classtimeRepository.findByTrainerIdAndDayOfWeekAndTime(trainerId, request.dayOfWeek(), request.time())
+			.isPresent()) {
 			throw new BusinessException(ErrorCode.CLASSTIME_DUPLICATED);
 		}
 		return classtimeRepository.save(
 			ClasstimeMapper.toEntity(request, trainerId));
 	}
 
-	public void deleteClasstime(Integer dayOfWeek, Integer time) {
-		// TODO : userDetail에서 id 가져와야 함
-		Long trainerId = 0L;
-		Classtime classtime = classtimeRepository.findByTrainerIdAndDayOfWeekAndTime(trainerId,dayOfWeek,time)
+	public void deleteClasstime(Integer dayOfWeek, Integer time, Long trainerId) {
+		Classtime classtime = classtimeRepository.findByTrainerIdAndDayOfWeekAndTime(trainerId, dayOfWeek, time)
 			.orElseThrow(() -> new BusinessException(ErrorCode.CLASSTIME_NOT_FOUND));
 		classtimeRepository.delete(classtime);
 	}
 
-	public ClasstimesResponse getAvailableTimes() {
-		// TODO : userDetail에서 id 가져와야 함
-		Long trainerId = 0L;
+	public ClasstimesResponse getAvailableTimes(Long trainerId) {
 		List<Classtime> classtimes = classtimeRepository.findByTrainerId(trainerId);
 		return new ClasstimesResponse(ClasstimeMapper.toClasstimesResponse(classtimes));
 	}

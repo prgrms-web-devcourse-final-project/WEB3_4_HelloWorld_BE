@@ -10,6 +10,7 @@ public enum ErrorCode {
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER-001", "유저를 찾을 수 없습니다."),
 	USER_LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "USER-002", "로그인이 필요합니다."),
 	USER_NICKNAME_DUPLICATION(HttpStatus.BAD_REQUEST, "USER-003", "닉네임이 중복 되었습니다."),
+	INSUFFICIENT_CASH(HttpStatus.NOT_FOUND, "USER-004", "캐시가 부족합니다."),
 	TOKEN_NOT_VALID(HttpStatus.UNAUTHORIZED, "TOKEN-001", "토큰이 유효하지 않습니다."),
 	REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW-001", "리뷰를 찾을 수 없습니다."),
 	REVIEW_PERMISSION_DENIED(HttpStatus.UNAUTHORIZED, "REVIEW-002", "리뷰에 대한 삭제/수정 권한이 없습니다."),
@@ -31,18 +32,29 @@ public enum ErrorCode {
 
 	// Gym
 	GYM_INVALID_REQUEST(HttpStatus.BAD_REQUEST, "GYM-001", "잘못된 입력값입니다."),
-	GYM_NOT_FOUND(HttpStatus.NOT_FOUND, "GYM-002", "해당 헬스장을 찾을 수 없습니다."),
+	GYM_NOT_FOUND(HttpStatus.NOT_FOUND, "GYM-002", "요청한 헬스장이 존재하지 않습니다."),
 	GYM_ALREADY_EXISTS(HttpStatus.CONFLICT, "GYM-003", "이미 등록된 헬스장입니다."),
 	GYM_REGISTRATION_FORBIDDEN(HttpStatus.FORBIDDEN, "GYM-004", "헬스장 등록 권한이 없습니다."),
 	GYM_FORBIDDEN(HttpStatus.FORBIDDEN, "GYM-005", "해당 헬스장에 대한 수정 권한이 없습니다."),
 
+	// PartnerGym
+	PARTNER_GYM_NOT_FOUND(HttpStatus.NOT_FOUND, "PARTNER-GYM-001", "파트너 헬스장이 등록되어 있지 않습니다."),
+
+	// GymProduct
+	GYMPRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "GYM-PRODUCT-001", "존재하지 않는 헬스장 이용권입니다."),
+
+	// Machine
+	MACHINE_NOT_FOUND(HttpStatus.NOT_FOUND, "MACHINE-001", "해당 기구가 존재하지 않습니다."),
+	MACHINE_FORBIDDEN(HttpStatus.FORBIDDEN, "MACHINE-002", "해당 기구에 대한 권한이 없습니다."),
+	MACHINE_MAX_UPLOAD(HttpStatus.FORBIDDEN, "MACHINE-003", "기구정보는 최대 30개 등록 가능합니다."),
+
 	// Myself
 	BIGTHREE_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-BIGTHREE-001", "해당 3대 측정 기록을 찾을 수 없습니다."),
-	RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-RECORD-001", "해당 운동 기록을 찾을 수 없습니다."),
+	DIARY_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-RECORD-001", "해당 운동 기록을 찾을 수 없습니다."),
 
 	// 인증 관련
 	AUTH_REQUIRED(HttpStatus.UNAUTHORIZED, "AUTH-001", "인증이 필요합니다. 로그인 후 다시 시도해주세요."),
-	USER_NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "USER-002", "권한이 부족합니다."),
+	USER_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "AUTH-002", "권한이 부족합니다."),
 
 	// 이미지 관련
 	IMAGE_TOO_LARGE(HttpStatus.PAYLOAD_TOO_LARGE, "IMAGE-002", "업로드한 파일 크기가 너무 큽니다. 최대 5MB까지 가능합니다."),
