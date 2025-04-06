@@ -37,7 +37,6 @@ services:
     depends_on:
       - backend
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - /etc/letsencrypt:/etc/letsencrypt
     networks:
       - gymmate-deploy-network
