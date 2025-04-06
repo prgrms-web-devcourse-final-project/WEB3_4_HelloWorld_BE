@@ -8,6 +8,7 @@ import org.helloworld.gymmate.domain.gym.enums.GymSearchOption;
 import org.helloworld.gymmate.domain.gym.enums.GymSortOption;
 import org.helloworld.gymmate.domain.gym.facility.dto.FacilityResponse;
 import org.helloworld.gymmate.domain.gym.facility.mapper.FacilityMapper;
+import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymDetailResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymListResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gyminfo.mapper.GymMapper;
@@ -111,4 +112,9 @@ public class GymService {
 		return new PageImpl<>(responses, pageable, gyms.getTotalElements());
 	}
 
+	@Transactional(readOnly = true)
+	public GymDetailResponse getDetail(Long gymId) {
+		Gym gym = getExistingGym(gymId);
+		return GymMapper.toDetailResponse(gym);
+	}
 }
