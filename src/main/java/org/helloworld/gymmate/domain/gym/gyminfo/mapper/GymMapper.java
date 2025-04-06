@@ -1,10 +1,10 @@
-package org.helloworld.gymmate.domain.gym.gymInfo.mapper;
+package org.helloworld.gymmate.domain.gym.gyminfo.mapper;
 
 import java.util.Map;
 
 import org.helloworld.gymmate.common.util.GeometryUtil;
-import org.helloworld.gymmate.domain.gym.gymInfo.dto.response.GymListResponse;
-import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymListResponse;
+import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.partnergym.dto.request.GymRequest;
 
 public class GymMapper {

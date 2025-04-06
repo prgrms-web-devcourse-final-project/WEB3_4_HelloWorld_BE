@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.gym.gymInfo.service;
+package org.helloworld.gymmate.domain.gym.gyminfo.service;
 
 import java.util.List;
 
@@ -8,10 +8,10 @@ import org.helloworld.gymmate.domain.gym.enums.GymSearchOption;
 import org.helloworld.gymmate.domain.gym.enums.GymSortOption;
 import org.helloworld.gymmate.domain.gym.facility.dto.FacilityResponse;
 import org.helloworld.gymmate.domain.gym.facility.mapper.FacilityMapper;
-import org.helloworld.gymmate.domain.gym.gymInfo.dto.response.GymListResponse;
-import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
-import org.helloworld.gymmate.domain.gym.gymInfo.mapper.GymMapper;
-import org.helloworld.gymmate.domain.gym.gymInfo.repository.GymRepository;
+import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymListResponse;
+import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gyminfo.mapper.GymMapper;
+import org.helloworld.gymmate.domain.gym.gyminfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.gym.machine.dto.FacilityAndMachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.mapper.MachineMapper;

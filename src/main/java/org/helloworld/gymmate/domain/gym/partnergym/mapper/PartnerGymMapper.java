@@ -3,8 +3,8 @@ package org.helloworld.gymmate.domain.gym.partnergym.mapper;
 import java.util.List;
 
 import org.helloworld.gymmate.domain.gym.facility.mapper.FacilityMapper;
-import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
-import org.helloworld.gymmate.domain.gym.gymInfo.entity.GymImage;
+import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gyminfo.entity.GymImage;
 import org.helloworld.gymmate.domain.gym.gymproduct.entity.GymProduct;
 import org.helloworld.gymmate.domain.gym.partnergym.dto.response.GymImageResponse;
 import org.helloworld.gymmate.domain.gym.partnergym.dto.response.GymInfoResponse;

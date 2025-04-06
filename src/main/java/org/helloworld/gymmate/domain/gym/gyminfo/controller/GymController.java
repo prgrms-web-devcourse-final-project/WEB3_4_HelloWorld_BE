@@ -1,9 +1,9 @@
-package org.helloworld.gymmate.domain.gym.gymInfo.controller;
+package org.helloworld.gymmate.domain.gym.gyminfo.controller;
 
 import org.helloworld.gymmate.common.dto.PageDto;
 import org.helloworld.gymmate.common.mapper.PageMapper;
-import org.helloworld.gymmate.domain.gym.gymInfo.dto.response.GymListResponse;
-import org.helloworld.gymmate.domain.gym.gymInfo.service.GymService;
+import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymListResponse;
+import org.helloworld.gymmate.domain.gym.gyminfo.service.GymService;
 import org.helloworld.gymmate.domain.gym.machine.dto.FacilityAndMachineResponse;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
