@@ -37,6 +37,7 @@ public class MemberMapper {
 			member.getRecentDeadlift(),
 			member.getRecentSquat(),
 			member.getLevel(),
+			member.getProfileUrl(),
 			member.getIsAccountNonLocked(),
 			member.getCash()
 		);

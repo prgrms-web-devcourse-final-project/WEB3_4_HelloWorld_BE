@@ -125,7 +125,7 @@ public class Member {
 
 	}
 
-	public void modifyMemberInfo(MemberModifyRequest request) {
+	public void modifyMemberInfo(MemberModifyRequest request, String profileUrl) {
 		this.phoneNumber = request.phoneNumber();
 		this.memberName = request.memberName();
 		this.email = request.email();
@@ -139,6 +139,7 @@ public class Member {
 		this.recentBench = request.recentBench();
 		this.recentDeadlift = request.recentDeadlift();
 		this.recentSquat = request.recentSquat();
+		this.profileUrl = profileUrl;
 		this.additionalInfoCompleted = true;
 	}
 }

@@ -85,9 +85,13 @@ public class MemberService {
 	public void deleteMember(Long memberId) {
 		log.debug("회원 삭제 시작: memberId={}", memberId);
 
+		//멤버 객체를 찾아서 파일 삭제
+		Member member = findByUserId(memberId);
+		fileManager.deleteFile(member.getProfileUrl());
+
+		//멤버 테이블에서 멤버 삭제
 		memberRepository.deleteByMemberId(memberId);
 		log.debug("회원이 성공적으로 삭제되었습니다. memberId={}", memberId);
-
 	}
 
 	@Transactional(readOnly = true)
@@ -97,8 +101,22 @@ public class MemberService {
 
 	// 멤버 정보 수정
 	@Transactional
-	public Long modifyMemberInfo(Member member, MemberModifyRequest request) {
-		member.modifyMemberInfo(request);
+	public Long modifyMemberInfo(Member member, MemberModifyRequest request, MultipartFile image) {
+
+		//1. 이전에 저장된 파일 삭제
+		fileManager.deleteFile(member.getProfileUrl());
+
+		//2. 새로운 파일 url 저장
+		String imageUrl = null;
+		if (image != null && !image.isEmpty()) {
+			// 파일 업로드
+			imageUrl = fileManager.uploadFile(image, "member");
+		}
+
+		//3. 객체 정보 수정
+		member.modifyMemberInfo(request, imageUrl);
+
+		//4.저장
 		return memberRepository.save(member).getMemberId();
 	}
 }

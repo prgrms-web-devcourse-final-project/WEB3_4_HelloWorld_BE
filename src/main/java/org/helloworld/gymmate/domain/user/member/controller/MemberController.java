@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -91,10 +90,14 @@ public class MemberController {
 	@PreAuthorize("hasRole('ROLE_MEMBER')")
 	@PutMapping
 	public ResponseEntity<Long> modify(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-		@RequestBody MemberModifyRequest request) {
+		@RequestPart("memberData") @Valid MemberModifyRequest request,
+		@RequestPart(value = "image", required = false) @ValidImageFile MultipartFile profile
+	) {
 		return ResponseEntity.ok()
 			.body(memberService.modifyMemberInfo(
-				memberService.findByUserId(customOAuth2User.getUserId()), request) //member 객체, memberModifyRequest객체
+				//매개변수 : member 객체, memberModifyRequest객체,profile
+				memberService.findByUserId(customOAuth2User.getUserId()), request, profile)
+
 			);
 	}
 }
