@@ -3,7 +3,7 @@ package org.helloworld.gymmate.domain.user.trainer.model;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.user.enums.GenderType;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;

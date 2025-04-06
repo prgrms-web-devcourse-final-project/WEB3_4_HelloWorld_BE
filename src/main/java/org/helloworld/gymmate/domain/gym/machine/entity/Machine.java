@@ -1,6 +1,6 @@
 package org.helloworld.gymmate.domain.gym.machine.entity;
 
-import org.helloworld.gymmate.domain.gym.gymInfo.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineRequest;
 
 import jakarta.persistence.Column;
