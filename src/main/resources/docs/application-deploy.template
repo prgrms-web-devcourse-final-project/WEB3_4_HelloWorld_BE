@@ -1,6 +1,6 @@
 # EC2용 환경 설정
 server:
-  url: http://localhost:8080/
+  url: https://3.34.129.72.nip.io
 
 spring:
   datasource:
