@@ -10,11 +10,8 @@ import org.helloworld.gymmate.domain.user.member.dto.MemberCheckResponse;
 import org.helloworld.gymmate.domain.user.member.dto.MemberModifyRequest;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
-import org.helloworld.gymmate.domain.user.member.entity.MemberProfile;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
-import org.helloworld.gymmate.domain.user.member.repository.MemberProfileRepository;
 import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
-import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 import org.helloworld.gymmate.security.oauth.repository.OauthRepository;
 import org.springframework.stereotype.Service;
@@ -33,9 +30,7 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 	private final OauthRepository oauthRepository;
 	private final EntityManager entityManager;
-	private final TrainerRepository trainerRepository;
 	private final FileManager fileManager;
-	private final MemberProfileRepository memberProfileRepository;
 
 	@Transactional
 	public Long createMember(Oauth oauth) {
@@ -51,23 +46,20 @@ public class MemberService {
 	//추가정보 등록
 	@Transactional
 	public Long registerInfoMember(Member member, MemberRequest request, MultipartFile image) {
-		member.registerMemberInfo(request);
+		String imageUrl = null;
+
 		if (image != null && !image.isEmpty()) {
-			saveMemberProfile(member, image);
+			// 파일 업로드
+			imageUrl = fileManager.uploadFile(image, "member");
 		}
+
+		member.registerMemberInfo(request, imageUrl);
+
 		return memberRepository.save(member).getMemberId();
 	}
 
 	@Transactional
 	public void saveMemberProfile(Member member, MultipartFile image) {
-		//1. 파일 업로드
-		String imageUrl = fileManager.uploadFile(image, "member");
-
-		//2. imageUrl과 member를 이용해 memberProfile 객체 생성
-		MemberProfile memberProfile = MemberMapper.toEntity(imageUrl, member);
-
-		// 4. 저장
-		memberProfileRepository.save(memberProfile);
 
 	}
 

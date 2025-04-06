@@ -5,7 +5,6 @@ import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.member.dto.MemberCheckResponse;
 import org.helloworld.gymmate.domain.user.member.dto.MemberResponse;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
-import org.helloworld.gymmate.domain.user.member.entity.MemberProfile;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 
 public class MemberMapper {
@@ -19,14 +18,6 @@ public class MemberMapper {
 			.genderType(GenderType.FEMALE)
 			.birthday("2000-00-00")
 			.additionalInfoCompleted(false)
-			.build();
-	}
-
-	// 프로필 이미지 Mapper
-	public static MemberProfile toEntity(String imageUrl, Member member) {
-		return MemberProfile.builder()
-			.url(imageUrl)
-			.member(member)
 			.build();
 	}
 

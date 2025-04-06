@@ -96,8 +96,8 @@ public class Member {
 
 	private Boolean additionalInfoCompleted; // 추가 정보 입력 여부
 
-	@OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private MemberProfile profile;
+	@Column(name = "profile_url")
+	private String profileUrl;
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "oauth_id")
@@ -106,7 +106,7 @@ public class Member {
 	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GymTicket> gymTickets = new ArrayList<>();
 
-	public void registerMemberInfo(MemberRequest request) {
+	public void registerMemberInfo(MemberRequest request, String profileUrl) {
 		this.phoneNumber = request.phoneNumber();
 		this.memberName = request.memberName();
 		this.email = request.email();
@@ -120,6 +120,7 @@ public class Member {
 		this.recentBench = request.recentBench();
 		this.recentDeadlift = request.recentDeadlift();
 		this.recentSquat = request.recentSquat();
+		this.profileUrl = profileUrl;
 		this.additionalInfoCompleted = true;
 
 	}
