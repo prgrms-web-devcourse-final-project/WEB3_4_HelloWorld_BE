@@ -1,10 +1,10 @@
-package org.helloworld.gymmate.domain.reservation.controller;
+package org.helloworld.gymmate.domain.pt.reservation.controller;
 
 import org.helloworld.gymmate.common.dto.PageDto;
 import org.helloworld.gymmate.common.mapper.PageMapper;
-import org.helloworld.gymmate.domain.reservation.dto.ReservationRequest;
-import org.helloworld.gymmate.domain.reservation.dto.ReservationResponse;
-import org.helloworld.gymmate.domain.reservation.service.ReservationService;
+import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationRequest;
+import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationResponse;
+import org.helloworld.gymmate.domain.pt.reservation.service.ReservationService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
