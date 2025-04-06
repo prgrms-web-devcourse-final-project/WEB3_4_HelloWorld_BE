@@ -1,6 +1,6 @@
 package org.helloworld.gymmate.domain.pt.reservation.mapper;
 
-import org.helloworld.gymmate.domain.pt.ptProduct.entity.PtProduct;
+import org.helloworld.gymmate.domain.pt.ptproduct.entity.PtProduct;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationRequest;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationResponse;
 import org.helloworld.gymmate.domain.pt.reservation.entity.Reservation;

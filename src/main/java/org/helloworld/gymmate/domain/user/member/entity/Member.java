@@ -3,7 +3,7 @@ package org.helloworld.gymmate.domain.user.member.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.helloworld.gymmate.domain.gym.gymTicket.entity.GymTicket;
+import org.helloworld.gymmate.domain.gym.gymticket.entity.GymTicket;
 import org.helloworld.gymmate.domain.user.enums.GenderType;
 import org.helloworld.gymmate.domain.user.member.dto.MemberModifyRequest;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;

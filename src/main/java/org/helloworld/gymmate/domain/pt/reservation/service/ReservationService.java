@@ -1,7 +1,7 @@
 package org.helloworld.gymmate.domain.pt.reservation.service;
 
-import org.helloworld.gymmate.domain.pt.ptProduct.entity.PtProduct;
-import org.helloworld.gymmate.domain.pt.ptProduct.service.PtProductService;
+import org.helloworld.gymmate.domain.pt.ptproduct.entity.PtProduct;
+import org.helloworld.gymmate.domain.pt.ptproduct.service.PtProductService;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationRequest;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationResponse;
 import org.helloworld.gymmate.domain.pt.reservation.entity.Reservation;
