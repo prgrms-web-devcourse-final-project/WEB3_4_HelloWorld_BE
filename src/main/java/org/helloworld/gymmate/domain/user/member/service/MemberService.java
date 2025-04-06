@@ -4,18 +4,22 @@ import java.util.Optional;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
+import org.helloworld.gymmate.common.s3.FileManager;
 import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.member.dto.MemberCheckResponse;
 import org.helloworld.gymmate.domain.user.member.dto.MemberModifyRequest;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
+import org.helloworld.gymmate.domain.user.member.entity.MemberProfile;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
+import org.helloworld.gymmate.domain.user.member.repository.MemberProfileRepository;
 import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 import org.helloworld.gymmate.security.oauth.repository.OauthRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +34,8 @@ public class MemberService {
 	private final OauthRepository oauthRepository;
 	private final EntityManager entityManager;
 	private final TrainerRepository trainerRepository;
+	private final FileManager fileManager;
+	private final MemberProfileRepository memberProfileRepository;
 
 	@Transactional
 	public Long createMember(Oauth oauth) {
@@ -44,9 +50,25 @@ public class MemberService {
 
 	//추가정보 등록
 	@Transactional
-	public Long registerInfoMember(Member member, MemberRequest request) {
+	public Long registerInfoMember(Member member, MemberRequest request, MultipartFile image) {
 		member.registerMemberInfo(request);
+		if (image != null && !image.isEmpty()) {
+			saveMemberProfile(member, image);
+		}
 		return memberRepository.save(member).getMemberId();
+	}
+
+	@Transactional
+	public void saveMemberProfile(Member member, MultipartFile image) {
+		//1. 파일 업로드
+		String imageUrl = fileManager.uploadFile(image, "member");
+
+		//2. imageUrl과 member를 이용해 memberProfile 객체 생성
+		MemberProfile memberProfile = MemberMapper.toEntity(imageUrl, member);
+
+		// 4. 저장
+		memberProfileRepository.save(memberProfile);
+
 	}
 
 	//추가정보 등록 여부 확인

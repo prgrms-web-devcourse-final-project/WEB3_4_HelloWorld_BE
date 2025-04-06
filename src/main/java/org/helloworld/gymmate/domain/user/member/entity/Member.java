@@ -96,6 +96,9 @@ public class Member {
 
 	private Boolean additionalInfoCompleted; // 추가 정보 입력 여부
 
+	@OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private MemberProfile profile;
+
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "oauth_id")
 	private Oauth oauth;
