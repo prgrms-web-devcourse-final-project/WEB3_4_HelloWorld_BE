@@ -10,6 +10,7 @@ public enum ErrorCode {
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER-001", "유저를 찾을 수 없습니다."),
 	USER_LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "USER-002", "로그인이 필요합니다."),
 	USER_NICKNAME_DUPLICATION(HttpStatus.BAD_REQUEST, "USER-003", "닉네임이 중복 되었습니다."),
+	INSUFFICIENT_CASH(HttpStatus.NOT_FOUND, "USER-004", "캐시가 부족합니다."),
 	TOKEN_NOT_VALID(HttpStatus.UNAUTHORIZED, "TOKEN-001", "토큰이 유효하지 않습니다."),
 	REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW-001", "리뷰를 찾을 수 없습니다."),
 	REVIEW_PERMISSION_DENIED(HttpStatus.UNAUTHORIZED, "REVIEW-002", "리뷰에 대한 삭제/수정 권한이 없습니다."),
@@ -38,6 +39,9 @@ public enum ErrorCode {
 
 	// PartnerGym
 	PARTNER_GYM_NOT_FOUND(HttpStatus.NOT_FOUND, "PARTNER-GYM-001", "파트너 헬스장이 등록되어 있지 않습니다."),
+
+	// GymProduct
+	GYMPRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "GYM-PRODUCT-001", "존재하지 않는 헬스장 이용권입니다."),
 
 	// Machine
 	MACHINE_NOT_FOUND(HttpStatus.NOT_FOUND, "MACHINE-001", "해당 기구가 존재하지 않습니다."),

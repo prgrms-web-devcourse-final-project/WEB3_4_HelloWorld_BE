@@ -137,4 +137,8 @@ public class Member {
 		this.recentSquat = request.recentSquat();
 		this.additionalInfoCompleted = true;
 	}
+
+	public void updateCash(Long updateCash) {
+		this.cash = updateCash;
+	}
 }
