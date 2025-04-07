@@ -8,6 +8,7 @@ import org.helloworld.gymmate.domain.gym.gymproduct.entity.GymProduct;
 import org.helloworld.gymmate.domain.gym.gymproduct.service.GymProductService;
 import org.helloworld.gymmate.domain.gym.gymticket.dto.GymTicketPurchaseResponse;
 import org.helloworld.gymmate.domain.gym.gymticket.entity.GymTicket;
+import org.helloworld.gymmate.domain.gym.gymticket.enums.GymTicketStatus;
 import org.helloworld.gymmate.domain.gym.gymticket.mapper.GymTicketMapper;
 import org.helloworld.gymmate.domain.gym.gymticket.repository.GymTicketRepository;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
@@ -50,6 +51,20 @@ public class GymTicketService {
 		}
 	}
 
-	// TODO : 티켓 상태 변경시키는 서비스
+	@Transactional
+	public void cancelTicket(Long userId, Long gymTicketId) {
+		Member member = memberService.findByUserId(userId);
+		GymTicket gymTicket = findByGymTicketId(gymTicketId);
+		if (gymTicket.getMember().equals(member)) {
+			throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
+		}
+		// TODO : 환불정책 고려
+		gymTicket.updateStatus(GymTicketStatus.CANCELED);
+	}
+
+	public GymTicket findByGymTicketId(Long gymTicketId) {
+		return gymTicketRepository.findById(gymTicketId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.GYM_TICKET_NOT_FOUND));
+	}
 
 }

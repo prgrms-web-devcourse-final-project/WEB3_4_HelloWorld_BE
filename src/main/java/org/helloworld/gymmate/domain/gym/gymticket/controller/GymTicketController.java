@@ -6,6 +6,7 @@ import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,5 +40,15 @@ public class GymTicketController {
 	) {
 		return ResponseEntity.ok().body(
 			gymTicketService.createTicket(customOAuth2User.getUserId(), gymProductId));
+	}
+
+	@PreAuthorize("hasRole('ROLE_MEMBER')")
+	@DeleteMapping("/{gymTicketId}")
+	public ResponseEntity<Void> cancelGymTicket(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+		@PathVariable Long gymTicketId
+	) {
+		gymTicketService.cancelTicket(customOAuth2User.getUserId(), gymTicketId);
+		return ResponseEntity.ok().build();
 	}
 }
