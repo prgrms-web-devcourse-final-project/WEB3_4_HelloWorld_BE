@@ -27,11 +27,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class GymService {
 	private final GymRepository gymRepository;
 	private final MemberService memberService;
@@ -72,7 +70,6 @@ public class GymService {
 	@Transactional(readOnly = true)
 	public Page<GymListResponse> fetchScoreSortedGyms(GymSearchOption search, String searchTerm,
 		Pageable pageable, Boolean isPartner) {
-		log.info("count : {}", gymRepository.findAll(isPartner, pageable).getTotalElements());
 		Page<Gym> gyms = switch (search) {
 			case NONE -> gymRepository.findAll(isPartner, pageable);
 			case GYM -> gymRepository.searchGymByGymName(searchTerm, isPartner,
