@@ -43,10 +43,10 @@ public class Gym {
 	@Column(name = "gym_name", nullable = false)
 	private String gymName;
 
-	@Column(name = "start_time", nullable = false)  //크롤링 해서 없는 경우 "운영시간이 없습니다" 표시
+	@Column(name = "start_time")
 	private String startTime;
 
-	@Column(name = "end_time", nullable = false) //크롤링 해서 없는 경우 "운영시간이 없습니다" 표시
+	@Column(name = "end_time")
 	private String endTime;
 
 	@Column(name = "phone_number", nullable = true) //헬스장 번호가 없는 경우 존재함
