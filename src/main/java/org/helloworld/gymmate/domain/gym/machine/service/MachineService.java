@@ -12,7 +12,7 @@ import org.helloworld.gymmate.domain.gym.machine.entity.Machine;
 import org.helloworld.gymmate.domain.gym.machine.mapper.MachineMapper;
 import org.helloworld.gymmate.domain.gym.machine.repository.MachineRepository;
 import org.helloworld.gymmate.domain.gym.partnergym.service.PartnerGymService;
-import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
+import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

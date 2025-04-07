@@ -15,6 +15,10 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
     show-sql: true
 
+  flyway:
+    enabled: true # Flyway 사용 활성화 (true = 동작)
+    baseline-on-migrate: true # 기존 DB를 baseline 버전으로 설정 후 마이그레이션 (false = 기존 DB 존재 시 오류 발생)
+
 logging:
   level:
     org.helloworld.gymmate: DEBUG
