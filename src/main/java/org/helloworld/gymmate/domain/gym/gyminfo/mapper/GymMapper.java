@@ -58,7 +58,9 @@ public class GymMapper {
 			gym.getGymName(),
 			gym.getStartTime(),
 			gym.getEndTime(),
-			gym.getPlaceUrl(),
+			gym.getAddress(),
+			String.valueOf(gym.getLocation().getX()),
+			String.valueOf(gym.getLocation().getY()),
 			gym.getAvgScore(),
 			gym.getIsPartner(),
 			Optional.ofNullable(gym.getImages())
