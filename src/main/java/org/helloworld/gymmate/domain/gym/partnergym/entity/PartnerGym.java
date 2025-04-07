@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name = "Partner_gym")
+@Table(name = "partner_gym")
 public class PartnerGym {
 
 	@Id

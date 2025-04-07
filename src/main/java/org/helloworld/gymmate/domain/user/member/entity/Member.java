@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.helloworld.gymmate.domain.gym.gymticket.entity.GymTicket;
+import org.helloworld.gymmate.domain.user.converter.GenderTypeConverter;
 import org.helloworld.gymmate.domain.user.enums.GenderType;
 import org.helloworld.gymmate.domain.user.member.dto.MemberModifyRequest;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
@@ -11,9 +12,8 @@ import org.helloworld.gymmate.security.oauth.entity.Oauth;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name = "member")
+@Table(name = "gymmate_member")
 public class Member {
 
 	@Id
@@ -53,54 +53,52 @@ public class Member {
 	@Column(name = "birthday")
 	private String birthday;
 
-	@Enumerated(value = EnumType.STRING)
-	@Column(name = "genderType")
+	@Convert(converter = GenderTypeConverter.class)
+	@Column(name = "gender_type")
 	private GenderType genderType;
 
-	//신체정보
 	@Column(name = "height")
-	private String height;
+	private String height; //신체정보
 
 	@Column(name = "weight")
 	private String weight;
 
-	//주소
 	@Column(name = "address")
-	private String address;
+	private String address; //주소
 
 	@Column(name = "x_field")
-	private String xField;
+	private Double xField;
 
 	@Column(name = "y_field")
-	private String yField;
+	private Double yField;
 
-	//3대
 	@Column(name = "recent_bench")
-	private Double recentBench;
+	private Double recentBench; //3대 - 밴치프레스
 
 	@Column(name = "recent_deadlift")
-	private Double recentDeadlift;
+	private Double recentDeadlift; //3대 - 데드리프트
 
 	@Column(name = "recent_squat")
-	private Double recentSquat;
+	private Double recentSquat; //3대 - 스쿼트
 
 	@Column(name = "level")
-	private Integer level;
+	private Integer level; //3대 - 레벨
 
-	//계정잠김여부
-	@Column(name = "is_account_nonloked")
-	private Boolean isAccountNonLocked;
+	@Column(name = "is_account_nonlocked")
+	private Boolean isAccountNonLocked; //계정잠김여부
+
+	@Column(name = "additional_info_completed")
+	private Boolean additionalInfoCompleted; // 추가 정보 입력 여부
 
 	@Column(name = "cash")
 	private Long cash;
-
-	private Boolean additionalInfoCompleted; // 추가 정보 입력 여부
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "oauth_id")
 	private Oauth oauth;
 
-	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "gymmate_member", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
 	private List<GymTicket> gymTickets = new ArrayList<>();
 
 	public void registerMemberInfo(MemberRequest request) {

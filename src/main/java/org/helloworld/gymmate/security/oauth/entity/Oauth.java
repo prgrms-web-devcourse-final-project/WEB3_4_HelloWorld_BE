@@ -1,13 +1,14 @@
 package org.helloworld.gymmate.security.oauth.entity;
 
 import org.helloworld.gymmate.common.entity.BaseEntity;
+import org.helloworld.gymmate.domain.user.converter.UserTypeConverter;
 import org.helloworld.gymmate.domain.user.enums.SocialProviderType;
 import org.helloworld.gymmate.domain.user.enums.UserType;
+import org.helloworld.gymmate.security.oauth.converter.SocialProviderTypeConverter;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,14 +31,14 @@ public class Oauth extends BaseEntity {
 	@Column(name = "oauth_id")
 	private Long oauthId;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "provider", nullable = false)
+	@Convert(converter = SocialProviderTypeConverter.class)
+	@Column(name = "provider_type", nullable = false)
 	private SocialProviderType provider;
 
 	@Column(name = "provider_id", nullable = false)
 	private String providerId;
 
-	@Enumerated(EnumType.STRING)
+	@Convert(converter = UserTypeConverter.class)
 	@Column(name = "user_type", nullable = false)
 	private UserType userType;
 }

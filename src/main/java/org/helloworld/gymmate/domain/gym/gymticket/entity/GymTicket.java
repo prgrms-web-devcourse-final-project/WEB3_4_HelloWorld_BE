@@ -2,13 +2,13 @@ package org.helloworld.gymmate.domain.gym.gymticket.entity;
 
 import java.time.LocalDate;
 
+import org.helloworld.gymmate.domain.gym.gymticket.converter.GymTicketStatusConverter;
 import org.helloworld.gymmate.domain.gym.gymticket.enums.GymTicketStatus;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,10 +43,10 @@ public class GymTicket {
 	@Column(name = "end_date", nullable = false)
 	private LocalDate endDate;
 
-	@Column(name = "pt_product_fee", nullable = false)
+	@Column(name = "gym_product_fee", nullable = false)
 	private Integer gymProductFee;
 
-	@Enumerated(value = EnumType.STRING)
+	@Convert(converter = GymTicketStatusConverter.class)
 	@Column(name = "status", nullable = false)
 	private GymTicketStatus status;
 

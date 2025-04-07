@@ -1,9 +1,10 @@
-package org.helloworld.gymmate.domain.user.trainer.model;
+package org.helloworld.gymmate.domain.user.trainer.entity;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
+import org.helloworld.gymmate.domain.user.converter.GenderTypeConverter;
 import org.helloworld.gymmate.domain.user.enums.GenderType;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
@@ -13,9 +14,8 @@ import org.helloworld.gymmate.security.oauth.entity.Oauth;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -49,44 +49,58 @@ public class Trainer {
 	@Column(name = "phone_number", unique = true)
 	private String phoneNumber;
 
+	@Column(name = "email")
 	private String email;
 
-	@Enumerated(value = EnumType.STRING)
+	@Convert(converter = GenderTypeConverter.class)
 	@Column(name = "gender")
 	private GenderType genderType;
 
+	@Column(name = "bank")
 	private String bank;
 
+	@Column(name = "account")
 	private String account;
 
 	@Column(name = "business_number", unique = true)
 	private String businessNumber;
 
+	@Column(name = "business_date")
+	private LocalDate businessDate;
+
+	@Column(name = "is_owner")
 	private Boolean isOwner;
 
+	@Column(name = "is_check")
 	private Boolean isCheck;
 
-	private String profile;
+	@Column(name = "profile_url")
+	private String profileUrl;
 
+	@Column(name = "is_account_non_locked")
 	private Boolean isAccountNonLocked;
 
+	@Column(name = "cash")
 	private Long cash;
 
+	@Column(name = "score")
 	private Double score; // 리뷰 평점 평균
+
+	@Column(name = "intro")
+	private String intro; // 소개글
+
+	@Column(name = "career")
+	private String career;
+
+	@Column(name = "field")
+	private String field;
+
+	@Column(name = "additionalInfoCompleted")
+	private Boolean additionalInfoCompleted; // 추가 정보 입력 여부
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "gym_id")
 	private Gym gym;
-
-	private String intro;
-
-	private String career;
-
-	private String field;
-
-	private Boolean additionalInfoCompleted; // 추가 정보 입력 여부
-
-	private LocalDate date;
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "oauth_id")
@@ -116,7 +130,7 @@ public class Trainer {
 		this.bank = request.bank();
 		this.account = request.account();
 		this.businessNumber = request.businessNumber();
-		this.date = LocalDate.parse(request.date(), DateTimeFormatter.ofPattern("yyyyMMdd"));
+		this.businessDate = LocalDate.parse(request.businessDate(), DateTimeFormatter.ofPattern("yyyyMMdd"));
 		this.additionalInfoCompleted = true;
 	}
 
@@ -126,7 +140,7 @@ public class Trainer {
 		this.email = request.email();
 		this.bank = request.bank();
 		this.account = request.account();
-		this.profile = request.profile();
+		this.profileUrl = request.profile();
 		this.intro = request.intro();
 		this.career = request.career();
 		this.field = request.field();

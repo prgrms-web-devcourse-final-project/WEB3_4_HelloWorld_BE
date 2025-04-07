@@ -1,4 +1,4 @@
-# EC2용 환경 설정
+# git에서 제거하기
 server:
   url: https://3.34.129.72.nip.io
 
@@ -26,6 +26,7 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+    clean-disabled: false
 
 logging:
   level:

@@ -8,7 +8,7 @@ import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerCheckResponse;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerListResponse;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerResponse;
-import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
+import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 
 public class TrainerMapper {
@@ -30,7 +30,7 @@ public class TrainerMapper {
 			trainer.getBank(),
 			trainer.getAccount(),
 			trainer.getGenderType().toString(),
-			trainer.getProfile(),
+			trainer.getProfileUrl(),
 			trainer.getIsOwner(),
 			trainer.getCash(),
 			trainer.getIntro(),
@@ -49,7 +49,7 @@ public class TrainerMapper {
 		return new TrainerListResponse(
 			trainer.getTrainerId(),
 			trainer.getTrainerName(),
-			trainer.getProfile(),
+			trainer.getProfileUrl(),
 			trainer.getScore(),
 			trainer.getIntro(),
 			trainer.getCareer(),

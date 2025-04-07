@@ -27,6 +27,7 @@ public class Facility {
 	@Column(name = "facility_id")
 	private Long facilityId;
 
+	@Column(name = "parking")
 	private Boolean parking;
 
 	@Column(name = "shower_room")
@@ -35,15 +36,19 @@ public class Facility {
 	@Column(name = "in_body")
 	private Boolean inBody;
 
+	@Column(name = "locker")
 	private Boolean locker;
 
+	@Column(name = "wifi")
 	private Boolean wifi;
 
 	@Column(name = "sports_wear")
 	private Boolean sportsWear;
 
+	@Column(name = "towel")
 	private Boolean towel;
 
+	@Column(name = "sauna")
 	private Boolean sauna;
 
 	public void update(FacilityRequest facilityRequest) {
@@ -58,5 +63,3 @@ public class Facility {
 	}
 
 }
-
-

@@ -57,6 +57,9 @@ dependencies {
     // Jts
     implementation 'org.locationtech.jts:jts-core:1.20.0'
     implementation 'org.hibernate:hibernate-spatial:6.4.0.Final'
+    // Flyway
+    implementation 'org.flywaydb:flyway-mysql'
+
 }
 
 tasks.named('test') {

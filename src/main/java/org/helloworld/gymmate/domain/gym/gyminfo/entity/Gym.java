@@ -37,6 +37,7 @@ public class Gym {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "gym_id", nullable = false)
 	private Long gymId;
 
 	@Column(name = "gym_name", nullable = false)
@@ -69,6 +70,10 @@ public class Gym {
 	@Column(name = "place_url") //헬스장 상세 정보URL
 	private String placeUrl;
 
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "facility_id")
+	private Facility facility;
+
 	@OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
 	@BatchSize(size = 20)
 	@Builder.Default
@@ -77,10 +82,6 @@ public class Gym {
 	@OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<Machine> machines = new ArrayList<>();
-
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "facility_id")
-	private Facility facility;
 
 	// ====== Business Logic ======
 

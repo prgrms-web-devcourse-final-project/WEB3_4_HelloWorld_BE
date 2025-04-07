@@ -29,13 +29,13 @@ public class Reservation {
 	@Column(name = "product_name", nullable = false)
 	private String productName;
 
-	@Column(nullable = false)
+	@Column(name = "date", nullable = false)
 	private LocalDate date;
 
-	@Column(nullable = false)
+	@Column(name = "time", nullable = false)
 	private Integer time;
 
-	@Column(nullable = false)
+	@Column(name = "price", nullable = false)
 	private Long price;
 
 	@Column(name = "cancel_date")

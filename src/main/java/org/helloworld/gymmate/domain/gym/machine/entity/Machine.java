@@ -37,7 +37,7 @@ public class Machine {
 	@Column(name = "amount", nullable = false)
 	private Integer amount;
 
-	@Column(name = "machineImage")
+	@Column(name = "machine_image")
 	private String machineImage;
 
 	@ManyToOne(fetch = FetchType.LAZY)

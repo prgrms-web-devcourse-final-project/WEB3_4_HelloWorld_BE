@@ -26,9 +26,9 @@ public record MemberModifyRequest(
 	//주소
 	String address,
 
-	String xField,
+	Double xField,
 
-	String yField,
+	Double yField,
 
 	//3대
 	Double recentBench,

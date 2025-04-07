@@ -31,14 +31,14 @@ public class Diary {
 	@Column(name = "diary_id")
 	private Long diaryId;
 
-	@Column(name = "date")
-	private LocalDate date;
-
-	@Column(name = "title")
+	@Column(name = "title", nullable = false)
 	private String title;
 
-	@Column(name = "content")
+	@Column(name = "content", nullable = false)
 	private String content;
+	
+	@Column(name = "date", nullable = false)
+	private LocalDate date;
 
 	@Setter
 	@ManyToOne
