@@ -103,13 +103,16 @@ public class MemberService {
 
 	@Transactional
 	public void deleteMember(Long memberId) {
-		log.debug("회원 삭제 시작: memberId={}", memberId);
-
-		//멤버 객체를 찾아서 파일 삭제
+		//1.멤버 객체를 찾기
 		Member member = findByUserId(memberId);
-		fileManager.deleteFile(member.getProfileUrl());
 
-		//멤버 테이블에서 멤버 삭제
+		//2.프로필 URL이 존재할 경우에만 파일 삭제
+		String profileUrl = member.getProfileUrl();
+		if (profileUrl != null && !profileUrl.isEmpty()) {
+			fileManager.deleteFile(profileUrl);
+		}
+
+		//3.멤버 테이블에서 멤버 삭제
 		memberRepository.deleteByMemberId(memberId);
 	}
 
