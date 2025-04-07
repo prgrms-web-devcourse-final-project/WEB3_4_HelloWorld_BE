@@ -2,6 +2,7 @@ package org.helloworld.gymmate.domain.gym.gyminfo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -22,13 +23,15 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name = "gymImage")
+@Table(name = "gym_image")
 public class GymImage {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@Column(name = "gym_image_id", nullable = false)
+	private Long gymImageId;
 
+	@Column(name = "url", nullable = false)
 	private String url; // 이미지 경로
 
 	//제한된 setter 사용

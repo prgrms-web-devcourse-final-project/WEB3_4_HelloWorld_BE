@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional
 public class GymProductService {
+
 	private final GymProductRepository gymProductRepository;
 
 	// 헬스장 이용권 정보 업데이트
@@ -29,7 +30,7 @@ public class GymProductService {
 			if (request.gymProductId() == null) {
 				createGymProducts(request, partnerGym);
 			} else {
-				modifyGymProducts(request);
+				modifyGymProducts(request, partnerGym);
 			}
 		}
 		// 삭제 호출
@@ -42,19 +43,18 @@ public class GymProductService {
 	}
 
 	// 헬스장 이용권 정보 수정
-	public void modifyGymProducts(GymProductRequest request) {
+	public void modifyGymProducts(GymProductRequest request, PartnerGym partnerGym) {
 		assert request.gymProductId() != null; // 명시적으로 null 이 아닌 것을 표시
-		GymProduct existingProduct = gymProductRepository.findById(request.gymProductId())
-			.orElseThrow(() -> new BusinessException(ErrorCode.PARTNER_GYM_NOT_FOUND));
+
+		GymProduct existingProduct = checkGymProductOwnerShip(request.gymProductId(), partnerGym); //소유 검증
 		existingProduct.update(request);
 	}
 
 	// 헬스장 이용권 정보 삭제
 	public void deleteGymProducts(List<Long> deleteIds, PartnerGym partnerGym) {
 		for (Long deleteId : deleteIds) {
-			gymProductRepository.findById(deleteId)
-				.filter(product -> product.getPartnerGym().equals(partnerGym))
-				.ifPresent(gymProductRepository::delete);
+			checkGymProductOwnerShip(deleteId, partnerGym); //소유 검증
+			gymProductRepository.deleteById(deleteId);
 		}
 	}
 
@@ -63,4 +63,17 @@ public class GymProductService {
 			() -> new BusinessException(ErrorCode.GYMPRODUCT_NOT_FOUND)
 		);
 	}
+
+	// 해당 이용권이 파트너헬스장에 속하는지 검증
+	public GymProduct checkGymProductOwnerShip(Long gymProductId, PartnerGym partnerGym) {
+		GymProduct gymProduct = gymProductRepository.findById(gymProductId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.GYMPRODUCT_NOT_FOUND));
+
+		if (!gymProduct.getPartnerGym().equals(partnerGym)) {
+			throw new BusinessException(ErrorCode.GYMPRODUCT_PARTNER_MISMATCH);
+		}
+
+		return gymProduct;
+	}
+
 }

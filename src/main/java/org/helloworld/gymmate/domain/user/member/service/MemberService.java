@@ -4,18 +4,19 @@ import java.util.Optional;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
+import org.helloworld.gymmate.common.s3.FileManager;
 import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.member.dto.MemberCheckResponse;
-import org.helloworld.gymmate.domain.user.member.dto.MemberModifyRequest;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
+import org.helloworld.gymmate.domain.user.member.dto.MemberResponse;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
 import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
-import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 import org.helloworld.gymmate.security.oauth.repository.OauthRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 	private final OauthRepository oauthRepository;
 	private final EntityManager entityManager;
-	private final TrainerRepository trainerRepository;
+	private final FileManager fileManager;
 
 	@Transactional
 	public Long createMember(Oauth oauth) {
@@ -44,8 +45,14 @@ public class MemberService {
 
 	//추가정보 등록
 	@Transactional
-	public Long registerInfoMember(Member member, MemberRequest request) {
+	public Long registerMember(Long memberId, MemberRequest request) {
+		// 1. 멤버id로 멤버 조회
+		Member member = findByUserId(memberId);
+
+		// 2. 멤버 객체 수정
 		member.registerMemberInfo(request);
+
+		//3. 저장
 		return memberRepository.save(member).getMemberId();
 	}
 
@@ -67,13 +74,52 @@ public class MemberService {
 			ErrorCode.USER_NOT_FOUND));
 	}
 
+	// 멤버 정보 수정
+	@Transactional
+	public Long modifyMember(Long memberId, MemberRequest request, MultipartFile image) {
+
+		//1. memberId로 member 조회
+		Member member = findByUserId(memberId);
+
+		//2.1. 기존 이미지 URL 유지
+		String imageUrl = member.getProfileUrl();
+
+		//2.2. 새로운 이미지가 있다면,
+		if (image != null && !image.isEmpty()) {
+			//이전에 프로필 사진이 있었다면 -> 삭제
+			if (imageUrl != null && !imageUrl.isEmpty()) {
+				fileManager.deleteFile(imageUrl);
+			}
+			//새로운 프로필 사진 업로드 & url 저장
+			imageUrl = fileManager.uploadFile(image, "member");
+		}
+
+		//3. 객체 정보 수정
+		member.modifyMemberInfo(request, imageUrl);
+
+		//4.객체 저장
+		return memberRepository.save(member).getMemberId();
+	}
+
 	@Transactional
 	public void deleteMember(Long memberId) {
-		log.debug("회원 삭제 시작: memberId={}", memberId);
+		//1.멤버 객체를 찾기
+		Member member = findByUserId(memberId);
 
+		//2.프로필 URL이 존재할 경우에만 파일 삭제
+		String profileUrl = member.getProfileUrl();
+		if (profileUrl != null && !profileUrl.isEmpty()) {
+			fileManager.deleteFile(profileUrl);
+		}
+
+		//3.멤버 테이블에서 멤버 삭제
 		memberRepository.deleteByMemberId(memberId);
-		log.debug("회원이 성공적으로 삭제되었습니다. memberId={}", memberId);
+	}
 
+	@Transactional
+	public MemberResponse getMember(Long userId) {
+		Member member = findByUserId(userId);
+		return MemberMapper.toResponseDto(member);
 	}
 
 	@Transactional(readOnly = true)
@@ -81,10 +127,4 @@ public class MemberService {
 		return MemberMapper.toCheckResponse(member);
 	}
 
-	// 멤버 정보 수정
-	@Transactional
-	public Long modifyMemberInfo(Member member, MemberModifyRequest request) {
-		member.modifyMemberInfo(request);
-		return memberRepository.save(member).getMemberId();
-	}
 }

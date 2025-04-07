@@ -26,23 +26,16 @@ public record MemberRequest(
 	//주소
 	String address,
 
-	String xField,
+	Double xField,
 
-	String yField,
+	Double yField,
 
 	//3대
 	Double recentBench,
 
 	Double recentDeadlift,
 
-	Double recentSquat,
-
-	Integer level,
-
-	//계정잠김
-	Boolean isAccountNonLocked,
-
-	Long cash
+	Double recentSquat
 
 ) {
 }

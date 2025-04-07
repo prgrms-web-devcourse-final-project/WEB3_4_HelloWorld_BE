@@ -12,7 +12,7 @@ import org.helloworld.gymmate.domain.pt.ptproduct.dto.PtProductsResponse;
 import org.helloworld.gymmate.domain.pt.ptproduct.entity.PtProduct;
 import org.helloworld.gymmate.domain.pt.ptproduct.entity.PtProductImage;
 import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
-import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
+import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 
 public class PtProductMapper {
 	public static PtProduct toEntity(PtProductCreateRequest request, Long trainerId) {
@@ -36,7 +36,7 @@ public class PtProductMapper {
 			trainer.getTrainerId(),
 			trainer.getTrainerName(),
 			trainer.getGenderType().toString(),
-			trainer.getProfile(),
+			trainer.getProfileUrl(),
 			trainer.getScore()
 		);
 	}
@@ -60,7 +60,7 @@ public class PtProductMapper {
 				trainer.getTrainerId(),
 				trainer.getTrainerName(),
 				trainer.getGenderType().toString(),
-				trainer.getProfile(),
+				trainer.getProfileUrl(),
 				trainer.getPhoneNumber(),
 				trainer.getEmail(),
 				trainer.getScore(),

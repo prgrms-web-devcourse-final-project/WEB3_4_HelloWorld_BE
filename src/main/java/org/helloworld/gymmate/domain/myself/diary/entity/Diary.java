@@ -26,22 +26,25 @@ import lombok.Setter;
 @Builder
 @Table(name = "diary")
 public class Diary {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "diary_id")
-	private Long diaryId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "diary_id")
+    private Long diaryId;
 
-	@Column(name = "date")
-	private LocalDate date;
+    @Column(name = "title", nullable = false)
+    private String title;
 
-	@Column(name = "title")
-	private String title;
+    @Column(name = "content", nullable = false)
+    private String content;
 
-	@Column(name = "content")
-	private String content;
+    @Column(name = "date", nullable = false)
+    private LocalDate date;
 
-	@Setter
-	@ManyToOne
-	@JoinColumn(name = "member_id")
-	private Member member;
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    // ====== Business Logic ======
+
 }
