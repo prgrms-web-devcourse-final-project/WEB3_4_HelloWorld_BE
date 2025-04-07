@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 import org.helloworld.gymmate.domain.gym.gymproduct.entity.GymProduct;
 import org.helloworld.gymmate.domain.gym.gymticket.dto.GymTicketPurchaseResponse;
-import org.helloworld.gymmate.domain.gym.gymticket.dto.TicketResponse;
+import org.helloworld.gymmate.domain.gym.gymticket.dto.MemberGymTicketResponse;
 import org.helloworld.gymmate.domain.gym.gymticket.entity.GymTicket;
 import org.helloworld.gymmate.domain.gym.gymticket.enums.GymTicketStatus;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
@@ -31,8 +31,8 @@ public class GymTicketMapper {
 		);
 	}
 
-	public static TicketResponse toDto(GymTicket gymTicket) {
-		return new TicketResponse(
+	public static MemberGymTicketResponse toDto(GymTicket gymTicket) {
+		return new MemberGymTicketResponse(
 			gymTicket.getGymTicketId(),
 			gymTicket.getGymProductName(),
 			gymTicket.getStartDate(),

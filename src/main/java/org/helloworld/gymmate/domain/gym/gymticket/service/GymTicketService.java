@@ -7,7 +7,7 @@ import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.domain.gym.gymproduct.entity.GymProduct;
 import org.helloworld.gymmate.domain.gym.gymproduct.service.GymProductService;
 import org.helloworld.gymmate.domain.gym.gymticket.dto.GymTicketPurchaseResponse;
-import org.helloworld.gymmate.domain.gym.gymticket.dto.TicketResponse;
+import org.helloworld.gymmate.domain.gym.gymticket.dto.MemberGymTicketResponse;
 import org.helloworld.gymmate.domain.gym.gymticket.entity.GymTicket;
 import org.helloworld.gymmate.domain.gym.gymticket.mapper.GymTicketMapper;
 import org.helloworld.gymmate.domain.gym.gymticket.repository.GymTicketRepository;
@@ -54,7 +54,7 @@ public class GymTicketService {
 		}
 	}
 
-	public Page<TicketResponse> getOwnTickets(Long memberId, int page, int pageSize) {
+	public Page<MemberGymTicketResponse> getOwnTickets(Long memberId, int page, int pageSize) {
 		Pageable pageable = PageRequest.of(page, pageSize);
 		return gymTicketRepository.findByMember_MemberId(memberId, pageable)
 			.map(GymTicketMapper::toDto);

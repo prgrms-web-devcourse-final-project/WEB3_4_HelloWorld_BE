@@ -2,7 +2,7 @@ package org.helloworld.gymmate.domain.gym.gymticket.dto;
 
 import java.time.LocalDate;
 
-public record TicketResponse(
+public record MemberGymTicketResponse(
 	long gymTicketId,
 	String gymProductName,
 	LocalDate startDate,
