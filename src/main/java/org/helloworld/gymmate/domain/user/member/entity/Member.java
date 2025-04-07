@@ -97,7 +97,7 @@ public class Member {
 	@JoinColumn(name = "oauth_id")
 	private Oauth oauth;
 
-	@OneToMany(mappedBy = "gymmate_member", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<GymTicket> gymTickets = new ArrayList<>();
 

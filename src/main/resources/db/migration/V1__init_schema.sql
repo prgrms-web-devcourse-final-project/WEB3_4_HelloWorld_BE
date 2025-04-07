@@ -27,7 +27,7 @@ CREATE TABLE gymmate_member ( -- 소셜 로그인 시  null 상태로 데이터 
     recent_bench DOUBLE,
     recent_deadlift DOUBLE,
     recent_squat DOUBLE,
-    `level` INT, -- 예약어
+    `level` INT, /* 예약어 */
     is_account_nonlocked BOOLEAN,
     additional_info_completed BOOLEAN,
     profile_url VARCHAR(255), -- url 길이 일반적으로 varchar(255) 권장
@@ -119,7 +119,7 @@ CREATE TABLE award (
 -- 8. Classtime
 CREATE TABLE class_time (
     class_time_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    `time` INT NOT NULL, -- 예약어
+    `time` INT NOT NULL, /* 예약어 */
     day_of_week INT NOT NULL,
     trainer_id BIGINT NOT NULL,
     FOREIGN KEY (trainer_id) REFERENCES gymmate_trainer(trainer_id)
@@ -148,8 +148,8 @@ CREATE TABLE pt_product_image (
 CREATE TABLE reservation (
     reservation_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     product_name VARCHAR(50) NOT NULL,
-    `date` DATE NOT NULL, --예약어
-    `time` INT NOT NULL, --예약어
+    `date` DATE NOT NULL, /* 예약어 */
+    `time` INT NOT NULL, /* 예약어 */
     price BIGINT NOT NULL,
     cancel_date DATE,
     completed_date DATE,
@@ -209,7 +209,7 @@ CREATE TABLE bigthree (
     bench DOUBLE NOT NULL,
     deadlift DOUBLE NOT NULL,
     squat DOUBLE NOT NULL,
-    `date` DATE NOT NULL, --예약어
+    `date` DATE NOT NULL, /* 예약어 */
     member_id BIGINT NOT NULL,
     FOREIGN KEY (member_id) REFERENCES gymmate_member(member_id)
 );
@@ -219,7 +219,7 @@ CREATE TABLE diary (
     diary_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(50) NOT NULL,
     content TEXT NOT NULL,
-    `date` DATE NOT NULL, --예약어
+    `date` DATE NOT NULL, /* 예약어 */
     member_id BIGINT NOT NULL,
     FOREIGN KEY (member_id) REFERENCES gymmate_member(member_id)
 );
