@@ -32,7 +32,7 @@ public class GymTicketMapper {
 		);
 	}
 
-	public static MemberGymTicketResponse toMemberGymTicketResponse(GymTicket gymTicket) {
+	public static MemberGymTicketResponse toMemberGymTicketResponse(GymTicket gymTicket, String gymName) {
 		return new MemberGymTicketResponse(
 			gymTicket.getGymTicketId(),
 			gymTicket.getGymProductName(),
@@ -40,7 +40,7 @@ public class GymTicketMapper {
 			gymTicket.getEndDate(),
 			gymTicket.getGymProductFee(),
 			gymTicket.getStatus().toString(),
-			gymTicket.getPartnerGymId()
+			gymName
 		);
 	}
 
