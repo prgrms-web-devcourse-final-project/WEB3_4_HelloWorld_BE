@@ -50,19 +50,19 @@ public class GymTicketController {
 	}
 
 	@PreAuthorize("hasRole('ROLE_MEMBER')")
-	@GetMapping
+	@GetMapping("/member")
 	@Validated
-	public ResponseEntity<PageDto<MemberGymTicketResponse>> ownTickets(
+	public ResponseEntity<PageDto<MemberGymTicketResponse>> getMemberTickets(
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@RequestParam(defaultValue = "0") @Min(0) int page,
 		@RequestParam(defaultValue = "10") @Min(1) @Max(10) int pageSize
 	) {
 		return ResponseEntity.ok(PageMapper.toPageDto(
-			gymTicketService.getOwnTickets(customOAuth2User.getUserId(), page, pageSize)));
+			gymTicketService.getMemberTickets(customOAuth2User.getUserId(), page, pageSize)));
 	}
 
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
-	@GetMapping
+	@GetMapping("/owner")
 	@Validated
 	public ResponseEntity<PageDto<PartnerGymTicketResponse>> getPartnerGymTickets(
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
