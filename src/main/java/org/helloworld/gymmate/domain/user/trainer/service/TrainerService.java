@@ -23,10 +23,10 @@ import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerProfileRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerResponse;
+import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.enums.TrainerSearchOption;
 import org.helloworld.gymmate.domain.user.trainer.enums.TrainerSortOption;
 import org.helloworld.gymmate.domain.user.trainer.mapper.TrainerMapper;
-import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
@@ -166,8 +166,8 @@ public class TrainerService {
 		int pageSize, CustomOAuth2User customOAuth2User) {
 		TrainerSearchOption search = TrainerSearchOption.from(searchOption);
 		Member member = memberService.findByUserId(customOAuth2User.getUserId());
-		Double x = Double.valueOf(member.getXField());
-		Double y = Double.valueOf(member.getYField());
+		Double x = member.getXField();
+		Double y = member.getYField();
 		Pageable pageable = PageRequest.of(page, pageSize);
 
 		return fetchNearbyTrainersUsingXY(search, searchTerm, pageable, x, y);

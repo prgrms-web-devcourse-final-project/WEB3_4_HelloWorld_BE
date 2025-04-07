@@ -25,33 +25,35 @@ import lombok.NoArgsConstructor;
 @Builder
 @Table(name = "pt_product")
 public class PtProduct {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "pt_product_id", nullable = false)
-	private Long ptProductId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "pt_product_id", nullable = false)
+    private Long ptProductId;
 
-	@Column(name = "pt_product_name", nullable = false)
-	private String ptProductName;
+    @Column(name = "pt_product_name", nullable = false)
+    private String ptProductName;
 
-	@Column(name = "info", nullable = false)
-	private String info;
+    @Column(name = "info", nullable = false)
+    private String info;
 
-	@Column(name = "pt_product_fee", nullable = false)
-	private Long ptProductFee;
+    @Column(name = "pt_product_fee", nullable = false)
+    private Long ptProductFee;
 
-	@Column(name = "trainer_id", nullable = false)
-	private Long trainerId;
+    @Column(name = "trainer_id", nullable = false)
+    private Long trainerId;
 
-	@OneToMany(mappedBy = "ptProduct", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	@Builder.Default
-	private List<PtProductImage> ptProductImages = new ArrayList<>();
+    @OneToMany(mappedBy = "ptProduct", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<PtProductImage> ptProductImages = new ArrayList<>();
 
-	public void update(String info, Long ptProductFee) {
-		this.info = info;
-		this.ptProductFee = ptProductFee;
-	}
+    // ====== Business Logic ======
 
-	public void removeImageByUrl(String imageUrl) {
-		this.ptProductImages.removeIf(image -> image.getUrl().equals(imageUrl));
-	}
+    public void update(String info, Long ptProductFee) {
+        this.info = info;
+        this.ptProductFee = ptProductFee;
+    }
+
+    public void removeImageByUrl(String imageUrl) {
+        this.ptProductImages.removeIf(image -> image.getUrl().equals(imageUrl));
+    }
 }

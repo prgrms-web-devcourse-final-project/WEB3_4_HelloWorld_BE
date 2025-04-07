@@ -22,41 +22,46 @@ import lombok.NoArgsConstructor;
 @Table(name = "facility")
 public class Facility {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "facility_id")
-	private Long facilityId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "facility_id")
+    private Long facilityId;
 
-	private Boolean parking;
+    @Column(name = "parking")
+    private Boolean parking;
 
-	@Column(name = "shower_room")
-	private Boolean showerRoom;
+    @Column(name = "shower_room")
+    private Boolean showerRoom;
 
-	@Column(name = "in_body")
-	private Boolean inBody;
+    @Column(name = "in_body")
+    private Boolean inBody;
 
-	private Boolean locker;
+    @Column(name = "locker")
+    private Boolean locker;
 
-	private Boolean wifi;
+    @Column(name = "wifi")
+    private Boolean wifi;
 
-	@Column(name = "sports_wear")
-	private Boolean sportsWear;
+    @Column(name = "sports_wear")
+    private Boolean sportsWear;
 
-	private Boolean towel;
+    @Column(name = "towel")
+    private Boolean towel;
 
-	private Boolean sauna;
+    @Column(name = "sauna")
+    private Boolean sauna;
 
-	public void update(FacilityRequest facilityRequest) {
-		this.parking = facilityRequest.parking();
-		this.showerRoom = facilityRequest.showerRoom();
-		this.inBody = facilityRequest.inBody();
-		this.locker = facilityRequest.locker();
-		this.wifi = facilityRequest.wifi();
-		this.sportsWear = facilityRequest.sportsWear();
-		this.towel = facilityRequest.towel();
-		this.sauna = facilityRequest.sauna();
-	}
+    // ====== Business Logic ======
+
+    public void update(FacilityRequest facilityRequest) {
+        this.parking = facilityRequest.parking();
+        this.showerRoom = facilityRequest.showerRoom();
+        this.inBody = facilityRequest.inBody();
+        this.locker = facilityRequest.locker();
+        this.wifi = facilityRequest.wifi();
+        this.sportsWear = facilityRequest.sportsWear();
+        this.towel = facilityRequest.towel();
+        this.sauna = facilityRequest.sauna();
+    }
 
 }
-
-

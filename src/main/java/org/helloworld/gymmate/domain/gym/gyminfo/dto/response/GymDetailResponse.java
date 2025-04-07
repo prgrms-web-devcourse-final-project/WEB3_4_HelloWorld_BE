@@ -1,5 +1,7 @@
 package org.helloworld.gymmate.domain.gym.gyminfo.dto.response;
 
+import java.util.List;
+
 public record GymDetailResponse(
 	Long gymId,
 	String gymName,
@@ -11,6 +13,7 @@ public record GymDetailResponse(
 	String yField,
 	Double avgScore,
 	String intro,
-	Boolean isPartner
+	Boolean isPartner,
+	List<String> gymImages
 ) {
 }

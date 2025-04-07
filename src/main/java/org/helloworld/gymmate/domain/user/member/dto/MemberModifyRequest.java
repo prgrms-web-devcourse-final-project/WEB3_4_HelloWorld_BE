@@ -2,7 +2,7 @@ package org.helloworld.gymmate.domain.user.member.dto;
 
 import jakarta.validation.constraints.NotNull;
 
-public record MemberRequest(
+public record MemberModifyRequest(
 
 	@NotNull(message = "전화번호는 필수입니다.")
 	String phoneNumber,
@@ -26,16 +26,23 @@ public record MemberRequest(
 	//주소
 	String address,
 
-	Double xField,
+	String xField,
 
-	Double yField,
+	String yField,
 
 	//3대
 	Double recentBench,
 
 	Double recentDeadlift,
 
-	Double recentSquat
+	Double recentSquat,
+
+	Integer level,
+
+	//계정잠김
+	Boolean isAccountNonLocked,
+
+	Long cash
 
 ) {
 }

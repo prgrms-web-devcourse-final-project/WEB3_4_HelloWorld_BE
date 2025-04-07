@@ -25,7 +25,7 @@ import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
 import org.helloworld.gymmate.domain.user.trainer.award.repository.AwardRepository;
-import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
+import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.data.domain.Page;
@@ -161,8 +161,8 @@ public class PtProductService {
 
 		PtProductSearchOption search = PtProductSearchOption.from(searchOption);
 		Member member = memberService.findByUserId(customOAuth2User.getUserId());
-		Double x = Double.valueOf(member.getXField());
-		Double y = Double.valueOf(member.getYField());
+		Double x = member.getXField();
+		Double y = member.getYField();
 		Pageable pageable = PageRequest.of(page, pageSize);
 
 		return fetchNearbyProductsUsingXY(search, searchTerm, pageable, x, y);

@@ -18,6 +18,6 @@ public record OwnerRegisterRequest(
 	@NotBlank(message = "사업자번호를 입력해주세요.")
 	String businessNumber,
 	@NotBlank(message = "개업일자를 입력해주세요.")
-	String date
+	String businessDate
 ) {
 }
