@@ -55,7 +55,7 @@ public class GymTicketService {
 	public void cancelTicket(Long userId, Long gymTicketId) {
 		Member member = memberService.findByUserId(userId);
 		GymTicket gymTicket = findByGymTicketId(gymTicketId);
-		if (gymTicket.getMember().equals(member)) {
+		if (!gymTicket.getMember().equals(member)) {
 			throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
 		}
 		// TODO : 환불정책 고려
