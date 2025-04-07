@@ -8,4 +8,4 @@ COPY ./deploy/*.jar /app.jar
 EXPOSE 8080
 
 # 앱 실행
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=deploy", "/app.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=deploy", "-jar", "/app.jar"]

@@ -33,12 +33,6 @@ jobs:
       - name: Make directory for deliver
         run: mkdir deploy
 
-      - name: Build with Gradle
-        run: ./gradlew clean build -x test
-
-      - name: Copy jar
-        run: cp ./build/libs/*.jar ./deploy/
-
       # application.yml 환경 변수 포함 생성
       - name: Generate application-deploy.yml with secrets
         run: |
@@ -62,6 +56,12 @@ jobs:
           export MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
           export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
           envsubst < ./src/main/resources/docs/application-deploy.template > ./src/main/resources/application-deploy.yml
+
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+
+      - name: Copy jar
+        run: cp ./build/libs/*.jar ./deploy/
 
       ## backend 도커 이미지 빌드 후 도커허브에 push하기
       - name: Docker Buildx 설치
