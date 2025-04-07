@@ -45,6 +45,7 @@ jobs:
           export KAKAO_API_KEY=${{ secrets.KAKAO_API_KEY }}
           export BUSINESS_URL=${{ secrets.BUSINESS_URL }}
           export BUSINESS_KEY=${{ secrets.BUSINESS_KEY }}
+          export REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
           envsubst < ./src/main/resources/docs/application.template > ./src/main/resources/application.yml
 
       # application-deploy.yml 환경 변수 포함 생성
