@@ -35,14 +35,7 @@ public record MemberRequest(
 
 	Double recentDeadlift,
 
-	Double recentSquat,
-
-	Integer level,
-
-	//계정잠김
-	Boolean isAccountNonLocked,
-
-	Long cash
+	Double recentSquat
 
 ) {
 }

@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.gym.gymTicket.entity;
+package org.helloworld.gymmate.domain.gym.gymticket.entity;
 
 import java.time.LocalDate;
 

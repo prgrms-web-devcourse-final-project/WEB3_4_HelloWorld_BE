@@ -3,9 +3,8 @@ package org.helloworld.gymmate.domain.user.member.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.helloworld.gymmate.domain.gym.gymTicket.entity.GymTicket;
+import org.helloworld.gymmate.domain.gym.gymticket.entity.GymTicket;
 import org.helloworld.gymmate.domain.user.enums.GenderType;
-import org.helloworld.gymmate.domain.user.member.dto.MemberModifyRequest;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 
@@ -106,7 +105,7 @@ public class Member {
 	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GymTicket> gymTickets = new ArrayList<>();
 
-	public void registerMemberInfo(MemberRequest request, String profileUrl) {
+	public void registerMemberInfo(MemberRequest request) {
 		this.phoneNumber = request.phoneNumber();
 		this.memberName = request.memberName();
 		this.email = request.email();
@@ -120,12 +119,11 @@ public class Member {
 		this.recentBench = request.recentBench();
 		this.recentDeadlift = request.recentDeadlift();
 		this.recentSquat = request.recentSquat();
-		this.profileUrl = profileUrl;
 		this.additionalInfoCompleted = true;
 
 	}
 
-	public void modifyMemberInfo(MemberModifyRequest request, String profileUrl) {
+	public void modifyMemberInfo(MemberRequest request, String profileUrl) {
 		this.phoneNumber = request.phoneNumber();
 		this.memberName = request.memberName();
 		this.email = request.email();

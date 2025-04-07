@@ -7,8 +7,8 @@ import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
 import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.member.dto.MemberCheckResponse;
-import org.helloworld.gymmate.domain.user.member.dto.MemberModifyRequest;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
+import org.helloworld.gymmate.domain.user.member.dto.MemberResponse;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
 import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
@@ -45,22 +45,15 @@ public class MemberService {
 
 	//추가정보 등록
 	@Transactional
-	public Long registerInfoMember(Member member, MemberRequest request, MultipartFile image) {
-		String imageUrl = null;
+	public Long registerMember(Long memberId, MemberRequest request) {
+		// 1. 멤버id로 멤버 조회
+		Member member = findByUserId(memberId);
 
-		if (image != null && !image.isEmpty()) {
-			// 파일 업로드
-			imageUrl = fileManager.uploadFile(image, "member");
-		}
+		// 2. 멤버 객체 수정
+		member.registerMemberInfo(request);
 
-		member.registerMemberInfo(request, imageUrl);
-
+		//3. 저장
 		return memberRepository.save(member).getMemberId();
-	}
-
-	@Transactional
-	public void saveMemberProfile(Member member, MultipartFile image) {
-
 	}
 
 	//추가정보 등록 여부 확인
@@ -81,6 +74,32 @@ public class MemberService {
 			ErrorCode.USER_NOT_FOUND));
 	}
 
+	// 멤버 정보 수정
+	@Transactional
+	public Long modifyMember(Long memberId, MemberRequest request, MultipartFile image) {
+
+		//1. memberId로 member 조회
+		Member member = findByUserId(memberId);
+
+		//2.1. 기존 이미지 URL 유지
+		String imageUrl = member.getProfileUrl();
+
+		//2.2. 새로운 이미지가 있다면,
+		if (image != null && !image.isEmpty()) {
+			//이전에 저장된 멤버의 프로필 사진 삭제
+			fileManager.deleteFile(member.getProfileUrl());
+
+			//새로운 프로필 사진 업로드 & url 저장
+			imageUrl = fileManager.uploadFile(image, "member");
+		}
+
+		//3. 객체 정보 수정
+		member.modifyMemberInfo(request, imageUrl);
+
+		//4.객체 저장
+		return memberRepository.save(member).getMemberId();
+	}
+
 	@Transactional
 	public void deleteMember(Long memberId) {
 		log.debug("회원 삭제 시작: memberId={}", memberId);
@@ -91,7 +110,12 @@ public class MemberService {
 
 		//멤버 테이블에서 멤버 삭제
 		memberRepository.deleteByMemberId(memberId);
-		log.debug("회원이 성공적으로 삭제되었습니다. memberId={}", memberId);
+	}
+
+	@Transactional
+	public MemberResponse getMember(Long userId) {
+		Member member = findByUserId(userId);
+		return MemberMapper.toResponseDto(member);
 	}
 
 	@Transactional(readOnly = true)
@@ -99,24 +123,4 @@ public class MemberService {
 		return MemberMapper.toCheckResponse(member);
 	}
 
-	// 멤버 정보 수정
-	@Transactional
-	public Long modifyMemberInfo(Member member, MemberModifyRequest request, MultipartFile image) {
-
-		//1. 이전에 저장된 파일 삭제
-		fileManager.deleteFile(member.getProfileUrl());
-
-		//2. 새로운 파일 url 저장
-		String imageUrl = null;
-		if (image != null && !image.isEmpty()) {
-			// 파일 업로드
-			imageUrl = fileManager.uploadFile(image, "member");
-		}
-
-		//3. 객체 정보 수정
-		member.modifyMemberInfo(request, imageUrl);
-
-		//4.저장
-		return memberRepository.save(member).getMemberId();
-	}
 }
