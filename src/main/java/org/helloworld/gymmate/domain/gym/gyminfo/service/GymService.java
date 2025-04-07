@@ -27,9 +27,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GymService {
 	private final GymRepository gymRepository;
 	private final MemberService memberService;
@@ -42,15 +44,15 @@ public class GymService {
 		return new FacilityAndMachineResponse(facilityResponse, machineResponses);
 	}
 
-	// 헬스장 조회
+	// 헬스장 조회 (외부에서 호출하는 부분이 있어서 Transactional 추가)
+	@Transactional(readOnly = true)
 	public Gym getExistingGym(Long gymId) {
 		return gymRepository.findById(gymId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.GYM_NOT_FOUND));
 	}
 
 	// 편의시설 조회
-	@Transactional(readOnly = true)
-	public FacilityResponse getFacility(Gym gym) {
+	private FacilityResponse getFacility(Gym gym) {
 		return FacilityMapper.toDto(gym.getFacility());
 	}
 
@@ -70,13 +72,12 @@ public class GymService {
 	@Transactional(readOnly = true)
 	public Page<GymListResponse> fetchScoreSortedGyms(GymSearchOption search, String searchTerm,
 		Pageable pageable, Boolean isPartner) {
+		log.info("count : {}", gymRepository.findAll(isPartner, pageable).getTotalElements());
 		Page<Gym> gyms = switch (search) {
-			case NONE -> gymRepository.findAllByIsPartnerOrderByAvgScoreDesc(isPartner, pageable);
-			case GYM ->
-				gymRepository.findByGymNameContainingIgnoreCaseAndIsPartnerOrderByAvgScoreDesc(searchTerm, isPartner,
-					pageable);
-			case DISTRICT ->
-				gymRepository.findByAddressAndIsPartnerOrderByAvgScoreDesc(searchTerm, isPartner, pageable);
+			case NONE -> gymRepository.findAll(isPartner, pageable);
+			case GYM -> gymRepository.searchGymByGymName(searchTerm, isPartner,
+				pageable);
+			case DISTRICT -> gymRepository.searchGymByAddress(searchTerm, isPartner, pageable);
 		};
 		return fetchAndMapGyms(gyms, pageable);
 	}

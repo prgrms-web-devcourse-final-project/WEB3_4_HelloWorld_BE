@@ -8,6 +8,6 @@ public record GymListResponse(
 	String placeUrl,
 	Double avgScore,
 	Boolean isPartner,
-	String imageUrl
+	String thumbnailImage
 ) {
 }
