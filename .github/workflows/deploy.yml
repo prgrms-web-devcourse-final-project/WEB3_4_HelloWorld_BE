@@ -95,7 +95,7 @@ jobs:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
-          username: ec2-user
+          username: root
           host: ${{ secrets.AWS_DEV_HOSTNAME }}
           key: ${{ secrets.AWS_DEV_PRIVATE_KEY }}
           script: |
@@ -107,7 +107,7 @@ jobs:
             TIMEOUT=60
 
             # 현재 실행 중인 컨테이너 확인
-            if docker ps --format '{{.Names}}' | grep -q "app1_1"; then
+            if sudo docker ps --format '{{.Names}}' | grep -q "app1_1"; then
               CURRENT="app1_1"
               NEXT="app1_2"
               CURRENT_PORT=8080
@@ -157,10 +157,10 @@ jobs:
 
             # 기존 컨테이너 중지 및 제거
             echo "Stopping old container: $CURRENT"
-            docker stop "$CURRENT" 2>/dev/null
-            docker rm "$CURRENT" 2>/dev/null
+            sudo docker stop "$CURRENT" 2>/dev/null
+            sudo docker rm "$CURRENT" 2>/dev/null
 
             # dangling image 제거
-            docker rmi $(docker images -f "dangling=true" -q) 2>/dev/null
+            sudo docker rmi $(docker images -f "dangling=true" -q) 2>/dev/null
 
             echo "✅ Deployment complete. Running container: $NEXT on port $NEXT_PORT"
