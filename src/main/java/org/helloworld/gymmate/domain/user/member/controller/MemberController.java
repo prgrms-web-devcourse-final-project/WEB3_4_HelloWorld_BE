@@ -6,6 +6,7 @@ import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.domain.user.member.dto.MemberResponse;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
+import org.helloworld.gymmate.security.oauth.service.CustomOAuth2UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberController {
 
 	private final MemberService memberService;
+	private final CustomOAuth2UserService customOAuth2UserService;
 
 	//회원 추가정보 등록
 	@PostMapping
