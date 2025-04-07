@@ -43,7 +43,6 @@ public enum ErrorCode {
 	// GymProduct
 	GYMPRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "GYM-PRODUCT-001", "존재하지 않는 헬스장 이용권입니다."),
 	GYMPRODUCT_PARTNER_MISMATCH(HttpStatus.BAD_REQUEST, "GYM-PRODUCT-002", "해당 이용권은 이 파트너 헬스장에 속하지 않습니다."),
-	GYMPRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "GYM-PRODUCT-001", "존재하지 않는 헬스장 상품입니다."),
 
 	// GymTicket
 	GYM_TICKET_NOT_FOUND(HttpStatus.NOT_FOUND, "GYM-TICKET-001", "존재하지 않는 헬스장 이용권입니다."),
