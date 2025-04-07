@@ -21,35 +21,33 @@ import lombok.NoArgsConstructor;
 @Builder
 @Table(name = "reservation")
 public class Reservation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "reservation_id", nullable = false)
-    private Long reservationId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "reservation_id", nullable = false)
+	private Long reservationId;
 
-    @Column(name = "product_name", nullable = false)
-    private String productName;
+	@Column(name = "product_name", nullable = false)
+	private String productName;
 
-    @Column(name = "date", nullable = false)
-    private LocalDate date;
+	@Column(name = "date", nullable = false)
+	private LocalDate date;
 
-    @Column(name = "time", nullable = false)
-    private Integer time;
+	@Column(name = "time", nullable = false)
+	private Integer time;
 
-    @Column(name = "price", nullable = false)
-    private Long price;
+	@Column(name = "price", nullable = false)
+	private Long price;
 
-    @Column(name = "cancel_date")
-    private LocalDate cancelDate;
+	@Column(name = "cancel_date")
+	private LocalDate cancelDate;
 
-    @Column(name = "completed_date")
-    private LocalDate completedDate;
+	@Column(name = "completed_date")
+	private LocalDate completedDate;
 
-    @Column(name = "member_id")
-    private Long memberId;
+	@Column(name = "member_id")
+	private Long memberId;
 
-    @Column(name = "trainer_id")
-    private Long trainerId;
-
-    // ====== Business Logic ======
+	@Column(name = "trainer_id")
+	private Long trainerId;
 
 }

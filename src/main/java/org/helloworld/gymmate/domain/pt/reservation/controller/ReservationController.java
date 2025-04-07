@@ -2,6 +2,7 @@ package org.helloworld.gymmate.domain.pt.reservation.controller;
 
 import org.helloworld.gymmate.common.dto.PageDto;
 import org.helloworld.gymmate.common.mapper.PageMapper;
+import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationByMonthResponse;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationRequest;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationResponse;
 import org.helloworld.gymmate.domain.pt.reservation.service.ReservationService;
@@ -113,6 +114,25 @@ public class ReservationController {
 					pageSize
 				)
 			));
+	}
+
+	/*
+	트레이너의 월별 예약 목록 조회 API
+	 */
+	@PreAuthorize("hasRole('ROLE_TRAINER')")
+	@GetMapping("/trainer/month")
+	public ResponseEntity<ReservationByMonthResponse> getTrainerReservationsByMonth(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+		@RequestParam int year,
+		@RequestParam int month
+	) {
+		ReservationByMonthResponse reservations = reservationService.getTrainerReservationsByMonth(
+			customOAuth2User.getUserId(),
+			year,
+			month
+		);
+
+		return ResponseEntity.ok(reservations);
 	}
 
 }
