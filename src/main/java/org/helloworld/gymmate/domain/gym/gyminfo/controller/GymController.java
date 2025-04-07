@@ -2,6 +2,7 @@ package org.helloworld.gymmate.domain.gym.gyminfo.controller;
 
 import org.helloworld.gymmate.common.dto.PageDto;
 import org.helloworld.gymmate.common.mapper.PageMapper;
+import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymDetailResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymListResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.service.GymService;
 import org.helloworld.gymmate.domain.gym.machine.dto.FacilityAndMachineResponse;
@@ -57,10 +58,18 @@ public class GymController {
 			gymService.getNearbyGyms(searchOption, searchTerm, page, pageSize, isPartner, customOAuth2User)));
 	}
 
+	@GetMapping("/{gymId}")
+	public ResponseEntity<GymDetailResponse> getGymDetail(
+		@PathVariable Long gymId
+	) {
+		return ResponseEntity.ok(gymService.getDetail(gymId));
+	}
+
 	@GetMapping("/{gymId}/facility")
 	public ResponseEntity<FacilityAndMachineResponse> getFacilitiesAndMachines(
 		@PathVariable Long gymId
 	) {
 		return ResponseEntity.ok(gymService.getOwnFacilitiesAndMachines(gymId));
 	}
+
 }

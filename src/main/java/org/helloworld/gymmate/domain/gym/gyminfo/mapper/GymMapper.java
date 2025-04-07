@@ -3,6 +3,7 @@ package org.helloworld.gymmate.domain.gym.gyminfo.mapper;
 import java.util.Map;
 
 import org.helloworld.gymmate.common.util.GeometryUtil;
+import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymDetailResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymListResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.partnergym.dto.request.GymRequest;
@@ -59,6 +60,22 @@ public class GymMapper {
 			gym.getAvgScore(),
 			gym.getIsPartner(),
 			gym.getImages().getFirst().getUrl()
+		);
+	}
+
+	public static GymDetailResponse toDetailResponse(Gym gym) {
+		return new GymDetailResponse(
+			gym.getGymId(),
+			gym.getGymName(),
+			gym.getStartTime(),
+			gym.getEndTime(),
+			gym.getPhoneNumber(),
+			gym.getAddress(),
+			String.valueOf(gym.getLocation().getX()),
+			String.valueOf(gym.getLocation().getY()),
+			gym.getAvgScore(),
+			gym.getIntro(),
+			gym.getIsPartner()
 		);
 	}
 
