@@ -7,6 +7,7 @@ import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.domain.gym.gymproduct.entity.GymProduct;
 import org.helloworld.gymmate.domain.gym.gymproduct.service.GymProductService;
 import org.helloworld.gymmate.domain.gym.gymticket.dto.GymTicketPurchaseResponse;
+import org.helloworld.gymmate.domain.gym.gymticket.dto.MemberGymTicketResponse;
 import org.helloworld.gymmate.domain.gym.gymticket.dto.PartnerGymTicketResponse;
 import org.helloworld.gymmate.domain.gym.gymticket.entity.GymTicket;
 import org.helloworld.gymmate.domain.gym.gymticket.mapper.GymTicketMapper;
@@ -60,6 +61,13 @@ public class GymTicketService {
 		}
 	}
 
+	public Page<MemberGymTicketResponse> getOwnTickets(Long memberId, int page, int pageSize) {
+		Pageable pageable = PageRequest.of(page, pageSize);
+		return gymTicketRepository.findByMember_MemberId(memberId, pageable)
+			.map(GymTicketMapper::toMemberGymTicketResponse);
+	}
+
+	// TODO : 티켓 취소
 	@Transactional(readOnly = true)
 	public Page<PartnerGymTicketResponse> getPartnerGymTickets(Long trainerId, int page, int pageSize) {
 		Trainer trainer = trainerService.findByUserId(trainerId);
@@ -69,7 +77,7 @@ public class GymTicketService {
 		PartnerGym partnerGym = partnerGymService.getPartnerGymByOwnerId(trainerId);
 		Pageable pageable = PageRequest.of(page, pageSize);
 		return gymTicketRepository.findAllByPartnerGymId(partnerGym.getPartnerGymId(), pageable)
-			.map(GymTicketMapper::toDto);
+			.map(GymTicketMapper::toPartnerGymTicketResponse);
 	}
 
 	// TODO : 티켓 상태 변경시키는 서비스

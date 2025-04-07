@@ -13,6 +13,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface GymTicketRepository extends JpaRepository<GymTicket, Long> {
 	List<GymTicket> findByEndDateBeforeAndStatus(LocalDate today, GymTicketStatus gymTicketStatus);
 
+	Page<GymTicket> findByMember_MemberId(Long memberId, Pageable pageable);
+
 	@EntityGraph(attributePaths = "member")
 	Page<GymTicket> findAllByPartnerGymId(Long partnerGymId, Pageable pageable);
 }

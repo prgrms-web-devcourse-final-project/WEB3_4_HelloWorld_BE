@@ -3,6 +3,7 @@ package org.helloworld.gymmate.domain.gym.gymticket.controller;
 import org.helloworld.gymmate.common.dto.PageDto;
 import org.helloworld.gymmate.common.mapper.PageMapper;
 import org.helloworld.gymmate.domain.gym.gymticket.dto.GymTicketPurchaseResponse;
+import org.helloworld.gymmate.domain.gym.gymticket.dto.MemberGymTicketResponse;
 import org.helloworld.gymmate.domain.gym.gymticket.dto.PartnerGymTicketResponse;
 import org.helloworld.gymmate.domain.gym.gymticket.service.GymTicketService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
@@ -46,6 +47,18 @@ public class GymTicketController {
 	) {
 		return ResponseEntity.ok().body(
 			gymTicketService.createTicket(customOAuth2User.getUserId(), gymProductId));
+	}
+
+	@PreAuthorize("hasRole('ROLE_MEMBER')")
+	@GetMapping
+	@Validated
+	public ResponseEntity<PageDto<MemberGymTicketResponse>> ownTickets(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+		@RequestParam(defaultValue = "0") @Min(0) int page,
+		@RequestParam(defaultValue = "10") @Min(1) @Max(10) int pageSize
+	) {
+		return ResponseEntity.ok(PageMapper.toPageDto(
+			gymTicketService.getOwnTickets(customOAuth2User.getUserId(), page, pageSize)));
 	}
 
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
