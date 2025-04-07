@@ -121,7 +121,7 @@ public class PartnerGymService {
 		return gymRepository.findNearbyGyms(point, radiusInMeters, limit);
 	}
 
-	private PartnerGym getPartnerGymByOwnerId(Long ownerId) {
+	public PartnerGym getPartnerGymByOwnerId(Long ownerId) {
 		// 본인이 운영하는 제휴 헬스장 가져오기
 		return partnerGymRepository.findByOwnerId(ownerId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_AUTHORIZED));
