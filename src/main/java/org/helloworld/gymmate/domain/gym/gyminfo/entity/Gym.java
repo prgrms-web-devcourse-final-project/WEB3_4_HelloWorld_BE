@@ -43,13 +43,13 @@ public class Gym {
 	@Column(name = "gym_name", nullable = false)
 	private String gymName;
 
-	@Column(name = "start_time", nullable = false)  //크롤링 해서 없는 경우 "운영시간이 없습니다" 표시
+	@Column(name = "start_time")  //크롤링 해서 없는 경우 "운영시간이 없습니다" 표시
 	private String startTime;
 
-	@Column(name = "end_time", nullable = false) //크롤링 해서 없는 경우 "운영시간이 없습니다" 표시
+	@Column(name = "end_time") //크롤링 해서 없는 경우 "운영시간이 없습니다" 표시
 	private String endTime;
 
-	@Column(name = "phone_number", nullable = true) //헬스장 번호가 없는 경우 존재함
+	@Column(name = "phone_number") //헬스장 번호가 없는 경우 존재함
 	private String phoneNumber;
 
 	@Column(name = "is_partner", nullable = false)
@@ -64,7 +64,7 @@ public class Gym {
 	@Column(name = "avg_score", nullable = false)
 	private Double avgScore;
 
-	@Column(name = "intro", nullable = false)
+	@Column(name = "intro")
 	private String intro;
 
 	@Column(name = "place_url") //헬스장 상세 정보URL

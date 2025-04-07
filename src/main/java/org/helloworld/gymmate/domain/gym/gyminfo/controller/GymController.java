@@ -4,6 +4,7 @@ import org.helloworld.gymmate.common.dto.PageDto;
 import org.helloworld.gymmate.common.mapper.PageMapper;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymDetailResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymListResponse;
+import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymSearchResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.service.GymService;
 import org.helloworld.gymmate.domain.gym.machine.dto.FacilityAndMachineResponse;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
@@ -70,6 +71,16 @@ public class GymController {
 		@PathVariable Long gymId
 	) {
 		return ResponseEntity.ok(gymService.getOwnFacilitiesAndMachines(gymId));
+	}
+
+	@GetMapping("/search")
+	@PreAuthorize("hasRole('ROLE_TRAINER')")
+	public ResponseEntity<PageDto<GymSearchResponse>> getSearch(
+		@RequestParam(defaultValue = "") String searchTerm,
+		@RequestParam(defaultValue = "0") @Min(0) int page,
+		@RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize
+	) {
+		return ResponseEntity.ok(PageMapper.toPageDto(gymService.getSearch(searchTerm, page, pageSize)));
 	}
 
 }

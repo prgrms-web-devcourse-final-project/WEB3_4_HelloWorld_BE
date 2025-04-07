@@ -10,6 +10,7 @@ import org.helloworld.gymmate.domain.gym.facility.dto.FacilityResponse;
 import org.helloworld.gymmate.domain.gym.facility.mapper.FacilityMapper;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymDetailResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymListResponse;
+import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymSearchResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gyminfo.mapper.GymMapper;
 import org.helloworld.gymmate.domain.gym.gyminfo.repository.GymRepository;
@@ -84,8 +85,8 @@ public class GymService {
 		int pageSize, Boolean isPartner, CustomOAuth2User customOAuth2User) {
 		GymSearchOption search = GymSearchOption.from(searchOption);
 		Member member = memberService.findByUserId(customOAuth2User.getUserId());
-		Double x = Double.valueOf(member.getXField());
-		Double y = Double.valueOf(member.getYField());
+		Double x = member.getXField();
+		Double y = member.getYField();
 		Pageable pageable = PageRequest.of(page, pageSize);
 		return fetchNearbyGymsUsingXY(search, searchTerm, pageable, x, y, isPartner);
 	}
@@ -114,5 +115,16 @@ public class GymService {
 	public GymDetailResponse getDetail(Long gymId) {
 		Gym gym = getExistingGym(gymId);
 		return GymMapper.toDetailResponse(gym);
+	}
+
+	@Transactional(readOnly = true)
+	public Page<GymSearchResponse> getSearch(String searchTerm, int page, int pageSize) {
+		Pageable pageable = PageRequest.of(page, pageSize);
+		Page<Gym> gyms = gymRepository.searchGymsByName(searchTerm, pageable);
+		List<GymSearchResponse> responses = gyms.stream()
+			.map(GymMapper::toSearchResponse)
+			.toList();
+
+		return new PageImpl<>(responses, pageable, gyms.getTotalElements());
 	}
 }
