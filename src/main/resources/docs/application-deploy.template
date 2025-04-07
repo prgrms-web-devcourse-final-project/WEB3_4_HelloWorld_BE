@@ -1,6 +1,6 @@
 # EC2용 환경 설정
 server:
-  url: https://3.34.129.72.nip.io
+  url: https://api.gymmate.my
 
 spring:
   datasource:
@@ -20,7 +20,7 @@ spring:
 
   data:
     redis:
-      host: gymmate-deploy-redis
+      host: redis_1
       port: 6379
 
   flyway:
