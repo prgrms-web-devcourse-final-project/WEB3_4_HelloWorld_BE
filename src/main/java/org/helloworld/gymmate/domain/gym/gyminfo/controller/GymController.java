@@ -37,7 +37,7 @@ public class GymController {
 		@RequestParam(defaultValue = "6") @Min(1) @Max(50) int pageSize,
 		@RequestParam(required = false, defaultValue = "127.0276") Double x,
 		@RequestParam(required = false, defaultValue = "37.4979") Double y,
-		@RequestParam(required = false, defaultValue = "true") Boolean isPartner
+		@RequestParam(required = false, defaultValue = "") Boolean isPartner
 	) {
 		return ResponseEntity.ok(PageMapper.toPageDto(
 			gymService.getGyms(sortOption, searchOption, searchTerm, page, pageSize, x, y, isPartner)));
@@ -51,7 +51,7 @@ public class GymController {
 		@RequestParam(defaultValue = "") String searchTerm,
 		@RequestParam(defaultValue = "0") @Min(0) int page,
 		@RequestParam(defaultValue = "6") @Min(1) @Max(50) int pageSize,
-		@RequestParam(required = false, defaultValue = "true") Boolean isPartner,
+		@RequestParam(required = false, defaultValue = "") Boolean isPartner,
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
 	) {
 		return ResponseEntity.ok(PageMapper.toPageDto(
