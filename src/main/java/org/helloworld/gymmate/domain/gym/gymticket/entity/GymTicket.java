@@ -57,4 +57,7 @@ public class GymTicket {
 	@Column(name = "partner_gym_id", nullable = false)
 	private Long partnerGymId;
 
+	public void updateStatus(GymTicketStatus gymTicketStatus) {
+		this.status = gymTicketStatus;
+	}
 }
