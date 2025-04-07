@@ -86,9 +86,10 @@ public class MemberService {
 
 		//2.2. 새로운 이미지가 있다면,
 		if (image != null && !image.isEmpty()) {
-			//이전에 저장된 멤버의 프로필 사진 삭제
-			fileManager.deleteFile(member.getProfileUrl());
-
+			//이전에 프로필 사진이 있었다면 -> 삭제
+			if (imageUrl != null && !imageUrl.isEmpty()) {
+				fileManager.deleteFile(imageUrl);
+			}
 			//새로운 프로필 사진 업로드 & url 저장
 			imageUrl = fileManager.uploadFile(image, "member");
 		}
