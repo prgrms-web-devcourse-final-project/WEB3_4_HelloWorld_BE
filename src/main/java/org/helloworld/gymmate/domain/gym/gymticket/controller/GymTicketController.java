@@ -7,6 +7,7 @@ import org.helloworld.gymmate.domain.gym.gymticket.dto.MemberGymTicketResponse;
 import org.helloworld.gymmate.domain.gym.gymticket.dto.PartnerGymTicketResponse;
 import org.helloworld.gymmate.domain.gym.gymticket.service.GymTicketService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -46,7 +47,7 @@ public class GymTicketController {
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@PathVariable Long gymProductId
 	) {
-		return ResponseEntity.ok().body(
+		return ResponseEntity.status(HttpStatus.CREATED).body(
 			gymTicketService.createTicket(customOAuth2User.getUserId(), gymProductId));
 	}
 
