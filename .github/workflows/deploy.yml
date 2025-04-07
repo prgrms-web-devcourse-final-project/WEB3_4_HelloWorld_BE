@@ -11,6 +11,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DOCKER_IMAGE_NAME: team12-app1
 
     steps:
       - name: Checkout
