@@ -59,4 +59,7 @@ public interface TrainerRepository extends JpaRepository<Trainer, Long> {
 		@Param("x") Double x, @Param("y") Double y,
 		@Param("searchOption") String searchOption, @Param("searchTerm") String searchTerm,
 		Pageable pageable);
+
+	List<Trainer> findByGym_GymId(Long gymId);
+
 }

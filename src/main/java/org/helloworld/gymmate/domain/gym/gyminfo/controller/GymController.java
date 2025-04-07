@@ -1,9 +1,12 @@
 package org.helloworld.gymmate.domain.gym.gyminfo.controller;
 
+import java.util.List;
+
 import org.helloworld.gymmate.common.dto.PageDto;
 import org.helloworld.gymmate.common.mapper.PageMapper;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymDetailResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymListResponse;
+import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.TrainerDetailResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.service.GymService;
 import org.helloworld.gymmate.domain.gym.machine.dto.FacilityAndMachineResponse;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
@@ -70,6 +73,14 @@ public class GymController {
 		@PathVariable Long gymId
 	) {
 		return ResponseEntity.ok(gymService.getOwnFacilitiesAndMachines(gymId));
+	}
+
+	//헬스장 소속 트레이너 정보 전체 조회
+	@GetMapping("/{gymId}/trainer")
+	public ResponseEntity<List<TrainerDetailResponse>> getTrainerDetail(
+		@PathVariable Long gymId
+	) {
+		return ResponseEntity.ok(gymService.getTrainerDetail(gymId));
 	}
 
 }

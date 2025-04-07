@@ -1,5 +1,7 @@
 package org.helloworld.gymmate.domain.pt.ptproduct.repository;
 
+import java.util.List;
+
 import org.helloworld.gymmate.domain.pt.ptproduct.entity.PtProduct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -108,4 +110,7 @@ public interface PtProductRepository extends JpaRepository<PtProduct, Long> {
 		@Param("x") Double x, @Param("y") Double y,
 		@Param("ptProductSearchOption") String ptProductSearchOption, @Param("searchTerm") String searchTerm,
 		Pageable pageable);
+
+	List<PtProduct> findByTrainerIdIn(List<Long> trainerIds);
+
 }
