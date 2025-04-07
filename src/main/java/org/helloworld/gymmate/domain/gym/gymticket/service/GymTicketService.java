@@ -7,11 +7,15 @@ import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.domain.gym.gymproduct.entity.GymProduct;
 import org.helloworld.gymmate.domain.gym.gymproduct.service.GymProductService;
 import org.helloworld.gymmate.domain.gym.gymticket.dto.GymTicketPurchaseResponse;
+import org.helloworld.gymmate.domain.gym.gymticket.dto.MemberGymTicketResponse;
 import org.helloworld.gymmate.domain.gym.gymticket.entity.GymTicket;
 import org.helloworld.gymmate.domain.gym.gymticket.mapper.GymTicketMapper;
 import org.helloworld.gymmate.domain.gym.gymticket.repository.GymTicketRepository;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +54,12 @@ public class GymTicketService {
 		}
 	}
 
-	// TODO : 티켓 상태 변경시키는 서비스
+	public Page<MemberGymTicketResponse> getOwnTickets(Long memberId, int page, int pageSize) {
+		Pageable pageable = PageRequest.of(page, pageSize);
+		return gymTicketRepository.findByMember_MemberId(memberId, pageable)
+			.map(GymTicketMapper::toDto);
+	}
+
+	// TODO : 티켓 취소
 
 }
