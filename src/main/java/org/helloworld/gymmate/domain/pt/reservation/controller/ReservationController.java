@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,6 +58,19 @@ public class ReservationController {
 				ptProductId,
 				request
 			));
+	}
+
+	/*
+	 회원의 예약 삭제 API
+	 - param : reservationId
+	*/
+	@PreAuthorize("hasRole('ROLE_MEMBER')")
+	@DeleteMapping("/{reservationId}")
+	public ResponseEntity<Void> deleteMemberReservation(
+		@PathVariable Long reservationId
+	) {
+		reservationService.deleteMemberReservation(reservationId);
+		return ResponseEntity.ok().build();
 	}
 
 	/*

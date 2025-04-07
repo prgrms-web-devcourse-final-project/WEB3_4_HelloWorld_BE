@@ -30,6 +30,10 @@ public enum ErrorCode {
 	UNSUPPORTED_SEARCH_OPTION(HttpStatus.BAD_REQUEST, "PT-PRODUCT-002", "존재하지 않는 검색 옵션입니다."),
 	UNSUPPORTED_SORT_OPTION(HttpStatus.BAD_REQUEST, "PT-PRODUCT-003", "존재하지 않는 정렬 조건입니다."),
 
+	//reservation
+	RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION-001", "예약이 존재하지 않습니다"),
+	CANNOT_CANCEL_THIS_WEEK_RESERVATION(HttpStatus.BAD_REQUEST, "RESERVATION-002", "이번 주 예약은 취소할 수 없습니다."),
+
 	// Gym
 	GYM_INVALID_REQUEST(HttpStatus.BAD_REQUEST, "GYM-001", "잘못된 입력값입니다."),
 	GYM_NOT_FOUND(HttpStatus.NOT_FOUND, "GYM-002", "요청한 헬스장이 존재하지 않습니다."),

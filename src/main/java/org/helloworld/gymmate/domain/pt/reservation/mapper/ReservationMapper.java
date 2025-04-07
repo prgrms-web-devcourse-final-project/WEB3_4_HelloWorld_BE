@@ -1,7 +1,5 @@
 package org.helloworld.gymmate.domain.pt.reservation.mapper;
 
-import java.time.LocalDate;
-
 import org.helloworld.gymmate.domain.pt.ptproduct.entity.PtProduct;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationRequest;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationResponse;
@@ -16,14 +14,13 @@ public class ReservationMapper {
 	public static Reservation toEntity(
 		PtProduct ptProduct,
 		ReservationRequest request,
-		LocalDate date,
 		Long userId
 
 	) {
 		return Reservation.builder()
 			.productName(ptProduct.getPtProductName())  // 스냅샷
 			.trainerId(ptProduct.getTrainerId())       // 스냅샷
-			.date(date) //실제 날짜 계산해 저장
+			.date(request.date())
 			.time(request.time())
 			.price(ptProduct.getPtProductFee())        // 스냅샷
 			.memberId(userId)
