@@ -1,6 +1,6 @@
 # EC2용 환경 설정
 server:
-  url: http://localhost:8080/
+  url: https://3.34.129.72.nip.io
 
 spring:
   datasource:
@@ -12,7 +12,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect

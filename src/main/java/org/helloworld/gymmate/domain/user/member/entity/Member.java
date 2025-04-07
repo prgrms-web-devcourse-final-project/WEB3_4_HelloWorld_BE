@@ -140,4 +140,8 @@ public class Member {
 		this.profileUrl = profileUrl;
 		this.additionalInfoCompleted = true;
 	}
+
+	public void updateCash(Long updateCash) {
+		this.cash = updateCash;
+	}
 }
