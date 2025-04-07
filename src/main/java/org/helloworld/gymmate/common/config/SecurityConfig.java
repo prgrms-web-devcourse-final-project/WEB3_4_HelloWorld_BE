@@ -68,7 +68,7 @@ public class SecurityConfig {
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() { // 스프링 시큐리티를 무시할 페이지 목록 ( = 로그인이 필요없는 페이지 목록)
 		return web -> web.ignoring().requestMatchers(
-				"/actuator/**",
+				"/", "/actuator/**",
 				"/v3/**", "/swagger-ui/**", "/api/logistics",
 				"h2-console/**", "/error",
 				// 이하는 개발환경에서만 허용해야 함
