@@ -120,10 +120,10 @@ jobs:
 
             # 다음 컨테이너 실행
             echo "Starting new container: $NEXT on port $NEXT_PORT..."
-            docker pull "$IMAGE"
-            docker stop "$NEXT" 2>/dev/null
-            docker rm "$NEXT" 2>/dev/null
-            docker run -d \
+            sudo docker pull "$IMAGE"
+            sudo docker stop "$NEXT" 2>/dev/null
+            sudo docker rm "$NEXT" 2>/dev/null
+            sudo docker run -d \
               -v $VOLUME \
               --network $NETWORK \
               --name "$NEXT" \
@@ -144,7 +144,7 @@ jobs:
               ELAPSED_TIME=$(( $(date +%s) - START_TIME ))
               if [[ $ELAPSED_TIME -ge $TIMEOUT ]]; then
                 echo "❌ Timeout: $NEXT did not start in $TIMEOUT seconds."
-                docker stop "$NEXT"
+                sudo docker stop "$NEXT"
                 exit 1
               fi
 
