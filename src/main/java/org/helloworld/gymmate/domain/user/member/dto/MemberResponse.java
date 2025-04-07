@@ -32,8 +32,7 @@ public record MemberResponse(
 
 	Integer level,
 
-	//계정잠김
-	Boolean isAccountNonLocked,
+	String profileUrl,
 
 	Long cash
 
