@@ -5,7 +5,9 @@ public record GymListResponse(
 	String gymName,
 	String startTime,
 	String endTime,
-	String placeUrl,
+	String address,
+	String xField,
+	String yField,
 	Double avgScore,
 	Boolean isPartner,
 	String thumbnailImage
