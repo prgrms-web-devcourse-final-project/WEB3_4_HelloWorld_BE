@@ -12,8 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,7 +76,7 @@ public class GymTicketController {
 	}
 
 	@PreAuthorize("hasRole('ROLE_MEMBER')")
-	@DeleteMapping("/{gymTicketId}")
+	@PatchMapping("/{gymTicketId}")
 	public ResponseEntity<Void> cancelGymTicket(
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
 		@PathVariable Long gymTicketId
