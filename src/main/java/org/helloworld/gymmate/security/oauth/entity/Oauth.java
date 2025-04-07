@@ -26,19 +26,22 @@ import lombok.NoArgsConstructor;
 @Builder
 @Table(name = "oauth")
 public class Oauth extends BaseEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "oauth_id")
-	private Long oauthId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "oauth_id")
+    private Long oauthId;
 
-	@Convert(converter = SocialProviderTypeConverter.class)
-	@Column(name = "provider_type", nullable = false)
-	private SocialProviderType provider;
+    @Convert(converter = SocialProviderTypeConverter.class)
+    @Column(name = "provider_type", nullable = false)
+    private SocialProviderType provider;
 
-	@Column(name = "provider_id", nullable = false)
-	private String providerId;
+    @Column(name = "provider_id", nullable = false)
+    private String providerId;
 
-	@Convert(converter = UserTypeConverter.class)
-	@Column(name = "user_type", nullable = false)
-	private UserType userType;
+    @Convert(converter = UserTypeConverter.class)
+    @Column(name = "user_type", nullable = false)
+    private UserType userType;
+
+    // ====== Business Logic ======
+
 }

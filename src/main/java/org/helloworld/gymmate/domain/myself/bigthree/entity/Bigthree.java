@@ -26,25 +26,28 @@ import lombok.Setter;
 @Builder
 @Table(name = "bigthree")
 public class Bigthree {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "bigthree_id")
-	private Long bigthreeId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "bigthree_id")
+    private Long bigthreeId;
 
-	@Column(name = "bench", nullable = false)
-	private double bench;
+    @Column(name = "bench", nullable = false)
+    private double bench;
 
-	@Column(name = "deadlift", nullable = false)
-	private double deadlift;
+    @Column(name = "deadlift", nullable = false)
+    private double deadlift;
 
-	@Column(name = "squat", nullable = false)
-	private double squat;
+    @Column(name = "squat", nullable = false)
+    private double squat;
 
-	@Column(name = "date", nullable = false)
-	private LocalDate date;
+    @Column(name = "date", nullable = false)
+    private LocalDate date;
 
-	@Setter
-	@ManyToOne
-	@JoinColumn(name = "member_id")
-	private Member member;
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    // ====== Business Logic ======
+
 }

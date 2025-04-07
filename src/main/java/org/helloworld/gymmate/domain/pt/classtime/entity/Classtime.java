@@ -20,17 +20,20 @@ import lombok.NoArgsConstructor;
 @Table(name = "class_time")
 public class Classtime {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "class_time_id", nullable = false)
-	private Long classtimeId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "class_time_id", nullable = false)
+    private Long classtimeId;
 
-	@Column(name = "time", nullable = false)
-	private Integer time;
+    @Column(name = "time", nullable = false)
+    private Integer time;
 
-	@Column(name = "day_of_week", nullable = false)
-	private Integer dayOfWeek;
+    @Column(name = "day_of_week", nullable = false)
+    private Integer dayOfWeek;
 
-	@Column(name = "trainer_id", nullable = false)
-	private Long trainerId;
+    @Column(name = "trainer_id", nullable = false)
+    private Long trainerId;
+
+    // ====== Business Logic ======
+
 }

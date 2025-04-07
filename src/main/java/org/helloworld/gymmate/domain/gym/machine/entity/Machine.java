@@ -26,30 +26,32 @@ import lombok.NoArgsConstructor;
 @Builder
 @Table(name = "machine")
 public class Machine {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "machine_id")
-	private Long machineId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "machine_id")
+    private Long machineId;
 
-	@Column(name = "machine_name", nullable = false)
-	private String machineName;
+    @Column(name = "machine_name", nullable = false)
+    private String machineName;
 
-	@Column(name = "amount", nullable = false)
-	private Integer amount;
+    @Column(name = "amount", nullable = false)
+    private Integer amount;
 
-	@Column(name = "machine_image")
-	private String machineImage;
+    @Column(name = "machine_image")
+    private String machineImage;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "gym_id")
-	private Gym gym;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gym_id")
+    private Gym gym;
 
-	public void update(@Valid MachineRequest request) {
-		this.machineName = request.machineName();
-		this.amount = request.amount();
-	}
+    // ====== Business Logic ======
+	
+    public void update(@Valid MachineRequest request) {
+        this.machineName = request.machineName();
+        this.amount = request.amount();
+    }
 
-	public void updateImage(String imageUrl) {
-		this.machineImage = imageUrl;
-	}
+    public void updateImage(String imageUrl) {
+        this.machineImage = imageUrl;
+    }
 }
