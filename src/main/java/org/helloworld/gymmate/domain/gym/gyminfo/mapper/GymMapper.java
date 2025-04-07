@@ -1,11 +1,13 @@
 package org.helloworld.gymmate.domain.gym.gyminfo.mapper;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.helloworld.gymmate.common.util.GeometryUtil;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymDetailResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymListResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gyminfo.entity.GymImage;
 import org.helloworld.gymmate.domain.gym.partnergym.dto.request.GymRequest;
 
 public class GymMapper {
@@ -24,13 +26,13 @@ public class GymMapper {
 		double y = parseToDouble(response.get("y"));
 		return Gym.builder()
 			.gymName((String)response.get("place_name"))
-			.startTime("영업시간이 등록되지 않았습니다.")
-			.endTime("영업시간이 등록되지 않았습니다.")
+			.startTime(null)
+			.endTime(null)
 			.phoneNumber((String)response.get("phone"))
 			.isPartner(false)
 			.address((String)response.get("road_address_name"))
 			.location(GeometryUtil.createPoint(x, y))
-			.intro("소개가 등록되지 않았습니다.")
+			.intro(null)
 			.avgScore(0.0)
 			.placeUrl((String)response.get("place_url"))
 			.build();
@@ -59,7 +61,10 @@ public class GymMapper {
 			gym.getPlaceUrl(),
 			gym.getAvgScore(),
 			gym.getIsPartner(),
-			gym.getImages().getFirst().getUrl()
+			Optional.ofNullable(gym.getImages())
+				.filter(images -> !images.isEmpty())
+				.map(images -> images.getFirst().getUrl())
+				.orElse(null)
 		);
 	}
 
@@ -75,7 +80,8 @@ public class GymMapper {
 			String.valueOf(gym.getLocation().getY()),
 			gym.getAvgScore(),
 			gym.getIntro(),
-			gym.getIsPartner()
+			gym.getIsPartner(),
+			gym.getImages().stream().map(GymImage::getUrl).toList()
 		);
 	}
 
