@@ -53,7 +53,7 @@ public class PartnerGymMapper {
 
 	public static GymImageResponse toDto(GymImage gymImage) {
 		return new GymImageResponse(
-			gymImage.getId(),
+			gymImage.getGymImageId(),
 			gymImage.getUrl()
 		);
 	}

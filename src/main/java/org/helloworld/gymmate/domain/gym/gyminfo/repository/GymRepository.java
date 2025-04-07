@@ -37,37 +37,27 @@ public interface GymRepository extends JpaRepository<Gym, Long> {
 	List<Gym> findNearbyGyms(@Param("point") String point, @Param("distance") double distance,
 		@Param("limit") int limit);
 
-	@Query("SELECT g FROM Gym g WHERE g.isPartner = :isPartner")
-	Page<Gym> findAllByIsPartnerOrderByAvgScoreDesc(Boolean isPartner, Pageable pageable);
+	@Query("SELECT g FROM Gym g WHERE g.isPartner = :isPartner ORDER BY g.avgScore DESC")
+	Page<Gym> findAll(Boolean isPartner, Pageable pageable);
 
-	@Query("SELECT g FROM Gym g WHERE g.gymName LIKE CONCAT('%', :searchTerm, '%') AND g.isPartner = :isPartner")
-	Page<Gym> findByGymNameContainingIgnoreCaseAndIsPartnerOrderByAvgScoreDesc(String searchTerm, Boolean isPartner,
+	@Query("SELECT g FROM Gym g WHERE g.gymName LIKE CONCAT('%', :searchTerm, '%') AND g.isPartner = :isPartner ORDER BY g.avgScore DESC")
+	Page<Gym> searchGymByGymName(String searchTerm, Boolean isPartner,
 		Pageable pageable);
 
-	@Query("SELECT g FROM Gym g WHERE g.address LIKE CONCAT('%', :searchTerm, '%') AND g.isPartner = :isPartner")
-	Page<Gym> findByAddressAndIsPartnerOrderByAvgScoreDesc(String searchTerm, Boolean isPartner,
+	@Query("SELECT g FROM Gym g WHERE g.address LIKE CONCAT('%', :searchTerm, '%') AND g.isPartner = :isPartner ORDER BY g.avgScore DESC")
+	Page<Gym> searchGymByAddress(String searchTerm, Boolean isPartner,
 		Pageable pageable);
 
 	@Query(value = """
-		 SELECT g.*
-		 FROM gym g
+		 SELECT g
+		 FROM Gym g
 		 WHERE (:searchOption = 'NONE' OR
-		       (:searchOption = 'GYM' AND g.gym_name LIKE CONCAT('%', :searchTerm, '%')) OR
+		       (:searchOption = 'GYM' AND g.gymName LIKE CONCAT('%', :searchTerm, '%')) OR
 		       (:searchOption = 'DISTRICT' AND g.address LIKE CONCAT('%', :searchTerm, '%')))
-				 AND g.is_partner = :isPartner
-		 ORDER BY ST_Distance_Sphere(
-		 		    ST_GeomFromText(CONCAT('POINT(', :y, ' ', :x, ')'), 4326), g.location 		
-		 ) ASC
-		""",
-		countQuery = """
-			SELECT COUNT(*)
-			FROM gym g
-			  WHERE (:searchOption = 'NONE' OR
-				    (:searchOption = 'GYM' AND g.gym_name LIKE CONCAT('%', :searchTerm, '%')) OR
-				    (:searchOption = 'DISTRICT' AND g.address LIKE CONCAT('%', :searchTerm, '%')))
-			""", nativeQuery = true)
+				 AND g.isPartner = :isPartner
+		 ORDER BY FUNCTION('ST_Distance_Sphere', FUNCTION('ST_GeomFromText', CONCAT('POINT(', :y, ' ', :x, ')'), 4326), g.location) ASC
+		""")
 	Page<Gym> findNearByGymWithSearchAndIsPartner(@Param("x") Double x, @Param("y") Double y,
 		@Param("searchOption") String searchOption, @Param("searchTerm") String searchTerm,
 		@Param("isPartner") Boolean isPartner, Pageable pageable);
-
 }

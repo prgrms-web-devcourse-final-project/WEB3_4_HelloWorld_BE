@@ -26,31 +26,33 @@ import lombok.NoArgsConstructor;
 @Table(name = "gym_product")
 public class GymProduct {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "gym_product_id")
-	private Long gymProductId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "gym_product_id")
+    private Long gymProductId;
 
-	@Column(name = "gym_product_name", nullable = false)
-	private String gymProductName;
+    @Column(name = "gym_product_name", nullable = false)
+    private String gymProductName;
 
-	@Column(name = "gym_product_fee", nullable = false)
-	private Integer gymProductFee;
+    @Column(name = "gym_product_fee", nullable = false)
+    private Integer gymProductFee;
 
-	@Column(name = "gym_product_month", nullable = false)
-	private Integer gymProductMonth;
+    @Column(name = "gym_product_month", nullable = false)
+    private Integer gymProductMonth;
 
-	@Column(name = "on_sale", nullable = false)
-	private Boolean onSale;
+    @Column(name = "on_sale", nullable = false)
+    private Boolean onSale;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "partner_gym_id")
-	private PartnerGym partnerGym;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_gym_id")
+    private PartnerGym partnerGym;
 
-	public void update(GymProductRequest request) {
-		this.gymProductName = request.gymProductName();
-		this.gymProductFee = request.gymProductFee();
-		this.gymProductMonth = request.gymProductMonth();
-	}
+    // ====== Business Logic ======
+	
+    public void update(GymProductRequest request) {
+        this.gymProductName = request.gymProductName();
+        this.gymProductFee = request.gymProductFee();
+        this.gymProductMonth = request.gymProductMonth();
+    }
 
 }

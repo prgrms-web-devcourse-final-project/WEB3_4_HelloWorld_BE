@@ -20,7 +20,7 @@ import org.helloworld.gymmate.domain.gym.partnergym.dto.response.PartnerGymDetai
 import org.helloworld.gymmate.domain.gym.partnergym.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.partnergym.mapper.PartnerGymMapper;
 import org.helloworld.gymmate.domain.gym.partnergym.repository.PartnerGymRepository;
-import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
+import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,7 +81,7 @@ public class PartnerGymService {
 		// 전체 정보 업데이트
 		updatePartnerGymInfos(request.gymInfoRequest(), request.deleteImageIds(), images, existingGym, partnerGym);
 
-		return existingGym.getGymId();
+		return partnerGym.getPartnerGymId();
 	}
 
 	private void updatePartnerGymInfos(GymInfoRequest gymInfoRequest, List<Long> deleteImageIds,
@@ -121,7 +121,7 @@ public class PartnerGymService {
 		return gymRepository.findNearbyGyms(point, radiusInMeters, limit);
 	}
 
-	private PartnerGym getPartnerGymByOwnerId(Long ownerId) {
+	public PartnerGym getPartnerGymByOwnerId(Long ownerId) {
 		// 본인이 운영하는 제휴 헬스장 가져오기
 		return partnerGymRepository.findByOwnerId(ownerId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_AUTHORIZED));
@@ -179,7 +179,7 @@ public class PartnerGymService {
 	private void deleteImages(List<Long> deleteImageIds, Gym gym) {
 		// 삭제할 이미지 필터링
 		List<GymImage> imagesToDelete = gym.getImages().stream()
-			.filter(img -> deleteImageIds.contains(img.getId()))
+			.filter(img -> deleteImageIds.contains(img.getGymImageId()))
 			.toList();
 
 		// S3 + 연관관계 제거

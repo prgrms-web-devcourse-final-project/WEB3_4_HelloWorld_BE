@@ -12,4 +12,13 @@ public enum GymTicketStatus {
 	GymTicketStatus(String description) {
 		this.description = description;
 	}
+
+	public static GymTicketStatus fromDescription(String name) {
+		for (GymTicketStatus status : GymTicketStatus.values()) {
+			if (status.getDescription().equalsIgnoreCase(name)) {
+				return status;
+			}
+		}
+		throw new IllegalArgumentException("Unknown status: " + name);
+	}
 }
