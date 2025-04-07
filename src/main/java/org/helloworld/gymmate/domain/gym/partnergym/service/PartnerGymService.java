@@ -81,7 +81,7 @@ public class PartnerGymService {
 		// 전체 정보 업데이트
 		updatePartnerGymInfos(request.gymInfoRequest(), request.deleteImageIds(), images, existingGym, partnerGym);
 
-		return existingGym.getGymId();
+		return partnerGym.getPartnerGymId();
 	}
 
 	private void updatePartnerGymInfos(GymInfoRequest gymInfoRequest, List<Long> deleteImageIds,
