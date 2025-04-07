@@ -8,6 +8,7 @@ import org.helloworld.gymmate.domain.gym.enums.GymSearchOption;
 import org.helloworld.gymmate.domain.gym.enums.GymSortOption;
 import org.helloworld.gymmate.domain.gym.facility.dto.FacilityResponse;
 import org.helloworld.gymmate.domain.gym.facility.mapper.FacilityMapper;
+import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymDetailResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymListResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gyminfo.mapper.GymMapper;
@@ -41,15 +42,15 @@ public class GymService {
 		return new FacilityAndMachineResponse(facilityResponse, machineResponses);
 	}
 
-	// 헬스장 조회
+	// 헬스장 조회 (외부에서 호출하는 부분이 있어서 Transactional 추가)
+	@Transactional(readOnly = true)
 	public Gym getExistingGym(Long gymId) {
 		return gymRepository.findById(gymId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.GYM_NOT_FOUND));
 	}
 
 	// 편의시설 조회
-	@Transactional(readOnly = true)
-	public FacilityResponse getFacility(Gym gym) {
+	private FacilityResponse getFacility(Gym gym) {
 		return FacilityMapper.toDto(gym.getFacility());
 	}
 
@@ -70,12 +71,10 @@ public class GymService {
 	public Page<GymListResponse> fetchScoreSortedGyms(GymSearchOption search, String searchTerm,
 		Pageable pageable, Boolean isPartner) {
 		Page<Gym> gyms = switch (search) {
-			case NONE -> gymRepository.findAllByIsPartnerOrderByAvgScoreDesc(isPartner, pageable);
-			case GYM ->
-				gymRepository.findByGymNameContainingIgnoreCaseAndIsPartnerOrderByAvgScoreDesc(searchTerm, isPartner,
-					pageable);
-			case DISTRICT ->
-				gymRepository.findByAddressAndIsPartnerOrderByAvgScoreDesc(searchTerm, isPartner, pageable);
+			case NONE -> gymRepository.findAll(isPartner, pageable);
+			case GYM -> gymRepository.searchGymByGymName(searchTerm, isPartner,
+				pageable);
+			case DISTRICT -> gymRepository.searchGymByAddress(searchTerm, isPartner, pageable);
 		};
 		return fetchAndMapGyms(gyms, pageable);
 	}
@@ -111,4 +110,9 @@ public class GymService {
 		return new PageImpl<>(responses, pageable, gyms.getTotalElements());
 	}
 
+	@Transactional(readOnly = true)
+	public GymDetailResponse getDetail(Long gymId) {
+		Gym gym = getExistingGym(gymId);
+		return GymMapper.toDetailResponse(gym);
+	}
 }
