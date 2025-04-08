@@ -66,7 +66,7 @@ public class Trainer {
     private String businessNumber;
 
     @Column(name = "business_date")
-    private LocalDate business_date;
+    private LocalDate businessDate;
 
     @Column(name = "is_owner")
     private Boolean isOwner;
@@ -132,7 +132,7 @@ public class Trainer {
         this.bank = request.bank();
         this.account = request.account();
         this.businessNumber = request.businessNumber();
-        this.business_date = LocalDate.parse(request.businessDate(), DateTimeFormatter.ofPattern("yyyyMMdd"));
+        this.businessDate = LocalDate.parse(request.businessDate(), DateTimeFormatter.ofPattern("yyyyMMdd"));
         this.additionalInfoCompleted = true;
     }
 
