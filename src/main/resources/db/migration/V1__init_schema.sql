@@ -2,10 +2,10 @@
 CREATE TABLE oauth (
     oauth_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     -- provider_type ENUM('KAKAO', 'GOOGLE', 'NAVER', 'APPLE') NOT NULL,
-    provider_type VARCHAR(10) NOT NULL, -- @Convert(converter = SocialProviderTypeConverter.class)
+    provider_type VARCHAR(10) NOT NULL,
     provider_id VARCHAR(255) NOT NULL, -- 몇 글자로 오는 지 모름
-    -- user_type  ENUM('MEMBER', 'TRAINER') NOT NULL,
-    user_type VARCHAR(10) NOT NULL, -- @Convert(converter = UserTypeConverter.class)
+    -- user_type  ENUM('MEMBER', 'TRAINER') NOT NULL, -- @Convert(converter = UserTypeConverter.class)
+    user_type VARCHAR(10) NOT NULL,
     created_at DATETIME, -- BaseEntity 적용 시 자동 추가됨
     modified_at DATETIME -- 사용하지 않지만 BaseEntity 적용 시 자동 추가됨
 );
@@ -18,7 +18,7 @@ CREATE TABLE gymmate_member ( -- 소셜 로그인 시  null 상태로 데이터 
     email VARCHAR(50),
     birthday VARCHAR(50),
     -- gender_type ENUM('MALE', 'FEMALE'), -- @Convert(converter = GenderTypeConverter.class)
-    gender_type VARCHAR(10), -- @Convert(converter = GenderTypeConverter.class)
+    gender_type VARCHAR(10),
     height VARCHAR(25),
     weight VARCHAR(25),
     address VARCHAR(50),
@@ -52,15 +52,15 @@ CREATE TABLE facility (
 -- 4. Gym
 CREATE TABLE gym (
     gym_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    gym_name VARCHAR(25) NOT NULL,
-    start_time VARCHAR(20) NOT NULL,
-    end_time VARCHAR(20) NOT NULL,
+    gym_name VARCHAR(50),
+    start_time VARCHAR(20),
+    end_time VARCHAR(20),
     phone_number VARCHAR(50),
-    is_partner BOOLEAN NOT NULL,
-    address VARCHAR(50) NOT NULL,
-    location POINT SRID 4326 NOT NULL,
-    avg_score DOUBLE NOT NULL,
-    intro VARCHAR(255) NOT NULL,
+    is_partner BOOLEAN,
+    address VARCHAR(50),
+    location POINT SRID 4326 NOT NULL, -- 공간 인덱스 사용을 위해 not null 필수
+    avg_score DOUBLE,
+    intro VARCHAR(255),
     place_url VARCHAR(255),
     facility_id BIGINT UNIQUE,
     -- 이미지 리스트는 칼럼으로 추가하지 않음, 5번째에 생성함
@@ -85,7 +85,7 @@ CREATE TABLE gymmate_trainer (
     phone_number VARCHAR(50) UNIQUE,
     email VARCHAR(50),
     -- gender_type ENUM('MALE', 'FEMALE'), -- @Convert(converter = GenderTypeConverter.class)
-    gender_type VARCHAR(10), -- @Convert(converter = GenderTypeConverter.class)
+    gender_type VARCHAR(10),
     bank VARCHAR(25),
     account VARCHAR(50),
     business_number VARCHAR(50) UNIQUE,
@@ -197,7 +197,7 @@ CREATE TABLE gym_ticket (
     end_date DATE NOT NULL,
     gym_product_fee INT NOT NULL,
     -- status ENUM('ACTIVE', 'EXPIRED', 'CANCELED') NOT NULL, -- @Convert(converter = GymTicketStatusConverter.class)
-    status VARCHAR(10), -- @Convert(converter = GymTicketStatusConverter.class)
+    status VARCHAR(10),
     member_id BIGINT NOT NULL,
     partner_gym_id BIGINT NOT NULL,
     FOREIGN KEY (member_id) REFERENCES gymmate_member(member_id)
@@ -231,4 +231,16 @@ CREATE TABLE bigthree_average (
     bench_average DOUBLE NOT NULL,
     deadlift_average DOUBLE NOT NULL,
     squat_average DOUBLE NOT NULL
+);
+
+-- 19. Student
+CREATE TABLE student (
+    student_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(25),
+    progress VARCHAR(255),
+    memo VARCHAR(500),
+    profile_url VARCHAR(255),
+    member_id BIGINT,
+    trainer_id BIGINT NOT NULL,
+    FOREIGN KEY (trainer_id) REFERENCES gymmate_trainer(trainer_id)
 );

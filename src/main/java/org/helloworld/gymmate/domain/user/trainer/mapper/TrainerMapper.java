@@ -86,7 +86,7 @@ public class TrainerMapper {
 			trainer.getIntro(),
 			trainer.getField(),
 			trainer.getCareer(),
-			trainer.getProfile(),
+			trainer.getProfileUrl(),
 			awardDtos,
 			productDtos
 		);

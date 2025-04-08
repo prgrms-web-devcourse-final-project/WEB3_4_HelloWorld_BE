@@ -26,7 +26,7 @@ import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
 import org.helloworld.gymmate.domain.user.trainer.award.repository.AwardRepository;
 import org.helloworld.gymmate.domain.user.trainer.mapper.TrainerMapper;
-import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
+import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.data.domain.Page;
