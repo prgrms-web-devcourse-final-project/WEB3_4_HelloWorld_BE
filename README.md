@@ -12,7 +12,7 @@ GymMate 백엔드 레포지토리
 
 ## Swagger
 
-swagger: [서버 실행 후 접속](http://localhost:8080/swagger-ui/index.html)
+swagger: 링크 (https://api.gymmate.my/swagger-ui/index.html)
 
 <br>
 
