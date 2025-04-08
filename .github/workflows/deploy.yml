@@ -55,16 +55,17 @@ jobs:
           export DB_NAME=${{ secrets.DB_NAME }}
           export MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
           export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-          export REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          export REDIS_PASSWORD_DEPLOY=${{ secrets.REDIS_PASSWORD_DEPLOY }}
           envsubst < ./src/main/resources/docs/application-deploy.template > ./src/main/resources/application-deploy.yml
 
+      # backend 빌드하기
       - name: Build with Gradle
         run: ./gradlew clean build -x test
 
       - name: Copy jar
         run: cp ./build/libs/*.jar ./deploy/
 
-      ## backend 도커 이미지 빌드 후 도커허브에 push하기
+      ## backend 도커 이미지 빌드 후 ghcr push
       - name: Docker Buildx 설치
         uses: docker/setup-buildx-action@v2
       - name: 레지스트리 로그인
@@ -90,8 +91,7 @@ jobs:
             ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSION }},
             ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:latest
 
-      # nginx.conf 경로 변경 후 도커 컴포즈 실행하기
-      # 도커 허브에서 jar파일 및 pull후에 컴포즈 up
+      # ghcr backend pull & 컴포즈 up
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:

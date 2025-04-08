@@ -9,6 +9,8 @@ client:
   url: http://localhost:3000
   
 spring:
+  config:
+    import: optional:file:.env[.properties]
   profiles:
     active: prod
   application:

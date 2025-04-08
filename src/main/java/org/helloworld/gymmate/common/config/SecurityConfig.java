@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -66,21 +68,34 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public WebSecurityCustomizer webSecurityCustomizer() { // 스프링 시큐리티를 무시할 페이지 목록 ( = 로그인이 필요없는 페이지 목록)
-		return web -> web.ignoring().requestMatchers(
-				"/", "/actuator/**",
-				"/v3/**", "/swagger-ui/**", "/api/logistics",
-				"h2-console/**", "/error",
-				// 이하는 개발환경에서만 허용해야 함
-				"/crawl/**"
-			)
-			.requestMatchers(HttpMethod.GET, "/ptProduct", "/ptProduct/{id:\\d+}")
-			.requestMatchers(HttpMethod.GET, "/trainer/list")
-			.requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}/facility")
-			.requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}")
-			.requestMatchers(HttpMethod.GET, "/gym")
-			//.requestMatchers(HttpMethod.GET, "/reviews/{reviewId}/comments")
-			.requestMatchers(PathRequest.toH2Console());
+	public WebSecurityCustomizer webSecurityCustomizer(Environment env) {
+		return web -> {
+			// 공통 무시 경로 설정
+			web.ignoring()
+				.requestMatchers(
+					"/", "/actuator/**", "/v3/**", "/swagger-ui/**",
+					"/api/logistics", "/error"
+				)
+				.requestMatchers(HttpMethod.GET, "/ptProduct", "/ptProduct/{id:\\d+}")
+				.requestMatchers(HttpMethod.GET, "/trainer/list")
+				.requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}/facility")
+				.requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}")
+				.requestMatchers(HttpMethod.GET, "/gym");
+
+			// 개발 환경에서 추가로 무시할 경로
+			if (Arrays.asList(env.getActiveProfiles()).contains("prod")) {
+				web.ignoring()
+					.requestMatchers( "/crawl/**")
+					.requestMatchers(PathRequest.toH2Console());
+			}
+
+			// 단위 테스트 환경에서 추가로 무시할 경로
+			if (Arrays.asList(env.getActiveProfiles()).contains("test")) {
+				web.ignoring()
+					.requestMatchers("/h2-console/**", "/crawl/**")
+					.requestMatchers(PathRequest.toH2Console());
+			}
+		};
 	}
 
 	@Bean
