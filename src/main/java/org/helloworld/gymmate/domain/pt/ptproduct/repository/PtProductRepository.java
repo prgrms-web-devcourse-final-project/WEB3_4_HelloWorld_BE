@@ -85,7 +85,12 @@ public interface PtProductRepository extends JpaRepository<PtProduct, Long> {
 		FROM pt_product p
 		JOIN gymmate_trainer t ON p.trainer_id = t.trainer_id
 		JOIN gym g ON t.gym_id = g.gym_id
-		WHERE (:ptProductSearchOption = 'NONE' OR
+		WHERE ST_Within(
+			g.location,
+			ST_Buffer(
+				ST_GeomFromText(CONCAT('POINT(', :y, ' ', :x, ')'), 4326),
+				:radius / 111.32))
+			AND (:ptProductSearchOption = 'NONE' OR
 		       (:ptProductSearchOption = 'TRAINER' AND t.trainer_name LIKE CONCAT('%', :searchTerm, '%')) OR
 		       (:ptProductSearchOption = 'PTPRODUCT' AND p.info LIKE CONCAT('%', :searchTerm, '%')) OR
 		       (:ptProductSearchOption = 'DISTRICT' AND g.address LIKE CONCAT('%', :searchTerm, '%')))
@@ -105,7 +110,7 @@ public interface PtProductRepository extends JpaRepository<PtProduct, Long> {
 			""",
 		nativeQuery = true)
 	Page<PtProduct> findNearestPtProductsWithSearch(
-		@Param("x") Double x, @Param("y") Double y,
+		@Param("x") Double x, @Param("y") Double y, @Param("radius") Double radius,
 		@Param("ptProductSearchOption") String ptProductSearchOption, @Param("searchTerm") String searchTerm,
 		Pageable pageable);
 }

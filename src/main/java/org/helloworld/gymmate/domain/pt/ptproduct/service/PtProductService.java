@@ -150,7 +150,7 @@ public class PtProductService {
 		String searchTerm,
 		Pageable pageable, Double x, Double y) {
 		String searchValue = (ptProductSearchOption == PtProductSearchOption.NONE) ? "" : searchTerm;
-		Page<PtProduct> ptProducts = ptProductRepository.findNearestPtProductsWithSearch(x, y,
+		Page<PtProduct> ptProducts = ptProductRepository.findNearestPtProductsWithSearch(x, y, 5.0,
 			ptProductSearchOption.name(),
 			searchValue, pageable);
 		return fetchAndMapProducts(ptProducts, pageable);
