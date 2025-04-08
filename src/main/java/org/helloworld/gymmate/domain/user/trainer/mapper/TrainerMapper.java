@@ -4,13 +4,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.TrainerDetailResponse;
+import org.helloworld.gymmate.domain.pt.ptproduct.entity.PtProduct;
 import org.helloworld.gymmate.domain.user.enums.UserType;
+import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerCheckResponse;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerListResponse;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerResponse;
 import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TrainerMapper {
 
 	public static Trainer toTrainer(Oauth oauth) {
@@ -58,4 +63,32 @@ public class TrainerMapper {
 		);
 	}
 
+	public TrainerDetailResponse toTrainerDetailResponse(
+		Trainer trainer,
+		List<Award> awards,
+		List<PtProduct> ptProducts
+	) {
+		List<TrainerDetailResponse.AwardResponse> awardDtos = awards.stream()
+			.map(award -> new TrainerDetailResponse.AwardResponse(
+				award.getAwardYear(),
+				award.getAwardName(),
+				award.getAwardInfo()
+			)).toList();
+
+		List<TrainerDetailResponse.PtProductResponse> productDtos = ptProducts.stream()
+			.map(p -> new TrainerDetailResponse.PtProductResponse(
+				p.getPtProductName(),
+				p.getPtProductFee().intValue()
+			)).toList();
+
+		return new TrainerDetailResponse(
+			trainer.getTrainerName(),
+			trainer.getIntro(),
+			trainer.getField(),
+			trainer.getCareer(),
+			trainer.getProfile(),
+			awardDtos,
+			productDtos
+		);
+	}
 }

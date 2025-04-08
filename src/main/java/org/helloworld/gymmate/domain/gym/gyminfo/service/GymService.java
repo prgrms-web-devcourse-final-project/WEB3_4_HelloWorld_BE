@@ -1,6 +1,8 @@
 package org.helloworld.gymmate.domain.gym.gyminfo.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
@@ -10,14 +12,22 @@ import org.helloworld.gymmate.domain.gym.facility.dto.FacilityResponse;
 import org.helloworld.gymmate.domain.gym.facility.mapper.FacilityMapper;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymDetailResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymListResponse;
+import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.TrainerDetailResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gyminfo.mapper.GymMapper;
 import org.helloworld.gymmate.domain.gym.gyminfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.gym.machine.dto.FacilityAndMachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.dto.MachineResponse;
 import org.helloworld.gymmate.domain.gym.machine.mapper.MachineMapper;
+import org.helloworld.gymmate.domain.pt.ptproduct.entity.PtProduct;
+import org.helloworld.gymmate.domain.pt.ptproduct.repository.PtProductRepository;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
+import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
+import org.helloworld.gymmate.domain.user.trainer.award.repository.AwardRepository;
+import org.helloworld.gymmate.domain.user.trainer.mapper.TrainerMapper;
+import org.helloworld.gymmate.domain.user.trainer.model.Trainer;
+import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,6 +43,10 @@ import lombok.RequiredArgsConstructor;
 public class GymService {
 	private final GymRepository gymRepository;
 	private final MemberService memberService;
+	private final TrainerRepository trainerRepository;
+	private final TrainerMapper trainerMapper;
+	private final AwardRepository awardRepository;
+	private final PtProductRepository ptProductRepository;
 
 	@Transactional(readOnly = true)
 	public FacilityAndMachineResponse getOwnFacilitiesAndMachines(Long gymId) {
@@ -114,5 +128,30 @@ public class GymService {
 	public GymDetailResponse getDetail(Long gymId) {
 		Gym gym = getExistingGym(gymId);
 		return GymMapper.toDetailResponse(gym);
+	}
+
+	public List<TrainerDetailResponse> getTrainerDetail(Long gymId) {
+		List<Trainer> trainers = trainerRepository.findByGym_GymId(gymId);
+		List<Long> trainerIds = trainers.stream()
+			.map(Trainer::getTrainerId)
+			.toList();
+
+		List<Award> awards = awardRepository.findByTrainerIdIn(trainerIds);
+		List<PtProduct> ptProducts = ptProductRepository.findByTrainerIdIn(trainerIds);
+
+		//트레이너별로 묶기
+		Map<Long, List<Award>> awardMap = awards.stream()
+			.collect(Collectors.groupingBy(Award::getTrainerId));
+
+		Map<Long, List<PtProduct>> productMap = ptProducts.stream()
+			.collect(Collectors.groupingBy(PtProduct::getTrainerId));
+
+		return trainers.stream()
+			.map(trainer -> trainerMapper.toTrainerDetailResponse(
+				trainer,
+				awardMap.getOrDefault(trainer.getTrainerId(), List.of()),
+				productMap.getOrDefault(trainer.getTrainerId(), List.of())
+			))
+			.toList();
 	}
 }
