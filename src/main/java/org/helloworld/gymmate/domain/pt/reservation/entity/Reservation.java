@@ -21,33 +21,34 @@ import lombok.NoArgsConstructor;
 @Builder
 @Table(name = "reservation")
 public class Reservation {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "reservation_id", nullable = false)
-	private Long reservationId;
 
-	@Column(name = "product_name", nullable = false)
-	private String productName;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "reservation_id", nullable = false)
+    private Long reservationId;
 
-	@Column(name = "date", nullable = false)
-	private LocalDate date;
+    @Column(name = "product_name", nullable = false)
+    private String productName;
 
-	@Column(name = "time", nullable = false)
-	private Integer time;
+    @Column(name = "date", nullable = false)
+    private LocalDate date;
 
-	@Column(name = "price", nullable = false)
-	private Long price;
+    @Column(name = "time", nullable = false)
+    private Integer time;
 
-	@Column(name = "cancel_date")
-	private LocalDate cancelDate;
+    @Column(name = "price", nullable = false)
+    private Long price;
 
-	@Column(name = "completed_date")
-	private LocalDate completedDate;
+    @Column(name = "cancel_date")
+    private LocalDate cancelDate;
 
-	@Column(name = "member_id")
-	private Long memberId;
+    @Column(name = "completed_date")
+    private LocalDate completedDate;
 
-	@Column(name = "trainer_id")
-	private Long trainerId;
+    @Column(name = "member_id")
+    private Long memberId;
+
+    @Column(name = "trainer_id")
+    private Long trainerId;
 
 }
