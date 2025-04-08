@@ -201,6 +201,7 @@ public class SeoulGymWebClientCrawler {
         log.debug("Gym에 연결된 Facility 데이터 저장 및 업데이트 완료!");
     }
 
+    // Gym에 해당하는 machine정보 저장
     @Transactional
     public void saveMachinesForGyms(List<Gym> gyms) {
         if (gyms.isEmpty())
