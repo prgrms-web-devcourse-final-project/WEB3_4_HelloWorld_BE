@@ -6,7 +6,6 @@ public record TrainerModifyRequest(
 	String email,
 	String bank,
 	String account,
-	String profile,
 	String intro,
 	String career,
 	String field
