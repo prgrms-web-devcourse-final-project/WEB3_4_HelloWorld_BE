@@ -10,6 +10,7 @@ import org.helloworld.gymmate.domain.gym.gymticket.dto.GymTicketPurchaseResponse
 import org.helloworld.gymmate.domain.gym.gymticket.dto.MemberGymTicketResponse;
 import org.helloworld.gymmate.domain.gym.gymticket.dto.PartnerGymTicketResponse;
 import org.helloworld.gymmate.domain.gym.gymticket.entity.GymTicket;
+import org.helloworld.gymmate.domain.gym.gymticket.enums.GymTicketStatus;
 import org.helloworld.gymmate.domain.gym.gymticket.mapper.GymTicketMapper;
 import org.helloworld.gymmate.domain.gym.gymticket.repository.GymTicketRepository;
 import org.helloworld.gymmate.domain.gym.partnergym.entity.PartnerGym;
@@ -79,5 +80,20 @@ public class GymTicketService {
         return gymTicketRepository.findAllByPartnerGymId(partnerGym.getPartnerGymId(), pageable)
             .map(GymTicketMapper::toPartnerGymTicketResponse);
     }
+	@Transactional
+	public void cancelTicket(Long userId, Long gymTicketId) {
+		Member member = memberService.findByUserId(userId);
+		GymTicket gymTicket = findByGymTicketId(gymTicketId);
+		if (!gymTicket.getMember().equals(member)) {
+			throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
+		}
+		// TODO : 환불정책 고려
+		gymTicket.updateStatus(GymTicketStatus.CANCELED);
+	}
+
+	public GymTicket findByGymTicketId(Long gymTicketId) {
+		return gymTicketRepository.findById(gymTicketId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.GYM_TICKET_NOT_FOUND));
+	}
 
 }
