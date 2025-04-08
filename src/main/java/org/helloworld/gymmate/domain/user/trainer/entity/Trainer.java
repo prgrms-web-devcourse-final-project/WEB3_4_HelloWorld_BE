@@ -53,7 +53,7 @@ public class Trainer {
     private String email;
 
     @Convert(converter = GenderTypeConverter.class)
-    @Column(name = "gender")
+    @Column(name = "gender_type")
     private GenderType genderType;
 
     @Column(name = "bank")
@@ -95,7 +95,7 @@ public class Trainer {
     @Column(name = "field")
     private String field;
 
-    @Column(name = "additionalInfoCompleted")
+    @Column(name = "additional_info_completed")
     private Boolean additionalInfoCompleted; // 추가 정보 입력 여부
 
     @ManyToOne(fetch = FetchType.LAZY)
