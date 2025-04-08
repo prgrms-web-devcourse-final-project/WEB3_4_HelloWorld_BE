@@ -52,15 +52,15 @@ CREATE TABLE facility (
 -- 4. Gym
 CREATE TABLE gym (
     gym_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    gym_name VARCHAR(25) NOT NULL,
-    start_time VARCHAR(20) NOT NULL,
-    end_time VARCHAR(20) NOT NULL,
+    gym_name VARCHAR(25),
+    start_time VARCHAR(20),
+    end_time VARCHAR(20),
     phone_number VARCHAR(50),
-    is_partner BOOLEAN NOT NULL,
-    address VARCHAR(50) NOT NULL,
-    location POINT SRID 4326 NOT NULL,
-    avg_score DOUBLE NOT NULL,
-    intro VARCHAR(255) NOT NULL,
+    is_partner BOOLEAN,
+    address VARCHAR(50),
+    location POINT SRID 4326,
+    avg_score DOUBLE,
+    intro VARCHAR(255),
     place_url VARCHAR(255),
     facility_id BIGINT UNIQUE,
     -- 이미지 리스트는 칼럼으로 추가하지 않음, 5번째에 생성함
