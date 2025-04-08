@@ -28,8 +28,4 @@ public interface PartnerGymRepository extends JpaRepository<PartnerGym, Long> {
     List<PartnerGymNameProjection> findGymNamesByPartnerGymIds(@Param("ids") Collection<Long> ids);
 
     PartnerGym findByGym_GymId(Long gymId);
-    @Query("SELECT pg.partnerGymId AS partnerGymId, pg.gym.gymName AS gymName FROM PartnerGym pg WHERE pg.partnerGymId IN :ids")
-    List<PartnerGymNameProjection> findGymNamesByPartnerGymIds(@Param("ids") Collection<Long> ids);
-
-    Optional<PartnerGym> findByGym_GymId(Long gymId);
 }

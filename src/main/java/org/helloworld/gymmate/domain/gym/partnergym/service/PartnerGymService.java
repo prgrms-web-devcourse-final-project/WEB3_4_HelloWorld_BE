@@ -204,8 +204,7 @@ public class PartnerGymService {
     }
 
     public PartnerGym getPartnerGymByGymId(Long gymId) {
-        return partnerGymRepository.findByGym_GymId(gymId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.PARTNER_GYM_NOT_FOUND));
+        return partnerGymRepository.findByGym_GymId(gymId);
     }
 }
 
