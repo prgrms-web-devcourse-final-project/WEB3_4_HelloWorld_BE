@@ -15,6 +15,7 @@ public class ReservationMapper {
 		PtProduct ptProduct,
 		ReservationRequest request,
 		Long userId
+
 	) {
 		return Reservation.builder()
 			.productName(ptProduct.getPtProductName())  // 스냅샷

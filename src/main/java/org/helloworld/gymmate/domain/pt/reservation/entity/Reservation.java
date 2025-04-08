@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Table(name = "reservation")
 public class Reservation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reservation_id", nullable = false)
@@ -49,7 +50,5 @@ public class Reservation {
 
     @Column(name = "trainer_id")
     private Long trainerId;
-
-    // ====== Business Logic ======
 
 }
