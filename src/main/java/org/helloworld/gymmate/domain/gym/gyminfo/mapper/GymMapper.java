@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.helloworld.gymmate.common.util.GeometryUtil;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymDetailResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymListResponse;
+import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymSearchResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.GymImage;
 import org.helloworld.gymmate.domain.gym.partnergym.dto.request.GymRequest;
@@ -90,4 +91,12 @@ public class GymMapper {
         );
     }
 
+	public static GymSearchResponse toSearchResponse(Gym gym) {
+		return new GymSearchResponse(gym.getGymName(),
+			gym.getAddress(),
+			Optional.ofNullable(gym.getImages())
+				.filter(images -> !images.isEmpty())
+				.map(images -> images.getFirst().getUrl())
+				.orElse(null));
+	}
 }
