@@ -6,7 +6,8 @@ CREATE TABLE gym_review (
     member_id BIGINT NOT NULL,
     partner_gym_id BIGINT NOT NULL,
     created_at DATETIME,
-    modified_at DATETIME
+    modified_at DATETIME,
+    FOREIGN KEY (partner_gym_id) REFERENCES partner_gym(partner_gym_id)
 );
 
 -- 21. gym_review_image
