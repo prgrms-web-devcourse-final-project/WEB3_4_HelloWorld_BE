@@ -1,6 +1,8 @@
 # EC2용 환경 설정
 server:
   url: https://api.gymmate.my
+client:
+  url: https://web-3-4-hello-world-fe.vercel.app
 
 spring:
   datasource:
