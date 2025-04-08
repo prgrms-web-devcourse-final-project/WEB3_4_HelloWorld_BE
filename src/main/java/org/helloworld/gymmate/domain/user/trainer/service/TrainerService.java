@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
+import org.helloworld.gymmate.common.s3.FileManager;
 import org.helloworld.gymmate.common.util.StringUtil;
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gyminfo.repository.GymRepository;
@@ -37,6 +38,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +53,7 @@ public class TrainerService {
 	private final GymRepository gymRepository;
 	private final BusinessValidateService businessValidateService;
 	private final MemberService memberService;
+	private final FileManager fileManager;
 
 	@Transactional
 	public Long createTrainer(Oauth oauth) {
@@ -81,8 +84,18 @@ public class TrainerService {
 
 	// 직원 및 사장 개인정보 수정
 	@Transactional
-	public Long modifyTrainerInfo(Trainer trainer, TrainerModifyRequest modifyRequest) {
-		trainer.modifyTrainerInfo(modifyRequest);
+	public Long modifyTrainerInfo(Trainer trainer, TrainerModifyRequest modifyRequest, MultipartFile profile) {
+		String imageUrl = trainer.getProfileUrl();
+
+		// 프로필 이미지 변경 된 경우
+		if (profile != null && !profile.isEmpty()) {
+			// 기존 이미지 있는 경우
+			if (imageUrl != null) {
+				fileManager.deleteFile(imageUrl);
+			}
+			imageUrl = fileManager.uploadFile(profile, "trainer");
+		}
+		trainer.modifyTrainerInfo(modifyRequest, imageUrl);
 		return trainerRepository.save(trainer).getTrainerId();
 	}
 

@@ -7,7 +7,7 @@ build/
 
 ### 절대 삭제하면 안됨 (카카오로그인 설정 보안) ###
 **/application.yml
-.env
+**/.env*
 
 ### test DB (H2) ###
 **/*.db

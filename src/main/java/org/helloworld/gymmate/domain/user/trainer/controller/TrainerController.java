@@ -2,6 +2,7 @@ package org.helloworld.gymmate.domain.user.trainer.controller;
 
 import org.helloworld.gymmate.common.dto.PageDto;
 import org.helloworld.gymmate.common.mapper.PageMapper;
+import org.helloworld.gymmate.common.validate.custom.ValidImageFile;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerCheckResponse;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerListResponse;
@@ -22,7 +23,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -60,10 +63,11 @@ public class TrainerController {
 	@PreAuthorize("hasRole('ROLE_TRAINER')")
 	@PutMapping("/modify")
 	public ResponseEntity<Long> modify(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-		@RequestBody TrainerModifyRequest modifyRequest) {
+		@RequestPart("request") TrainerModifyRequest modifyRequest,
+		@RequestPart(value = "image", required = false) @ValidImageFile MultipartFile profile) {
 		return ResponseEntity.ok()
 			.body(trainerService.modifyTrainerInfo(trainerService.findByUserId(customOAuth2User.getUserId()),
-				modifyRequest));
+				modifyRequest, profile));
 	}
 
 	@PreAuthorize("hasRole('ROLE_TRAINER')")

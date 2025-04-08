@@ -9,6 +9,8 @@ client:
   url: http://localhost:3000
   
 spring:
+  config:
+    import: optional:file:.env[.properties]
   profiles:
     active: prod
   application:
@@ -17,6 +19,7 @@ spring:
     redis:
       port: 6379
       host: localhost
+      password:
   servlet:
     multipart:
       max-file-size: 10MB

@@ -35,78 +35,82 @@ import lombok.With;
 @Table(name = "gym")
 public class Gym {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "gym_id", nullable = false)
-	private Long gymId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "gym_id", nullable = false)
+    private Long gymId;
 
-	@Column(name = "gym_name", nullable = false)
-	private String gymName;
+    @Column(name = "gym_name", nullable = false)
+    private String gymName;
 
-	@Column(name = "start_time", nullable = false)  //크롤링 해서 없는 경우 "운영시간이 없습니다" 표시
-	private String startTime;
+    @Column(name = "start_time", nullable = false)  //크롤링 해서 없는 경우 "운영시간이 없습니다" 표시
+    private String startTime;
 
-	@Column(name = "end_time", nullable = false) //크롤링 해서 없는 경우 "운영시간이 없습니다" 표시
-	private String endTime;
+    @Column(name = "end_time", nullable = false) //크롤링 해서 없는 경우 "운영시간이 없습니다" 표시
+    private String endTime;
 
-	@Column(name = "phone_number", nullable = true) //헬스장 번호가 없는 경우 존재함
-	private String phoneNumber;
+    @Column(name = "phone_number", nullable = true) //헬스장 번호가 없는 경우 존재함
+    private String phoneNumber;
 
-	@Column(name = "is_partner", nullable = false)
-	private Boolean isPartner;
+    @Column(name = "is_partner", nullable = false)
+    private Boolean isPartner;
 
-	@Column(name = "address", nullable = false)
-	private String address;
+    @Column(name = "address", nullable = false)
+    private String address;
 
-	@Column(name = "location", columnDefinition = "POINT SRID 4326", nullable = false)
-	private Point location;
+    @Column(name = "location", columnDefinition = "POINT SRID 4326", nullable = false)
+    private Point location;
 
-	@Column(name = "avg_score", nullable = false)
-	private Double avgScore;
+    @Column(name = "avg_score", nullable = false)
+    private Double avgScore;
 
-	@Column(name = "intro", nullable = false)
-	private String intro;
+    @Column(name = "intro", nullable = false)
+    private String intro;
 
-	@Column(name = "place_url") //헬스장 상세 정보URL
-	private String placeUrl;
+    @Column(name = "place_url") //헬스장 상세 정보URL
+    private String placeUrl;
 
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "facility_id")
-	private Facility facility;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "facility_id")
+    private Facility facility;
 
-	@OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
-	@BatchSize(size = 20)
-	@Builder.Default
-	private List<GymImage> images = new ArrayList<>();  //이미지의 경우 default이미지 표시
+    @OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 20)
+    @Builder.Default
+    private List<GymImage> images = new ArrayList<>();  //이미지의 경우 default이미지 표시
 
-	@OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
-	@Builder.Default
-	private List<Machine> machines = new ArrayList<>();
+    @OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Machine> machines = new ArrayList<>();
 
-	// ====== Business Logic ======
+    // ====== Business Logic ======
 
-	public void addImages(List<GymImage> images) {
-		this.images.addAll(images);
-		images.forEach(img -> img.setGym(this));
-	}
+    public void addImages(List<GymImage> images) {
+        this.images.addAll(images);
+        images.forEach(img -> img.setGym(this));
+    }
 
-	public void removeImage(GymImage image) {
-		images.remove(image);
-		image.setGym(null);
-	}
+    public void removeImage(GymImage image) {
+        images.remove(image);
+        image.setGym(null);
+    }
 
-	public void updateInfo(
-		String startTime,
-		String endTime,
-		String intro
-	) {
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.intro = intro;
-	}
+    public void updateInfo(
+        String startTime,
+        String endTime,
+        String intro
+    ) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.intro = intro;
+    }
 
-	public void assignFacility(Facility facility) {
-		this.facility = facility;
-	}
+    public void assignFacility(Facility facility) {
+        this.facility = facility;
+    }
+
+    public void updatePartner(Boolean isPartner) {
+        this.isPartner = isPartner;
+    }
 }
 

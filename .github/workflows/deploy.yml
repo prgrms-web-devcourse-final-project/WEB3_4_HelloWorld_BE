@@ -33,12 +33,6 @@ jobs:
       - name: Make directory for deliver
         run: mkdir deploy
 
-      - name: Build with Gradle
-        run: ./gradlew clean build -x test
-
-      - name: Copy jar
-        run: cp ./build/libs/*.jar ./deploy/
-
       # application.yml 환경 변수 포함 생성
       - name: Generate application-deploy.yml with secrets
         run: |
@@ -61,9 +55,17 @@ jobs:
           export DB_NAME=${{ secrets.DB_NAME }}
           export MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
           export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+          export REDIS_PASSWORD_DEPLOY=${{ secrets.REDIS_PASSWORD_DEPLOY }}
           envsubst < ./src/main/resources/docs/application-deploy.template > ./src/main/resources/application-deploy.yml
 
-      ## backend 도커 이미지 빌드 후 도커허브에 push하기
+      # backend 빌드하기
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+
+      - name: Copy jar
+        run: cp ./build/libs/*.jar ./deploy/
+
+      ## backend 도커 이미지 빌드 후 ghcr push
       - name: Docker Buildx 설치
         uses: docker/setup-buildx-action@v2
       - name: 레지스트리 로그인
@@ -89,8 +91,7 @@ jobs:
             ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSION }},
             ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:latest
 
-      # nginx.conf 경로 변경 후 도커 컴포즈 실행하기
-      # 도커 허브에서 jar파일 및 pull후에 컴포즈 up
+      # ghcr backend pull & 컴포즈 up
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -106,7 +107,7 @@ jobs:
             TIMEOUT=60
 
             # 현재 실행 중인 컨테이너 확인
-            if docker ps --format '{{.Names}}' | grep -q "app1_1"; then
+            if sudo docker ps --format '{{.Names}}' | grep -q "app1_1"; then
               CURRENT="app1_1"
               NEXT="app1_2"
               CURRENT_PORT=8080
@@ -156,10 +157,10 @@ jobs:
 
             # 기존 컨테이너 중지 및 제거
             echo "Stopping old container: $CURRENT"
-            docker stop "$CURRENT" 2>/dev/null
-            docker rm "$CURRENT" 2>/dev/null
+            sudo docker stop "$CURRENT" 2>/dev/null
+            sudo docker rm "$CURRENT" 2>/dev/null
 
             # dangling image 제거
-            docker rmi $(docker images -f "dangling=true" -q) 2>/dev/null
+            sudo docker rmi $(docker images -f "dangling=true" -q) 2>/dev/null
 
             echo "✅ Deployment complete. Running container: $NEXT on port $NEXT_PORT"

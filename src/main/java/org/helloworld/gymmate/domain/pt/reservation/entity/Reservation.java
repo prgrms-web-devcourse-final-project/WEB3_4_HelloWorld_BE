@@ -51,4 +51,9 @@ public class Reservation {
     @Column(name = "trainer_id")
     private Long trainerId;
 
+    // 날짜와 시간을 변경하는 메서드
+    public Reservation modifyDateAndTime(LocalDate newDate, Integer newTime) {
+        return new Reservation(this.reservationId, this.productName, newDate, newTime, this.price, this.cancelDate,
+            this.completedDate, this.memberId, this.trainerId);
+    }
 }

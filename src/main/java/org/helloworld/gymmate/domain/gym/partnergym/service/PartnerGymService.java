@@ -142,6 +142,8 @@ public class PartnerGymService {
             .gym(gym)
             .build();
 
+        gym.updatePartner(true);
+
         return partnerGymRepository.save(partnerGym);
     }
 
