@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class SeoulGymWebClientCrawler {
-    private static final int BATCH_SIZE = 30;
+    private static final int BATCH_SIZE = 500;
     private final JdbcTemplate jdbcTemplate;
     private final KakaoMapWebClientService kakaoMapWebClientService;
     private final GymRepository gymRepository;
