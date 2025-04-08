@@ -9,6 +9,6 @@ public record MemberGymTicketResponse(
 	LocalDate endDate,
 	int gymProductFee,
 	String status,
-	long partnerGymId
+	String gymName
 ) {
 }

@@ -1,6 +1,10 @@
 package org.helloworld.gymmate.domain.gym.gymticket.service;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
@@ -13,6 +17,7 @@ import org.helloworld.gymmate.domain.gym.gymticket.entity.GymTicket;
 import org.helloworld.gymmate.domain.gym.gymticket.enums.GymTicketStatus;
 import org.helloworld.gymmate.domain.gym.gymticket.mapper.GymTicketMapper;
 import org.helloworld.gymmate.domain.gym.gymticket.repository.GymTicketRepository;
+import org.helloworld.gymmate.domain.gym.partnergym.dao.PartnerGymNameProjection;
 import org.helloworld.gymmate.domain.gym.partnergym.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.partnergym.service.PartnerGymService;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
@@ -65,8 +70,22 @@ public class GymTicketService {
     @Transactional(readOnly = true)
     public Page<MemberGymTicketResponse> getMemberTickets(Long memberId, int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        return gymTicketRepository.findByMember_MemberId(memberId, pageable)
-            .map(GymTicketMapper::toMemberGymTicketResponse);
+        Page<GymTicket> tickets = gymTicketRepository.findByMember_MemberId(memberId, pageable);
+
+        Set<Long> partnerGymIds = tickets.stream()
+            .map(GymTicket::getPartnerGymId)
+            .collect(Collectors.toSet());
+        List<PartnerGymNameProjection> gymInfos = partnerGymService.getGymNamesByIds(partnerGymIds);
+        Map<Long, String> gymNameMap = gymInfos.stream()
+            .collect(Collectors.toMap(
+                PartnerGymNameProjection::getPartnerGymId,
+                PartnerGymNameProjection::getGymName
+            ));
+
+        return tickets.map(ticket -> {
+            String gymName = gymNameMap.get(ticket.getPartnerGymId());
+            return GymTicketMapper.toMemberGymTicketResponse(ticket, gymName);
+        });
     }
 
     @Transactional(readOnly = true)

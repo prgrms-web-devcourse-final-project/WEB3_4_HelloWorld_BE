@@ -1,5 +1,6 @@
 package org.helloworld.gymmate.domain.gym.partnergym.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
@@ -13,6 +14,7 @@ import org.helloworld.gymmate.domain.gym.gyminfo.mapper.GymMapper;
 import org.helloworld.gymmate.domain.gym.gyminfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.gym.gyminfo.service.GymService;
 import org.helloworld.gymmate.domain.gym.gymproduct.service.GymProductService;
+import org.helloworld.gymmate.domain.gym.partnergym.dao.PartnerGymNameProjection;
 import org.helloworld.gymmate.domain.gym.partnergym.dto.request.GymInfoRequest;
 import org.helloworld.gymmate.domain.gym.partnergym.dto.request.GymRegisterRequest;
 import org.helloworld.gymmate.domain.gym.partnergym.dto.request.GymUpdateRequest;
@@ -192,6 +194,11 @@ public class PartnerGymService {
 	private void updateFacility(Gym existingGym, GymInfoRequest request) {
 		Facility facility = existingGym.getFacility();
 		facility.update(request.facilityRequest());
+	}
+
+	@Transactional(readOnly = true)
+	public List<PartnerGymNameProjection> getGymNamesByIds(Collection<Long> partnerGymIds) {
+		return partnerGymRepository.findGymNamesByPartnerGymIds(partnerGymIds);
 	}
 }
 
