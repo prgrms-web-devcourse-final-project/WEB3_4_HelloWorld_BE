@@ -136,14 +136,14 @@ public class Trainer {
         this.additionalInfoCompleted = true;
     }
 
-    public void modifyTrainerInfo(TrainerModifyRequest request, String imageUr) {
+    public void modifyTrainerInfo(TrainerModifyRequest request, String imageUrl) {
         this.trainerName = request.trainerName();
         this.phoneNumber = request.phoneNumber();
         this.email = request.email();
         this.bank = request.bank();
         this.account = request.account();
         this.intro = request.intro();
-        this.profileUrl = imageUr;
+        this.profileUrl = imageUrl;
         this.career = request.career();
         this.field = request.field();
     }
