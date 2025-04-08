@@ -7,6 +7,11 @@ import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationResponse;
 import org.helloworld.gymmate.domain.pt.reservation.entity.Reservation;
 import org.helloworld.gymmate.domain.pt.reservation.mapper.ReservationMapper;
 import org.helloworld.gymmate.domain.pt.reservation.repository.ReservationRepository;
+import org.helloworld.gymmate.domain.pt.student.service.StudentService;
+import org.helloworld.gymmate.domain.user.member.entity.Member;
+import org.helloworld.gymmate.domain.user.member.service.MemberService;
+import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
+import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +27,9 @@ public class ReservationService {
 
 	private final ReservationRepository reservationRepository;
 	private final PtProductService ptProductService;
+	private final StudentService studentService;
+	private final MemberService memberService;
+	private final TrainerService trainerService;
 
 	/*
 	 예약 생성 로직
@@ -35,8 +43,11 @@ public class ReservationService {
 		PtProduct ptProduct = ptProductService.findProductOrThrow(ptProductId);
 		// 2) 예약 엔티티 생성
 		Reservation reservation = ReservationMapper.toEntity(ptProduct, request, userId);
-
-		// 3) 저장 및 ID 반환
+		// 3) Student 정보 생성
+		Member member = memberService.findByUserId(userId);
+		Trainer trainer = trainerService.findByUserId(ptProduct.getTrainerId());
+		studentService.makeStudent(trainer, member);
+		// 4) 저장 및 ID 반환
 		return reservationRepository.save(reservation).getReservationId();
 	}
 

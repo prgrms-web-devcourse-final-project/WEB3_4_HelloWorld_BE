@@ -1,5 +1,6 @@
 package org.helloworld.gymmate.domain.pt.student.mapper;
 
+import org.helloworld.gymmate.domain.pt.student.dto.StudentDetailResponse;
 import org.helloworld.gymmate.domain.pt.student.dto.StudentsResponse;
 import org.helloworld.gymmate.domain.pt.student.entity.Student;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
@@ -23,6 +24,22 @@ public class StudentMapper {
 			student.getProgress(),
 			student.getMemo(),
 			student.getProfileUrl()
+		);
+	}
+
+	public static StudentDetailResponse toDto(Student student, Member member) {
+		return new StudentDetailResponse(
+			student.getName(),
+			student.getProgress(),
+			student.getMemo(),
+			student.getProfileUrl(),
+			member.getGenderType().toString(),
+			member.getHeight(),
+			member.getWeight(),
+			member.getRecentBench(),
+			member.getRecentDeadlift(),
+			member.getRecentSquat(),
+			member.getLevel()
 		);
 	}
 }
