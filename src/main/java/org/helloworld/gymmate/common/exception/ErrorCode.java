@@ -30,6 +30,9 @@ public enum ErrorCode {
 	UNSUPPORTED_SEARCH_OPTION(HttpStatus.BAD_REQUEST, "PT-PRODUCT-002", "존재하지 않는 검색 옵션입니다."),
 	UNSUPPORTED_SORT_OPTION(HttpStatus.BAD_REQUEST, "PT-PRODUCT-003", "존재하지 않는 정렬 조건입니다."),
 
+	// Student
+	STUDENT_NOT_FOUND(HttpStatus.NOT_FOUND, "PT-PRODUCT-001", "존재하지 않는 수강생입니다."),
+
 	//reservation
 	RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION-001", "예약이 존재하지 않습니다"),
 	CANNOT_CANCEL_THIS_WEEK_RESERVATION(HttpStatus.BAD_REQUEST, "RESERVATION-002", "이번 주 예약은 취소할 수 없습니다."),

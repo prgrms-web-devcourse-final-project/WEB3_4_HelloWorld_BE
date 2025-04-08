@@ -2,8 +2,11 @@ package org.helloworld.gymmate.domain.user.trainer.entity;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
+import org.helloworld.gymmate.domain.pt.student.entity.Student;
 import org.helloworld.gymmate.domain.user.converter.GenderTypeConverter;
 import org.helloworld.gymmate.domain.user.enums.GenderType;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
@@ -22,6 +25,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -37,7 +41,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Table(name = "gymmate_trainer")
 public class Trainer {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "trainer_id")
@@ -105,6 +108,10 @@ public class Trainer {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "oauth_id")
     private Oauth oauth;
+
+    @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Student> students = new ArrayList<>();
 
     // ====== Business Logic ======
 
