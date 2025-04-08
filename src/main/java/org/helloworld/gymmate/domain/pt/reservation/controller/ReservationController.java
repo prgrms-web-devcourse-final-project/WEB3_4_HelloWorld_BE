@@ -2,6 +2,7 @@ package org.helloworld.gymmate.domain.pt.reservation.controller;
 
 import org.helloworld.gymmate.common.dto.PageDto;
 import org.helloworld.gymmate.common.mapper.PageMapper;
+import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationByMonthResponse;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationRequest;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationResponse;
 import org.helloworld.gymmate.domain.pt.reservation.service.ReservationService;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,6 +62,19 @@ public class ReservationController {
 	}
 
 	/*
+	 회원의 예약 삭제 API
+	 - param : reservationId
+	*/
+	@PreAuthorize("hasRole('ROLE_MEMBER')")
+	@DeleteMapping("/{reservationId}")
+	public ResponseEntity<Void> deleteMemberReservation(
+		@PathVariable Long reservationId
+	) {
+		reservationService.deleteMemberReservation(reservationId);
+		return ResponseEntity.ok().build();
+	}
+
+	/*
 	  멤버의 예약 목록 조회 API
 	  컨트롤러 -> 서비스 전달 정보 : 유저id
 	 */
@@ -99,6 +114,25 @@ public class ReservationController {
 					pageSize
 				)
 			));
+	}
+
+	/*
+	트레이너의 월별 예약 목록 조회 API
+	 */
+	@PreAuthorize("hasRole('ROLE_TRAINER')")
+	@GetMapping("/trainer/month")
+	public ResponseEntity<ReservationByMonthResponse> getTrainerReservationsByMonth(
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+		@RequestParam int year,
+		@RequestParam int month
+	) {
+		ReservationByMonthResponse reservations = reservationService.getTrainerReservationsByMonth(
+			customOAuth2User.getUserId(),
+			year,
+			month
+		);
+
+		return ResponseEntity.ok(reservations);
 	}
 
 }

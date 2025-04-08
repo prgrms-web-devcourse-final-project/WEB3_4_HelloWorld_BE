@@ -1,7 +1,16 @@
 package org.helloworld.gymmate.domain.pt.reservation.service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.helloworld.gymmate.common.exception.BusinessException;
+import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.domain.pt.ptproduct.entity.PtProduct;
 import org.helloworld.gymmate.domain.pt.ptproduct.service.PtProductService;
+import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationByMonthResponse;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationRequest;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationResponse;
 import org.helloworld.gymmate.domain.pt.reservation.entity.Reservation;
@@ -41,14 +50,38 @@ public class ReservationService {
 	public Long register(Long userId, Long ptProductId, ReservationRequest request) {
 		// 1) PT 상품 조회
 		PtProduct ptProduct = ptProductService.findProductOrThrow(ptProductId);
-		// 2) 예약 엔티티 생성
+
+		// 2) classTime에 존재하는지 확인 -> 프론트에서 예약가능한 시간만 보여주므로, 일단 생략
+
+		// 3) 예약 엔티티 생성
 		Reservation reservation = ReservationMapper.toEntity(ptProduct, request, userId);
-		// 3) Student 정보 생성
+
+
+		// 4) Student 정보 생성
 		Member member = memberService.findByUserId(userId);
 		Trainer trainer = trainerService.findByUserId(ptProduct.getTrainerId());
 		studentService.makeStudent(trainer, member);
-		// 4) 저장 및 ID 반환
+		// 5) 저장 및 ID 반환
 		return reservationRepository.save(reservation).getReservationId();
+	}
+
+	/*
+	 회원의 예약 삭제 로직
+	  - param : reservationId
+	 */
+	public void deleteMemberReservation(Long reservationId) {
+		//1. 예약 객체 조회
+		Reservation reservation = findReservationOrThrow(reservationId);
+
+		//2. 예약 객체 삭제
+		reservationRepository.delete(reservation);
+
+	}
+
+	// 예약 조회 메서드 분리
+	private Reservation findReservationOrThrow(Long reservationId) {
+		return reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
 	}
 
 	/*
@@ -74,7 +107,7 @@ public class ReservationService {
 	}
 
 	/*
-	  회원의 예약 목록 조회 로직
+	  트레이너의 예약 목록 조회 로직
 	   - 매개변수 : 회원 ID
 	   - 리턴값 : 회원의 예약 목록
 	 */
@@ -93,5 +126,38 @@ public class ReservationService {
 		// 페이징된 데이터 조회 및 DTO 변환
 		return reservationRepository.findByTrainerId(trainerId, pageable)
 			.map(ReservationMapper::toDto);
+	}
+
+	/*
+    	특정 트레이너의 특정 달의 예약 조회
+    	- param : trainerId, 연도, 달
+    	- return : ReservationByMonthResponse DTO
+	 */
+	@Transactional(readOnly = true)
+	public ReservationByMonthResponse getTrainerReservationsByMonth(Long trainerId, int year, int month) {
+
+		// 1. 해당 트레이너의 모든 예약 객체를 조회
+		List<Reservation> reservations = reservationRepository.findByTrainerId(trainerId);
+
+		// 2. 월별 예약 목록을 그룹화
+		Map<LocalDate, List<Integer>> reservationsByDate = new HashMap<>();
+
+		for (Reservation reservation : reservations) { // 각 예약 객체별로
+			LocalDate reservationDate = reservation.getDate(); //예약 날짜 조회
+
+			if (reservationDate.getYear() == year && reservationDate.getMonthValue() == month) {
+				//만약 예약 객체의 연도와 달이 year,month(매개변수로 받은)와 같다면,
+
+				reservationsByDate.computeIfAbsent(reservationDate, k -> new ArrayList<>())
+					// a) 해당날짜(reservationDate)가 키로 존재하지 않는다면,
+					//   해당 키(reservatoinDate)에 새로운ArrayList를 매핑해 리스트 반환
+					// b) 해당날짜가 키로 존재한다면, 기존에 매핑된 리스트 반환
+					.add(reservation.getTime());
+				//예약된 시간을 해당날짜(키)의 리스트에 추가
+			}
+		}
+
+		// 결과를 DTO로 변환하여 반환
+		return new ReservationByMonthResponse(reservationsByDate);
 	}
 }
