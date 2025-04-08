@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -168,6 +169,9 @@ public class SeoulGymWebClientCrawler {
         // Gym 테이블의 facility_id 컬럼 업데이트 쿼리
         String updateGymSql = "UPDATE gym SET facility_id = ? WHERE place_url = ?";
 
+        // 무작위 true / false를 위함
+        Random random = new Random();
+
         for (Gym gym : gyms) {
             Facility facility = gym.getFacility();
             if (facility == null) {
@@ -177,14 +181,14 @@ public class SeoulGymWebClientCrawler {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(facilitySql, new String[] {"facility_id"});
-                ps.setBoolean(1, false);
-                ps.setBoolean(2, false);
-                ps.setBoolean(3, false);
-                ps.setBoolean(4, false);
-                ps.setBoolean(5, false);
-                ps.setBoolean(6, false);
-                ps.setBoolean(7, false);
-                ps.setBoolean(8, false);
+                ps.setBoolean(1, random.nextBoolean());
+                ps.setBoolean(2, random.nextBoolean());
+                ps.setBoolean(3, random.nextBoolean());
+                ps.setBoolean(4, random.nextBoolean());
+                ps.setBoolean(5, random.nextBoolean());
+                ps.setBoolean(6, random.nextBoolean());
+                ps.setBoolean(7, random.nextBoolean());
+                ps.setBoolean(8, random.nextBoolean());
                 return ps;
             }, keyHolder);
 
