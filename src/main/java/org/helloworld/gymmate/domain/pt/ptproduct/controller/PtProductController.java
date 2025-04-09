@@ -9,6 +9,7 @@ import org.helloworld.gymmate.domain.pt.ptproduct.dto.PtProductCreateRequest;
 import org.helloworld.gymmate.domain.pt.ptproduct.dto.PtProductModifyRequest;
 import org.helloworld.gymmate.domain.pt.ptproduct.dto.PtProductResponse;
 import org.helloworld.gymmate.domain.pt.ptproduct.dto.PtProductsResponse;
+import org.helloworld.gymmate.domain.pt.ptproduct.dto.TrainersPtProductsResponse;
 import org.helloworld.gymmate.domain.pt.ptproduct.service.PtProductService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.HttpStatus;
@@ -117,5 +118,13 @@ public class PtProductController {
         @PathVariable Long ptProductId
     ) {
         return ResponseEntity.ok(ptProductService.getProduct(ptProductId));
+    }
+
+    @Operation(summary = "트레이너정보 + 헬스장정보 + 해당트레이너 PT상품들")
+    @GetMapping("/trainer/{trainerId}")
+    public ResponseEntity<TrainersPtProductsResponse> getTrainersProducts(
+        @PathVariable Long trainerId
+    ) {
+        return ResponseEntity.ok(ptProductService.getTrainersPtProducts(trainerId));
     }
 }
