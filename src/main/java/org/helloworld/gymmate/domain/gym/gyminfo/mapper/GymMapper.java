@@ -90,4 +90,11 @@ public class GymMapper {
         );
     }
 
+    public static GymImage toImageEntity(String url, Gym gym) {
+        return GymImage.builder()
+            .url(url)
+            .gym(gym)
+            .build();
+    }
+
 }

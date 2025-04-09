@@ -5,15 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 import org.helloworld.gymmate.common.util.StringUtil;
+import org.helloworld.gymmate.domain.gym.enums.GymDummyImage;
 import org.helloworld.gymmate.domain.gym.facility.entity.Facility;
 import org.helloworld.gymmate.domain.gym.facility.mapper.FacilityMapper;
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
+import org.helloworld.gymmate.domain.gym.gyminfo.entity.GymImage;
 import org.helloworld.gymmate.domain.gym.gyminfo.mapper.GymMapper;
 import org.helloworld.gymmate.domain.gym.gyminfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.gym.machine.entity.Machine;
@@ -79,6 +82,12 @@ public class SeoulGymWebClientCrawler {
 
                     // 중복 제거 후 저장
                     saveGyms(List.copyOf(gymBatch));
+                    List<Gym> gymsWithId = gymRepository.findAllByPlaceUrlIn(
+                        gymBatch.stream().map(Gym::getPlaceUrl).toList()
+                    );
+                    saveFacilitiesForGyms(List.copyOf(gymsWithId));
+                    saveMachinesForGyms(List.copyOf(gymsWithId));
+                    saveImagesForGyms(List.copyOf(gymsWithId));
                     gymBatch.clear();
                 }
             });
@@ -112,9 +121,21 @@ public class SeoulGymWebClientCrawler {
 
             // 중복 제거 후 500개 저장
             if (gymBatch.size() >= BATCH_SIZE) {
+                Map<String, Facility> facilityMap = gymBatch.stream()
+                    .collect(Collectors.toMap(Gym::getPlaceUrl, Gym::getFacility));
                 saveGyms(List.copyOf(gymBatch));
-                saveFacilitiesForGyms(List.copyOf(gymBatch));
-                saveMachinesForGyms(List.copyOf(gymBatch));
+                List<Gym> gymsWithId = gymRepository.findAllByPlaceUrlIn(
+                    gymBatch.stream().map(Gym::getPlaceUrl).toList()
+                );
+                for (Gym gym : gymsWithId) {
+                    Facility facility = facilityMap.get(gym.getPlaceUrl());
+                    if (facility != null) {
+                        gym.assignFacility(facility);
+                    }
+                }
+                saveFacilitiesForGyms(List.copyOf(gymsWithId));
+                saveMachinesForGyms(List.copyOf(gymsWithId));
+                saveImagesForGyms(List.copyOf(gymsWithId));
                 gymBatch.clear();
             }
         }
@@ -174,17 +195,20 @@ public class SeoulGymWebClientCrawler {
                 continue;
             }
 
+            // 무작위 true / false를 위함
+            Random random = new Random();
+
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(facilitySql, new String[] {"facility_id"});
-                ps.setBoolean(1, false);
-                ps.setBoolean(2, false);
-                ps.setBoolean(3, false);
-                ps.setBoolean(4, false);
-                ps.setBoolean(5, false);
-                ps.setBoolean(6, false);
-                ps.setBoolean(7, false);
-                ps.setBoolean(8, false);
+                ps.setBoolean(1, random.nextBoolean());
+                ps.setBoolean(2, random.nextBoolean());
+                ps.setBoolean(3, random.nextBoolean());
+                ps.setBoolean(4, random.nextBoolean());
+                ps.setBoolean(5, random.nextBoolean());
+                ps.setBoolean(6, random.nextBoolean());
+                ps.setBoolean(7, random.nextBoolean());
+                ps.setBoolean(8, random.nextBoolean());
                 return ps;
             }, keyHolder);
 
@@ -197,23 +221,14 @@ public class SeoulGymWebClientCrawler {
         log.debug("Gym에 연결된 Facility 데이터 저장 및 업데이트 완료!");
     }
 
+    // Gym에 해당하는 machine정보 저장
     @Transactional
     public void saveMachinesForGyms(List<Gym> gyms) {
         if (gyms.isEmpty())
             return;
-        String sqlFindGymId = "SELECT gym_id FROM gym WHERE place_url = ?";
-        List<Gym> gymsWithId = new ArrayList<>();
-        for (Gym gym : gyms) {
-            try {
-                Long gymId = jdbcTemplate.queryForObject(sqlFindGymId, Long.class, gym.getPlaceUrl());
-                Gym gymWithId = gym.withGymId(gymId);
-                gymsWithId.add(gymWithId);
-            } catch (Exception e) {
-                log.error("Gym ID 조회 실패! place_url: {}", gym.getPlaceUrl(), e);
-            }
-        }
+
         List<Machine> machinesToInsert = new ArrayList<>();
-        for (Gym gym : gymsWithId) {
+        for (Gym gym : gyms) {
             List<GymMachine> selectedMachines = GymMachine.getRandomMachines(3);
             for (GymMachine gymMachine : selectedMachines) {
                 int amount = (int)(Math.random() * 5) + 1;
@@ -232,6 +247,36 @@ public class SeoulGymWebClientCrawler {
             log.debug("총 {}개의 Machine 데이터 저장 완료!", machinesToInsert.size());
         } catch (Exception e) {
             log.error("Machine 데이터 저장 중 오류 발생: ", e);
+        }
+    }
+
+    @Transactional
+    public void saveImagesForGyms(List<Gym> gyms) {
+        if (gyms.isEmpty())
+            return;
+
+        List<GymImage> imagesToInsert = new ArrayList<>();
+
+        for (Gym gym : gyms) {
+            try {
+                String randomUrl = GymDummyImage.getRandomImageUrls(1).get(0);
+                GymImage image = GymMapper.toImageEntity(randomUrl, gym);
+                imagesToInsert.add(image);
+            } catch (Exception e) {
+                log.error("GymImage 생성 중 오류 발생! gym: {}", gym.getPlaceUrl(), e);
+            }
+        }
+
+        String sql = "INSERT INTO gym_image (url, gym_id) VALUES (?, ?)";
+
+        try {
+            jdbcTemplate.batchUpdate(sql, imagesToInsert, BATCH_SIZE, (ps, image) -> {
+                ps.setString(1, image.getUrl());
+                ps.setLong(2, image.getGym().getGymId());
+            });
+            log.debug("총 {}개의 GymImage 데이터 저장 완료!", imagesToInsert.size());
+        } catch (Exception e) {
+            log.error("GymImage 데이터 저장 중 오류 발생: ", e);
         }
     }
 }
