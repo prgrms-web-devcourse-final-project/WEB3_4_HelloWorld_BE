@@ -22,11 +22,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "PT 예약 API", description = "PT 예약 등록, 수정, 삭제, 조회")
 @RestController
 @RequestMapping("/reservation")
 @RequiredArgsConstructor
@@ -46,6 +49,8 @@ public class ReservationController {
      1. ptProduct_id로 ptProduct 정보 조회
      2. ptProduct 정보, reservationRequest 정보, member_id 로 reservation객체 생성&저장
      */
+
+    @Operation(summary = "멤버 - 예약 등록")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     @PostMapping("/ptProduct/{ptProductId}")
     @Validated
@@ -62,23 +67,20 @@ public class ReservationController {
             ));
     }
 
+    @Operation(summary = "멤버 - 예약 수정")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     @PutMapping("/{reservationId}")
     public ResponseEntity<ReservationResponse> updateReservation(
         @PathVariable Long reservationId,
         @RequestBody ReservationRequest request) {
 
-        // 예약 수정 로직
         ReservationResponse response
             = reservationService.updateReservation(reservationId, request.date(), request.time());
 
         return ResponseEntity.ok(response);
     }
 
-    /*
-     회원의 예약 삭제 API
-     - param : reservationId
-    */
+    @Operation(summary = "멤버 - 예약 삭제")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<Void> deleteMemberReservation(
@@ -88,10 +90,7 @@ public class ReservationController {
         return ResponseEntity.ok().build();
     }
 
-    /*
-      멤버의 예약 목록 조회 API
-      컨트롤러 -> 서비스 전달 정보 : 유저id
-     */
+    @Operation(summary = "멤버 - 예약 목록 조회")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     @GetMapping("/member")
     public ResponseEntity<PageDto<ReservationResponse>> getMemberReservations(
@@ -109,10 +108,7 @@ public class ReservationController {
             ));
     }
 
-    /*
-    트레이너의 예약 목록 조회 API
-    컨트롤러 -> 서비스 전달 정보 : 유저id
-   */
+    @Operation(summary = "트레이너 - 예약 목록 조회")
     @PreAuthorize("hasRole('ROLE_TRAINER')")
     @GetMapping("/trainer")
     public ResponseEntity<PageDto<ReservationResponse>> getTrainerReservations(
@@ -130,9 +126,7 @@ public class ReservationController {
             ));
     }
 
-    /*
-    트레이너의 월별 예약 목록 조회 API
-     */
+    @Operation(summary = "트레이너 - 월별 예약 목록 조회")
     @PreAuthorize("hasRole('ROLE_TRAINER')")
     @GetMapping("/trainer/month")
     public ResponseEntity<ReservationByMonthResponse> getTrainerReservationsByMonth(

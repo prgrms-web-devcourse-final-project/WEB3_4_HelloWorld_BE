@@ -29,12 +29,15 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@Tag(name = "PT 상품 API", description = "PT 상품 등록,수정,삭제 / 상품 전체조회, 단일조회")
 @RestController
 @RequestMapping("/ptProduct")
 @RequiredArgsConstructor
@@ -42,7 +45,9 @@ import lombok.extern.slf4j.Slf4j;
 public class PtProductController {
     private final PtProductService ptProductService;
 
+    @Operation(summary = "트레이너 - PT 상품 생성")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
     public ResponseEntity<Long> createPtProduct(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
         @RequestPart("ptProductData") @Valid PtProductCreateRequest request,
@@ -52,7 +57,9 @@ public class PtProductController {
             .body(ptProductService.createPtProduct(request, images, customOAuth2User.getUserId()));
     }
 
+    @Operation(summary = "트레이너 - PT 상품 수정")
     @PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
     public ResponseEntity<Long> modifyPtProduct(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
         @PathVariable Long productId,
@@ -63,7 +70,9 @@ public class PtProductController {
             .body(ptProductService.modifyPtProduct(productId, request, images, customOAuth2User.getUserId()));
     }
 
+    @Operation(summary = "트레이너 - PT 수업 삭제")
     @DeleteMapping(value = "/{productId}")
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
     public ResponseEntity<Void> deletePtProduct(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
         @PathVariable Long productId
@@ -72,6 +81,7 @@ public class PtProductController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "PT 상품 전체조회")
     @GetMapping
     @Validated
     public ResponseEntity<PageDto<PtProductsResponse>> getProducts(
@@ -87,6 +97,7 @@ public class PtProductController {
             ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize, x, y)));
     }
 
+    @Operation(summary = "멤버 - 가까운 순 PT 상품 전체조회")
     @GetMapping("/nearby")
     @Validated
     @PreAuthorize("hasRole('ROLE_MEMBER')")
@@ -101,6 +112,7 @@ public class PtProductController {
             ptProductService.fetchNearbyProducts(searchOption, searchTerm, page, pageSize, customOAuth2User)));
     }
 
+    @Operation(summary = "단일 PT 상품 조회")
     @GetMapping("/{ptProductId}")
     public ResponseEntity<PtProductResponse> getProduct(
         @PathVariable Long ptProductId
@@ -108,6 +120,7 @@ public class PtProductController {
         return ResponseEntity.ok(ptProductService.getProduct(ptProductId));
     }
 
+    @Operation(summary = "트레이너정보 + 헬스장정보 + 해당트레이너 PT상품들")
     @GetMapping("/trainer/{trainerId}")
     public ResponseEntity<TrainersPtProductsResponse> getTrainersProducts(
         @PathVariable Long trainerId
