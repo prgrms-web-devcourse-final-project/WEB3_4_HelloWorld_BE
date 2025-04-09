@@ -211,6 +211,7 @@ public class PtProductService {
         return PtProductMapper.toDto(ptProduct, trainer, awards, gym);
     }
 
+    @Transactional(readOnly = true)
     public TrainersPtProductsResponse getTrainersPtProducts(Long trainerId) {
         List<PtProduct> ptProducts = ptProductRepository.findByTrainerIdIn(List.of(trainerId));
         Trainer trainer = trainerService.findByUserId(trainerId);
