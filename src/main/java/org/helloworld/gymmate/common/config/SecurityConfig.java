@@ -27,6 +27,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 
 @Configuration
 @EnableWebSecurity
@@ -37,6 +38,9 @@ public class SecurityConfig {
     private final CustomAuthenticationFilter customAuthenticationFilter;
     private final LogoutSuccessHandler logoutSuccessHandler;
     private final CustomAuthorizationRequestResolver customAuthorizationRequestResolver;
+
+    @Value("${client.url}")
+    private String clientUrl;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -59,7 +63,7 @@ public class SecurityConfig {
             .logout(logout -> logout
                 .addLogoutHandler(logoutSuccessHandler)
                 .invalidateHttpSession(true)
-                .logoutSuccessUrl("http://localhost:3000")
+                .logoutSuccessUrl(clientUrl)
                 .logoutSuccessHandler((request, response, authentication) -> {
                     response.setStatus(HttpStatus.OK.value());
                 })
