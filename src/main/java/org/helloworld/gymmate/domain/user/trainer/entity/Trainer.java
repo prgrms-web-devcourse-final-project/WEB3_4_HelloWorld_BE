@@ -9,6 +9,7 @@ import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.pt.student.entity.Student;
 import org.helloworld.gymmate.domain.user.converter.GenderTypeConverter;
 import org.helloworld.gymmate.domain.user.enums.GenderType;
+import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
 import org.helloworld.gymmate.domain.user.trainer.dto.OwnerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerModifyRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerProfileRequest;
@@ -112,6 +113,9 @@ public class Trainer {
     @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Student> students = new ArrayList<>();
+
+    @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Award> awards = new ArrayList<>(); //fetch = FetchType.LAZY??
 
     // ====== Business Logic ======
 
