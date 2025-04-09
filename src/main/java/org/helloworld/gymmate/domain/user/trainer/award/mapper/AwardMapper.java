@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.user.trainer.award.service;
+package org.helloworld.gymmate.domain.user.trainer.award.mapper;
 
 import org.helloworld.gymmate.domain.user.trainer.award.dto.AwardRequest;
 import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
