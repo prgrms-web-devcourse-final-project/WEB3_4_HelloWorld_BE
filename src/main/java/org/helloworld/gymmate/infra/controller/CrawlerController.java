@@ -13,11 +13,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CrawlerController {
 
-	private final SeoulGymWebClientCrawler seoulGymWebClientCrawler;
+    private final SeoulGymWebClientCrawler seoulGymWebClientCrawler;
 
-	@GetMapping("/gym")
-	public ResponseEntity<Void> gymCrawling() {
-		seoulGymWebClientCrawler.crawlSeoulGyms();
-		return ResponseEntity.ok().build();
-	}
+    @GetMapping("/gym")
+    public ResponseEntity<Void> gymCrawling() {
+        seoulGymWebClientCrawler.crawlSeoulGyms();
+        return ResponseEntity.ok().build();
+    }
 }
