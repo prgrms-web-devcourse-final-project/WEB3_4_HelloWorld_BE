@@ -1,5 +1,6 @@
 package org.helloworld.gymmate.domain.user.trainer.award.mapper;
 
+import org.helloworld.gymmate.domain.user.trainer.award.dto.AwardRequest;
 import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
 import org.helloworld.gymmate.domain.user.trainer.award.enums.AwardData;
 
@@ -13,4 +14,14 @@ public class AwardMapper {
             .trainerId(trainerId)
             .build();
     }
+
+    public static Award toEntity(long trainerId, AwardRequest awardRequest) {
+        return Award.builder()
+            .trainerId(trainerId)
+            .awardYear(awardRequest.awardYear())
+            .awardName(awardRequest.awardName())
+            .awardInfo(awardRequest.awardInfo())
+            .build();
+    }
+
 }
