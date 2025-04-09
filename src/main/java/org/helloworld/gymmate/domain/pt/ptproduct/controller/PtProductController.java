@@ -9,6 +9,7 @@ import org.helloworld.gymmate.domain.pt.ptproduct.dto.PtProductCreateRequest;
 import org.helloworld.gymmate.domain.pt.ptproduct.dto.PtProductModifyRequest;
 import org.helloworld.gymmate.domain.pt.ptproduct.dto.PtProductResponse;
 import org.helloworld.gymmate.domain.pt.ptproduct.dto.PtProductsResponse;
+import org.helloworld.gymmate.domain.pt.ptproduct.dto.TrainersPtProductsResponse;
 import org.helloworld.gymmate.domain.pt.ptproduct.service.PtProductService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.HttpStatus;
@@ -39,71 +40,78 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class PtProductController {
-	private final PtProductService ptProductService;
+    private final PtProductService ptProductService;
 
-	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Long> createPtProduct(
-		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-		@RequestPart("ptProductData") @Valid PtProductCreateRequest request,
-		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images
-	) {
-		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(ptProductService.createPtProduct(request, images, customOAuth2User.getUserId()));
-	}
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> createPtProduct(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+        @RequestPart("ptProductData") @Valid PtProductCreateRequest request,
+        @RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ptProductService.createPtProduct(request, images, customOAuth2User.getUserId()));
+    }
 
-	@PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Long> modifyPtProduct(
-		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-		@PathVariable Long productId,
-		@RequestPart("ptProductData") @Valid PtProductModifyRequest request,
-		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images
-	) {
-		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(ptProductService.modifyPtProduct(productId, request, images, customOAuth2User.getUserId()));
-	}
+    @PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> modifyPtProduct(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+        @PathVariable Long productId,
+        @RequestPart("ptProductData") @Valid PtProductModifyRequest request,
+        @RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ptProductService.modifyPtProduct(productId, request, images, customOAuth2User.getUserId()));
+    }
 
-	@DeleteMapping(value = "/{productId}")
-	public ResponseEntity<Void> deletePtProduct(
-		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-		@PathVariable Long productId
-	) {
-		ptProductService.deletePtProduct(productId, customOAuth2User.getUserId());
-		return ResponseEntity.ok().build();
-	}
+    @DeleteMapping(value = "/{productId}")
+    public ResponseEntity<Void> deletePtProduct(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+        @PathVariable Long productId
+    ) {
+        ptProductService.deletePtProduct(productId, customOAuth2User.getUserId());
+        return ResponseEntity.ok().build();
+    }
 
-	@GetMapping
-	@Validated
-	public ResponseEntity<PageDto<PtProductsResponse>> getProducts(
-		@RequestParam(defaultValue = "score") String sortOption,
-		@RequestParam(required = false) String searchOption,
-		@RequestParam(defaultValue = "") String searchTerm,
-		@RequestParam(defaultValue = "0") @Min(0) int page,
-		@RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize,
-		@RequestParam(required = false, defaultValue = "127.0276") Double x,
-		@RequestParam(required = false, defaultValue = "37.4979") Double y
-	) {
-		return ResponseEntity.ok(PageMapper.toPageDto(
-			ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize, x, y)));
-	}
+    @GetMapping
+    @Validated
+    public ResponseEntity<PageDto<PtProductsResponse>> getProducts(
+        @RequestParam(defaultValue = "score") String sortOption,
+        @RequestParam(required = false) String searchOption,
+        @RequestParam(defaultValue = "") String searchTerm,
+        @RequestParam(defaultValue = "0") @Min(0) int page,
+        @RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize,
+        @RequestParam(required = false, defaultValue = "127.0276") Double x,
+        @RequestParam(required = false, defaultValue = "37.4979") Double y
+    ) {
+        return ResponseEntity.ok(PageMapper.toPageDto(
+            ptProductService.getProducts(sortOption, searchOption, searchTerm, page, pageSize, x, y)));
+    }
 
-	@GetMapping("/nearby")
-	@Validated
-	@PreAuthorize("hasRole('ROLE_MEMBER')")
-	public ResponseEntity<PageDto<PtProductsResponse>> getNearByProducts(
-		@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-		@RequestParam(required = false) String searchOption,
-		@RequestParam(defaultValue = "") String searchTerm,
-		@RequestParam(defaultValue = "0") @Min(0) int page,
-		@RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize
-	) {
-		return ResponseEntity.ok(PageMapper.toPageDto(
-			ptProductService.fetchNearbyProducts(searchOption, searchTerm, page, pageSize, customOAuth2User)));
-	}
+    @GetMapping("/nearby")
+    @Validated
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    public ResponseEntity<PageDto<PtProductsResponse>> getNearByProducts(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+        @RequestParam(required = false) String searchOption,
+        @RequestParam(defaultValue = "") String searchTerm,
+        @RequestParam(defaultValue = "0") @Min(0) int page,
+        @RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize
+    ) {
+        return ResponseEntity.ok(PageMapper.toPageDto(
+            ptProductService.fetchNearbyProducts(searchOption, searchTerm, page, pageSize, customOAuth2User)));
+    }
 
-	@GetMapping("/{ptProductId}")
-	public ResponseEntity<PtProductResponse> getProduct(
-		@PathVariable Long ptProductId
-	) {
-		return ResponseEntity.ok(ptProductService.getProduct(ptProductId));
-	}
+    @GetMapping("/{ptProductId}")
+    public ResponseEntity<PtProductResponse> getProduct(
+        @PathVariable Long ptProductId
+    ) {
+        return ResponseEntity.ok(ptProductService.getProduct(ptProductId));
+    }
+
+    @GetMapping("/trainer/{trainerId}")
+    public ResponseEntity<TrainersPtProductsResponse> getTrainersProducts(
+        @PathVariable Long trainerId
+    ) {
+        return ResponseEntity.ok(ptProductService.getTrainersPtProducts(trainerId));
+    }
 }
