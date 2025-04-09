@@ -37,25 +37,15 @@ public class BigthreeService {
         // 날짜가 비어있으면 현재 날짜 넣기
         LocalDate date = request.date() != null ? request.date() : LocalDate.now();
 
+        validateBigthreeNotExists(member, date);
+
+        // 새 3대 기록 생성 및 저장
         Bigthree newBigthree = BigthreeMapper.toEntity(request, member, date);
         bigthreeRepository.save(newBigthree);
 
-        // 최신 BigThree 값 기준으로 Member 업데이트
         updateMemberRecentBigthree(member);
 
         return newBigthree.getBigthreeId();
-
-    }
-
-    private void updateMemberRecentBigthree(Member member) {
-        bigthreeRepository.findTopByMemberOrderByDateDescBigthreeIdDesc(member)
-            .ifPresent(latest -> {
-                member.updateRecentBigthree(
-                    latest.getBench(),
-                    latest.getDeadlift(),
-                    latest.getSquat()
-                );
-            });
     }
 
     @Transactional
@@ -67,46 +57,28 @@ public class BigthreeService {
 
         bigthreeRepository.delete(existBigthree);
 
-        // 최신 값으로 Member recent 갱신
         updateMemberRecentBigthree(member);
     }
 
     @Transactional
-    public void modifyBigthree(Long bigthreeId, @Valid BigthreeRequest request, Long memberId) {
+    public Long modifyBigthree(Long bigthreeId, @Valid BigthreeRequest request, Long memberId) {
         Bigthree existBigthree = getExistingBigthree(bigthreeId);
 
         Member member = getMember(memberId);
         validateBigthreeOwner(existBigthree, member);
 
-        // 기존 Bigthree 객체에 값을 업데이트
-        existBigthree.update(
-            request.bench(),
-            request.deadlift(),
-            request.squat()
-        );
+        // 기존 날짜 가져오기
+        LocalDate date = existBigthree.getDate();
 
-        // 최신 값으로 Member recent 갱신
+        // 기존 3대 기록 id로 데이터 업데이트
+        bigthreeRepository.save(BigthreeMapper.toEntity(request, member, date, existBigthree.getBigthreeId()));
+
         updateMemberRecentBigthree(member);
+
+        return existBigthree.getBigthreeId();
     }
 
-    private Member getMember(Long memberId) {
-        return memberService.findByUserId(memberId);
-    }
-
-    private Bigthree getExistingBigthree(Long bigthreeId) {
-        //기존 3대 측정 기록 가져오기
-        return bigthreeRepository.findById(bigthreeId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.BIGTHREE_NOT_FOUND));
-    }
-
-    private void validateBigthreeOwner(Bigthree bigthree, Member member) {
-        // 본인의 3대 측정 기록이 아니면 예외 발생
-        if (!bigthree.getMember().equals(member)) {
-            throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
-        }
-    }
-
-    // 3대 측정 통계
+    /** 3대 측정 통계 */
     @Transactional(readOnly = true)
     public BigthreeStatsResponse getBigthreeStats(Long memberId) {
         Member member = getMember(memberId);
@@ -128,6 +100,43 @@ public class BigthreeService {
         return bigthreeMapper.toResponseDto(member, average, mostLevel, benchRate, deadliftRate, squatRate, myAvg);
     }
 
+    private Member getMember(Long memberId) {
+        return memberService.findByUserId(memberId);
+    }
+
+    /** 이미 기록이 있는 날짜인지 확인 후 있으면 예외처리 (잘못된 요청, put 으로 요청해야 함) */
+    private void validateBigthreeNotExists(Member member, LocalDate date) {
+        bigthreeRepository.findByMemberAndDate(member, date)
+            .ifPresent(b -> {
+                throw new BusinessException(ErrorCode.BIGTHREE_ALREADY_EXISTS);
+            });
+    }
+
+    private Bigthree getExistingBigthree(Long bigthreeId) {
+        //기존 3대 측정 기록 가져오기
+        return bigthreeRepository.findById(bigthreeId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.BIGTHREE_NOT_FOUND));
+    }
+
+    /** 본인의 3대 측정 기록이 아니면 예외 발생 */
+    private void validateBigthreeOwner(Bigthree bigthree, Member member) {
+        if (!bigthree.getMember().equals(member)) {
+            throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
+    }
+
+    /** BigThree 테이블의 최신 데이터를 기준으로 Member 업데이트 */
+    private void updateMemberRecentBigthree(Member member) {
+        bigthreeRepository.findTopByMemberOrderByDateDesc(member)
+            .ifPresent(latest -> {
+                member.updateRecentBigthree(
+                    latest.getBench(),
+                    latest.getDeadlift(),
+                    latest.getSquat()
+                );
+            });
+    }
+
     private double calculateRate(Double myWeight, Double myTotal) {
         if (myTotal == null || myTotal == 0.0)
             return 0;
@@ -137,14 +146,14 @@ public class BigthreeService {
         return Math.round(rawRate * 100.0) / 100.0;
     }
 
+    /** 3대 측정 평균 가져오기 */
     private BigthreeAverage getLatestBigthreeAverage() {
-        // 3대 측정 평균 가져오기
-        return bigthreeAverageRepository.findTopByOrderByBigthreeAverageIdDesc()
+        return bigthreeAverageRepository.findByBigthreeAverageId(1L)
             .orElseThrow(() -> new BusinessException(ErrorCode.BIGTHREE_AVERAGE_NOT_FOUND));
     }
 
+    /** 많은 일반 회원이 속한 레벨 가져오기 */
     private int getMostLevel() {
-        // 많은 일반 회원이 속한 레벨 가져오기
         return memberRepository.findMostLevel();
     }
 

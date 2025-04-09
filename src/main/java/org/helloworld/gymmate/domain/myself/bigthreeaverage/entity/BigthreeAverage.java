@@ -2,8 +2,6 @@ package org.helloworld.gymmate.domain.myself.bigthreeaverage.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -19,11 +17,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @Table(name = "bigthree_average")
 public class BigthreeAverage {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bigthree_average_id")
-    private Long bigthreeAverageId;
+    private Long bigthreeAverageId; // 1로 고정
 
     @Column(name = "sum_average", nullable = false)
     private double sumAverage;

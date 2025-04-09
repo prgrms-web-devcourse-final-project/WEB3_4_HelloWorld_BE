@@ -42,27 +42,23 @@ public class BigthreeController {
 
         bigthreeService.deleteBigthree(bigthreeId, customOAuth2User.getUserId());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PutMapping(value = "/{bigthreeId}")
-    public ResponseEntity<Void> modifyBigthree(
+    public ResponseEntity<Long> modifyBigthree(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
         @PathVariable Long bigthreeId,
         @Valid @RequestBody BigthreeRequest request) {
 
-        bigthreeService.modifyBigthree(bigthreeId, request, customOAuth2User.getUserId());
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).body(
+            bigthreeService.modifyBigthree(bigthreeId, request, customOAuth2User.getUserId()));
     }
 
     @GetMapping(value = "/status")
     public ResponseEntity<BigthreeStatsResponse> getBigthreeStats(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ) {
-        BigthreeStatsResponse response = bigthreeService.getBigthreeStats(customOAuth2User.getUserId());
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(bigthreeService.getBigthreeStats(customOAuth2User.getUserId()));
     }
-
 }
