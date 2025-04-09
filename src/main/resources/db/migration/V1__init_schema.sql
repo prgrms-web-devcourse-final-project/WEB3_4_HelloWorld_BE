@@ -79,32 +79,32 @@ CREATE TABLE gym_image (
 );
 
 -- 6. Trainer
-CREATE TABLE gymmate_trainer (
-    trainer_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    trainer_name VARCHAR(25),
-    phone_number VARCHAR(50) UNIQUE,
-    email VARCHAR(50),
-    -- gender_type ENUM('MALE', 'FEMALE'), -- @Convert(converter = GenderTypeConverter.class)
-    gender_type VARCHAR(10),
-    bank VARCHAR(25),
-    account VARCHAR(50),
-    business_number VARCHAR(50) UNIQUE,
-    business_date DATE,
-    is_owner BOOLEAN,
-    is_check BOOLEAN,
-    profile_url VARCHAR(255),
-    is_account_non_locked BOOLEAN,
-    cash BIGINT,
-    score DOUBLE,
-    intro VARCHAR(100),
-    career VARCHAR(50),
-    field VARCHAR(50),
-    additional_info_completed BOOLEAN,
-    gym_id BIGINT,
-    oauth_id BIGINT UNIQUE,
-    FOREIGN KEY (gym_id) REFERENCES gym(gym_id),
-    FOREIGN KEY (oauth_id) REFERENCES oauth(oauth_id)
-);
+    CREATE TABLE gymmate_trainer (
+        trainer_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        trainer_name VARCHAR(25),
+        phone_number VARCHAR(50) UNIQUE,
+        email VARCHAR(50),
+        -- gender_type ENUM('MALE', 'FEMALE'), -- @Convert(converter = GenderTypeConverter.class)
+        gender_type VARCHAR(10),
+        bank VARCHAR(25),
+        account VARCHAR(50),
+        business_number VARCHAR(50) UNIQUE,
+        business_date DATE,
+        is_owner BOOLEAN,
+        is_check BOOLEAN,
+        profile_url VARCHAR(255),
+        is_account_non_locked BOOLEAN,
+        cash BIGINT,
+        score DOUBLE,
+        intro VARCHAR(100),
+        career VARCHAR(50),
+        field VARCHAR(50),
+        additional_info_completed BOOLEAN,
+        gym_id BIGINT,
+        oauth_id BIGINT UNIQUE,
+        FOREIGN KEY (gym_id) REFERENCES gym(gym_id),
+        FOREIGN KEY (oauth_id) REFERENCES oauth(oauth_id)
+    );
 
 -- 7. Award
 CREATE TABLE award (
