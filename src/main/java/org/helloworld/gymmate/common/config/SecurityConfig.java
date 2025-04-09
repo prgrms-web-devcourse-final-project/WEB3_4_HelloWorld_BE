@@ -5,6 +5,7 @@ import org.helloworld.gymmate.security.filter.CustomAuthenticationFilter;
 import org.helloworld.gymmate.security.handler.LoginSuccessHandler;
 import org.helloworld.gymmate.security.handler.LogoutSuccessHandler;
 import org.helloworld.gymmate.security.resolver.CustomAuthorizationRequestResolver;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +38,9 @@ public class SecurityConfig {
 	private final LogoutSuccessHandler logoutSuccessHandler;
 	private final CustomAuthorizationRequestResolver customAuthorizationRequestResolver;
 
+	@Value("${client.url}")
+	private String clientUrl;
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -58,7 +62,7 @@ public class SecurityConfig {
 			.logout(logout -> logout
 				.addLogoutHandler(logoutSuccessHandler)
 				.invalidateHttpSession(true)
-				.logoutSuccessUrl("http://localhost:3000")
+				.logoutSuccessUrl(clientUrl)
 				.logoutSuccessHandler((request, response, authentication) -> {
 					response.setStatus(HttpStatus.OK.value());
 				})
@@ -108,7 +112,7 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("http://localhost:3000")); // 허용할 Origin
+		configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://web-3-4-hello-world-fe.vercel.app")); // 허용할 Origin
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH")); // 허용할 HTTP 메소드
 		configuration.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
 		configuration.setAllowCredentials(true); // 인증 정보 포함 허용

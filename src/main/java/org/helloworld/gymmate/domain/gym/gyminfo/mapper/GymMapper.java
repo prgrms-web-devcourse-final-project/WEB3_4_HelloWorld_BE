@@ -91,12 +91,19 @@ public class GymMapper {
         );
     }
 
-	public static GymSearchResponse toSearchResponse(Gym gym) {
-		return new GymSearchResponse(gym.getGymName(),
-			gym.getAddress(),
-			Optional.ofNullable(gym.getImages())
-				.filter(images -> !images.isEmpty())
-				.map(images -> images.getFirst().getUrl())
-				.orElse(null));
-	}
+    public static GymImage toImageEntity(String url, Gym gym) {
+        return GymImage.builder()
+            .url(url)
+            .gym(gym)
+            .build();
+    }
+
+    public static GymSearchResponse toSearchResponse(Gym gym) {
+        return new GymSearchResponse(gym.getGymName(),
+            gym.getAddress(),
+            Optional.ofNullable(gym.getImages())
+                .filter(images -> !images.isEmpty())
+                .map(images -> images.getFirst().getUrl())
+                .orElse(null));
+    }
 }
