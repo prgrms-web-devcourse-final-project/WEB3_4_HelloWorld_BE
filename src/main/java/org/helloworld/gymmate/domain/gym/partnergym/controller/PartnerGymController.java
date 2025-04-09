@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,50 +33,49 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/partnergym")
 @RequiredArgsConstructor
 public class PartnerGymController {
+    private final PartnerGymService partnerGymService;
+    private final MachineService machineService;
 
-	private final PartnerGymService partnerGymService;
-	private final MachineService machineService;
+    @Operation(summary = "운영중인 제휴 헬스장 등록", description = "트레이너 사장이 아직 제휴 헬스장을 등록하지 않았을 때 마이페이지에서 제휴 헬스장 등록 요청 처리")
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> registerPartnerGym(
+        @RequestPart("request") @Valid GymRegisterRequest request,
+        @RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images,
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-	// 제휴 헬스장 등록
-	@PreAuthorize("hasRole('ROLE_TRAINER')")
-	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Long> registerPartnerGym(
-		@RequestPart("request") @Valid GymRegisterRequest request,
-		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images,
-		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(partnerGymService.registerPartnerGym(request, images, customOAuth2User.getUserId()));
+    }
 
-		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(partnerGymService.registerPartnerGym(request, images, customOAuth2User.getUserId()));
-	}
+    @Operation(summary = "운영중인 제휴 헬스장 정보 수정", description = "트레이너 사장이 제휴 헬스장을 등록한 후 마이페이지에서 제휴 헬스장 정보 수정 요청 처리")
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> updatePartnerGym(
+        @RequestPart("request") @Valid GymUpdateRequest request,
+        @RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images,
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-	// 제휴 헬스장 수정
-	@PreAuthorize("hasRole('ROLE_TRAINER')")
-	@PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Long> updatePartnerGym(
-		@RequestPart("request") @Valid GymUpdateRequest request,
-		@RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images,
-		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        return ResponseEntity.ok(
+            partnerGymService.updatePartnerGym(request, images, customOAuth2User.getUserId()));
+    }
 
-		return ResponseEntity.ok(
-			partnerGymService.updatePartnerGym(request, images, customOAuth2User.getUserId()));
-	}
+    @Operation(summary = "운영중인 제휴 헬스장 정보 조회", description = "트레이너 사장이 제휴 헬스장을 등록한 후 마이페이지로 이동했을 때 띄워줄 제휴 헬스장 정보")
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
+    @GetMapping
+    public ResponseEntity<PartnerGymDetailResponse> getPartnerGymDetail(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+    ) {
+        return ResponseEntity.ok(
+            partnerGymService.getPartnerGymDetail(customOAuth2User.getUserId()));
+    }
 
-	// 제휴 헬스장 조회
-	@PreAuthorize("hasRole('ROLE_TRAINER')")
-	@GetMapping
-	public ResponseEntity<PartnerGymDetailResponse> getPartnerGymDetail(
-		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
-	) {
-		return ResponseEntity.ok(
-			partnerGymService.getPartnerGymDetail(customOAuth2User.getUserId()));
-	}
+    @Operation(summary = "운영중인 제휴 헬스장의 운동 기구 목록 조회", description = "트레이너 사장이 제휴 헬스장을 등록한 후 마이페이지에서 보여줄 운동 기구 목록")
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
+    @GetMapping("/machine")
+    public ResponseEntity<List<MachineResponse>> getMachines(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-	// 제휴 헬스장 머신 리스트 조회
-	@PreAuthorize("hasRole('ROLE_TRAINER')")
-	@GetMapping("/machine")
-	public ResponseEntity<List<MachineResponse>> getMachines(
-		@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-
-		return ResponseEntity.ok(machineService.getOwnMachines(customOAuth2User.getUserId()));
-	}
+        return ResponseEntity.ok(machineService.getOwnMachines(customOAuth2User.getUserId()));
+    }
 }
