@@ -112,8 +112,8 @@ public class BigthreeService {
             });
     }
 
+    /**기존 3대 측정 기록 가져오기 */
     private Bigthree getExistingBigthree(Long bigthreeId) {
-        //기존 3대 측정 기록 가져오기
         return bigthreeRepository.findById(bigthreeId)
             .orElseThrow(() -> new BusinessException(ErrorCode.BIGTHREE_NOT_FOUND));
     }
