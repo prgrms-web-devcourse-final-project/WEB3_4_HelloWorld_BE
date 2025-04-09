@@ -37,7 +37,25 @@ public class BigthreeService {
         // 날짜가 비어있으면 현재 날짜 넣기
         LocalDate date = request.date() != null ? request.date() : LocalDate.now();
 
-        return bigthreeRepository.save(BigthreeMapper.toEntity(request, member, date)).getBigthreeId();
+        Bigthree newBigthree = BigthreeMapper.toEntity(request, member, date);
+        bigthreeRepository.save(newBigthree);
+
+        // 최신 BigThree 값 기준으로 Member 업데이트
+        updateMemberRecentBigthree(member);
+
+        return newBigthree.getBigthreeId();
+
+    }
+
+    private void updateMemberRecentBigthree(Member member) {
+        bigthreeRepository.findTopByMemberOrderByDateDescBigthreeIdDesc(member)
+            .ifPresent(latest -> {
+                member.updateRecentBigthree(
+                    latest.getBench(),
+                    latest.getDeadlift(),
+                    latest.getSquat()
+                );
+            });
     }
 
     @Transactional
@@ -48,6 +66,9 @@ public class BigthreeService {
         validateBigthreeOwner(existBigthree, member);
 
         bigthreeRepository.delete(existBigthree);
+
+        // 최신 값으로 Member recent 갱신
+        updateMemberRecentBigthree(member);
     }
 
     @Transactional
@@ -57,10 +78,15 @@ public class BigthreeService {
         Member member = getMember(memberId);
         validateBigthreeOwner(existBigthree, member);
 
-        // 기존 날짜 가져오기
-        LocalDate date = existBigthree.getDate();
+        // 기존 Bigthree 객체에 값을 업데이트
+        existBigthree.update(
+            request.bench(),
+            request.deadlift(),
+            request.squat()
+        );
 
-        bigthreeRepository.save(BigthreeMapper.toEntity(request, member, date));
+        // 최신 값으로 Member recent 갱신
+        updateMemberRecentBigthree(member);
     }
 
     private Member getMember(Long memberId) {
@@ -79,8 +105,6 @@ public class BigthreeService {
             throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
         }
     }
-
-    //TODO: Bigthree 테이블에 저장된 기록 중 가장 최신값 회원의  recent필드에 업데이트하는 로직
 
     // 3대 측정 통계
     @Transactional(readOnly = true)
