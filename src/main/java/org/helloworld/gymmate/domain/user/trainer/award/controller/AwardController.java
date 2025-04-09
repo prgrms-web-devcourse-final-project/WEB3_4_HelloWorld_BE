@@ -1,6 +1,9 @@
 package org.helloworld.gymmate.domain.user.trainer.award.controller;
 
+import java.util.List;
+
 import org.helloworld.gymmate.domain.user.trainer.award.dto.AwardRequest;
+import org.helloworld.gymmate.domain.user.trainer.award.dto.AwardResponse;
 import org.helloworld.gymmate.domain.user.trainer.award.service.AwardService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.HttpStatus;
@@ -8,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,4 +52,12 @@ public class AwardController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "트레이너 수상이력 조회")
+    @GetMapping
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
+    public ResponseEntity<List<AwardResponse>> getAwards(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+    ) {
+        return ResponseEntity.ok().body(awardService.getAwards(customOAuth2User.getUserId()));
+    }
 }
