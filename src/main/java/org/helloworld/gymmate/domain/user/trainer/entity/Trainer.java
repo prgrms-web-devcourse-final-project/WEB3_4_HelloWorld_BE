@@ -115,7 +115,7 @@ public class Trainer {
     private List<Student> students = new ArrayList<>();
 
     @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Award> awards = new ArrayList<>(); //fetch = FetchType.LAZY??
+    private List<Award> awards = new ArrayList<>();
 
     // ====== Business Logic ======
 

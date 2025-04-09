@@ -1,5 +1,10 @@
 package org.helloworld.gymmate.domain.user.trainer.award.enums;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import lombok.Getter;
 
 @Getter
@@ -25,5 +30,12 @@ public enum AwardData {
         this.awardYear = awardYear;
         this.awardName = awardName;
         this.awardInfo = awardInfo;
+    }
+
+    //'count'개의 랜덤한 AwardData리스트를 반환
+    public static List<AwardData> getRandomAwards(int count) {
+        List<AwardData> allAwards = new ArrayList<>(Arrays.asList(values()));
+        Collections.shuffle(allAwards);
+        return allAwards.subList(0, Math.min(count, allAwards.size()));
     }
 }

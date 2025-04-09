@@ -1,14 +1,10 @@
 package org.helloworld.gymmate.domain.user.trainer.award.entity;
 
-import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -37,7 +33,6 @@ public class Award {
     @Column(name = "award_info", nullable = false)
     private String awardInfo;
 
-    @ManyToOne
-    @JoinColumn(name = "trainer_id")
-    private Trainer trainer;
+    @Column(name = "trainer_id", nullable = false)
+    private Long trainerId;
 }
