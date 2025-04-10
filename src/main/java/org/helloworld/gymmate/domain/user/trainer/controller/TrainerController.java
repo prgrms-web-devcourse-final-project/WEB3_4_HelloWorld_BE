@@ -29,13 +29,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "트레이너 정보", description = "트레이너 or 헬스장 운영자 정보에 대한 API")
+@Tag(name = "트레이너 정보 API", description = "트레이너 or 헬스장 운영자 정보에 대한 등록, 수정, 삭제, 일반 목록 및 검색 목록 조회")
 @RestController
 @RequestMapping("/trainer")
 @RequiredArgsConstructor
@@ -127,8 +129,16 @@ public class TrainerController {
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity<PageDto<TrainerListResponse>> getTrainerList(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-        @Parameter(description = "\"trainer\" | \"district\"", required = false, )
+        @Parameter(
+            name = "searchOption",
+            description = "검색 옵션",
+            schema = @Schema(allowableValues = {"trainer", "district"}, example = "trainer")
+        )
+        // @Parameter(description = "검색 옵션", examples = {
+        //     @ExampleObject(name = "트레이너 이름", value = "trainer"), @ExampleObject(name = "헬스장 지역", value = "district")})
         @RequestParam(required = false) String searchOption,
+        @Parameter(description = "검색어", examples = {
+            @ExampleObject(name = "트레이너 이름", value = "trainer"), @ExampleObject(name = "헬스장 지역", value = "district")})
         @RequestParam(defaultValue = "") String searchTerm,
         @RequestParam(defaultValue = "0") @Min(0) int page,
         @RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize
