@@ -6,7 +6,6 @@ import java.util.List;
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
-import org.helloworld.gymmate.common.util.StringUtil;
 import org.helloworld.gymmate.domain.gym.facility.entity.Facility;
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.GymImage;
@@ -116,13 +115,6 @@ public class PartnerGymService {
 
     }
 
-    // 가까운 헬스장 조회
-    @Transactional(readOnly = true)
-    public List<Gym> findNearbyGyms(double longitude, double latitude, double radiusInMeters, int limit) {
-        String point = StringUtil.format("POINT({} {})", latitude, longitude);
-        return gymRepository.findNearbyGyms(point, radiusInMeters, limit);
-    }
-
     public PartnerGym getPartnerGymByOwnerId(Long ownerId) {
         // 본인이 운영하는 제휴 헬스장 가져오기
         return partnerGymRepository.findByOwnerId(ownerId)
@@ -141,7 +133,7 @@ public class PartnerGymService {
             .ownerId(ownerId)
             .gym(gym)
             .build();
-		
+
         gym.updatePartner(true);
 
         return partnerGymRepository.save(partnerGym);
