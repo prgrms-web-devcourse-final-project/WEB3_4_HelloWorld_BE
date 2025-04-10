@@ -16,7 +16,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByMemberId(Long memberId);
 
     void deleteByMemberId(Long memberId);
-    
+
     @Query(value = """
         SELECT level
         FROM gymmate_member
@@ -25,7 +25,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
         ORDER BY COUNT(*) DESC
         LIMIT 1
         """, nativeQuery = true)
-    int findMostLevel();
+    Integer findMostLevel();
 
     @Query("""
         SELECT m
