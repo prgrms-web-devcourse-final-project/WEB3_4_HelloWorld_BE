@@ -1,8 +1,11 @@
 package org.helloworld.gymmate.domain.myself.bigthree.controller;
 
-import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeCreateRequest;
-import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeRequest;
-import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeStatsResponse;
+import org.helloworld.gymmate.common.dto.PageDto;
+import org.helloworld.gymmate.common.mapper.PageMapper;
+import org.helloworld.gymmate.domain.myself.bigthree.dto.request.BigthreeCreateRequest;
+import org.helloworld.gymmate.domain.myself.bigthree.dto.request.BigthreeRequest;
+import org.helloworld.gymmate.domain.myself.bigthree.dto.response.BigthreeListResponse;
+import org.helloworld.gymmate.domain.myself.bigthree.dto.response.BigthreeStatsResponse;
 import org.helloworld.gymmate.domain.myself.bigthree.service.BigthreeService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.HttpStatus;
@@ -16,11 +19,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "3대 측정", description = "3대 측정 기록(Bench, Deadlift, Squat)에 대한 API")
@@ -73,4 +79,17 @@ public class BigthreeController {
     ) {
         return ResponseEntity.ok(bigthreeService.getBigthreeStats(customOAuth2User.getUserId()));
     }
+
+    @Operation(summary = "[일반 회원] 3대 측정 나의 기록 조회", description = "요청한 회원이 기록한 3대 측정 합을 조회하여 꺾은선 그래프에 활용")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @GetMapping
+    public ResponseEntity<PageDto<BigthreeListResponse>> getBigthree(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+        @RequestParam(defaultValue = "0") @Min(0) int page,
+        @RequestParam(defaultValue = "6") @Min(1) @Max(50) int pageSize
+    ) {
+        return ResponseEntity.ok(PageMapper.toPageDto(
+            bigthreeService.getBigthree(page, pageSize, customOAuth2User)));
+    }
+
 }

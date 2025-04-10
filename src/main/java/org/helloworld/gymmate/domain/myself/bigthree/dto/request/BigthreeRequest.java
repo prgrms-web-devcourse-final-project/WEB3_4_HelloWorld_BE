@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.myself.bigthree.dto;
+package org.helloworld.gymmate.domain.myself.bigthree.dto.request;
 
 import jakarta.validation.constraints.PositiveOrZero;
 

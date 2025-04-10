@@ -2,9 +2,9 @@ package org.helloworld.gymmate.domain.myself.bigthree.mapper;
 
 import java.time.LocalDate;
 
-import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeCreateRequest;
-import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeRequest;
-import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeStatsResponse;
+import org.helloworld.gymmate.domain.myself.bigthree.dto.request.BigthreeCreateRequest;
+import org.helloworld.gymmate.domain.myself.bigthree.dto.request.BigthreeRequest;
+import org.helloworld.gymmate.domain.myself.bigthree.dto.response.BigthreeStatsResponse;
 import org.helloworld.gymmate.domain.myself.bigthree.entity.Bigthree;
 import org.helloworld.gymmate.domain.myself.bigthreeaverage.entity.BigthreeAverage;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
@@ -70,4 +70,5 @@ public class BigthreeMapper {
             .date(LocalDate.now())
             .build();
     }
+
 }

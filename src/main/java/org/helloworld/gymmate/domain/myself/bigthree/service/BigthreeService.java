@@ -4,9 +4,10 @@ import java.time.LocalDate;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
-import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeCreateRequest;
-import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeRequest;
-import org.helloworld.gymmate.domain.myself.bigthree.dto.BigthreeStatsResponse;
+import org.helloworld.gymmate.domain.myself.bigthree.dto.request.BigthreeCreateRequest;
+import org.helloworld.gymmate.domain.myself.bigthree.dto.request.BigthreeRequest;
+import org.helloworld.gymmate.domain.myself.bigthree.dto.response.BigthreeListResponse;
+import org.helloworld.gymmate.domain.myself.bigthree.dto.response.BigthreeStatsResponse;
 import org.helloworld.gymmate.domain.myself.bigthree.entity.Bigthree;
 import org.helloworld.gymmate.domain.myself.bigthree.mapper.BigthreeMapper;
 import org.helloworld.gymmate.domain.myself.bigthree.repository.BigthreeRepository;
@@ -14,6 +15,11 @@ import org.helloworld.gymmate.domain.myself.bigthreeaverage.entity.BigthreeAvera
 import org.helloworld.gymmate.domain.myself.bigthreeaverage.repository.BigthreeAverageRepository;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
+import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -168,6 +174,25 @@ public class BigthreeService {
     /** 많은 일반 회원이 속한 레벨 가져오기 */
     private int getMostLevel() {
         return memberRepository.findMostLevel();
+    }
+
+    /** 회원이 등록한 3대 측정 기록을 날짜순으로 조회하여 총합과 함께 반환하기*/
+    public Page<BigthreeListResponse> getBigthree(int page, int pageSize, CustomOAuth2User customOAuth2User) {
+        Member member = getMember(customOAuth2User.getUserId());
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("date").descending());
+
+        Page<Bigthree> bigthrees = bigthreeRepository.findByMemberOrderByDateDesc(member, pageable);
+
+        return bigthrees.map(bigthree -> new BigthreeListResponse(
+            bigthree.getBigthreeId(),
+            bigthree.getDate(),
+            calculateSum(bigthree)
+        ));
+    }
+
+    /** 회원이 기록한 3대 총합 계산하기*/
+    private int calculateSum(Bigthree bigthree) {
+        return (int)(bigthree.getBench() + bigthree.getDeadlift() + bigthree.getSquat());
     }
 }
 
