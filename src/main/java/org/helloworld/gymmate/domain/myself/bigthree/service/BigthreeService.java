@@ -14,7 +14,6 @@ import org.helloworld.gymmate.domain.myself.bigthreeaverage.entity.BigthreeAvera
 import org.helloworld.gymmate.domain.myself.bigthreeaverage.repository.BigthreeAverageRepository;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
-import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BigthreeService {
     private final BigthreeRepository bigthreeRepository;
-    private final MemberService memberService;
     private final BigthreeAverageRepository bigthreeAverageRepository;
     private final MemberRepository memberRepository;
 
@@ -109,7 +107,8 @@ public class BigthreeService {
     }
 
     private Member getMember(Long memberId) {
-        return memberService.findByUserId(memberId);
+        return memberRepository.findByMemberId(memberId).orElseThrow(() -> new BusinessException(
+            ErrorCode.USER_NOT_FOUND));
     }
 
     /** 기존 3대 측정 기록 가져오기 */
