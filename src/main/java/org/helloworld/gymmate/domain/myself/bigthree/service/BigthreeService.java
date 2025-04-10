@@ -1,6 +1,7 @@
 package org.helloworld.gymmate.domain.myself.bigthree.service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
@@ -167,7 +168,7 @@ public class BigthreeService {
 
     /** 많은 일반 회원이 속한 레벨 가져오기 */
     private int getMostLevel() {
-        return memberRepository.findMostLevel();
+        return Optional.ofNullable(memberRepository.findMostLevel()).orElse(0);
     }
 }
 

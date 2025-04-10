@@ -6,6 +6,10 @@ import org.helloworld.gymmate.domain.myself.bigthreeaverage.entity.BigthreeAvera
 import org.helloworld.gymmate.domain.myself.bigthreeaverage.repository.BigthreeAverageRepository;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,11 +23,35 @@ import lombok.extern.slf4j.Slf4j;
 public class BigthreeAverageScheduler {
     private final MemberRepository memberRepository;
     private final BigthreeAverageRepository bigthreeAverageRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    @Scheduled(cron = "0 0 0  * * *") //매일 자정 실행
+    /** 매일 자정에 실행되는 스케줄러 */
+    @Scheduled(cron = "0 0 0 * * *")
     @Transactional
-    public void updateDailyBigthreeAverage() {
-        // 최근 벤치, 데드리프트, 스쿼트 값이 모두 있는 일반 회원 조회
+    public void scheduledUpdateDailyBigthreeAverage() {
+        log.debug("스케쥴러 실행: scheduledUpdateDailyBigthreeAverage");
+        updateDailyBigthreeAverage();
+    }
+
+    /** 서버 부팅 후 ApplicationReadyEvent 발생 시 데이터가 없으면 이벤트 발행 */
+    @EventListener(ApplicationReadyEvent.class)
+    public void onApplicationReady() {
+        if (bigthreeAverageRepository.count() == 0) {
+            log.debug("BigthreeAverage 데이터 없음 -> 이벤트 발행:  평균 계산 비동기 실행");
+            this.eventPublisher.publishEvent(new BigthreeAverageInitEvent(this));
+        }
+    }
+
+    /** 이벤트 수신: 비동기 계산 로직 실행 (별도 스레드에서 처리) */
+    @Async
+    @EventListener
+    @Transactional
+    public void handleBigthreeAverageInitEvent(BigthreeAverageInitEvent event) {
+        updateDailyBigthreeAverage();
+    }
+
+    /** 평균 계산 및 저장 로직 */
+    private void updateDailyBigthreeAverage() {
         List<Member> members = memberRepository.findAllWithRecentBigthree();
 
         if (members.isEmpty()) {
@@ -31,7 +59,7 @@ public class BigthreeAverageScheduler {
             return;
         }
 
-        BigthreeAverage average = calcaulateBigthreeAverage(members);
+        BigthreeAverage average = calculateBigthreeAverage(members);
         bigthreeAverageRepository.save(average);
 
         log.debug("3대 평균 저장 완료 : bench={}, deadlift={}, squat={}, sum={}",
@@ -39,7 +67,7 @@ public class BigthreeAverageScheduler {
             average.getSumAverage());
     }
 
-    private BigthreeAverage calcaulateBigthreeAverage(List<Member> members) {
+    private BigthreeAverage calculateBigthreeAverage(List<Member> members) {
         double totalBench = 0, totalDeadlift = 0, totalSquat = 0;
         for (Member m : members) {
             double bench = m.getRecentBench();
@@ -61,6 +89,7 @@ public class BigthreeAverageScheduler {
 
     private BigthreeAverage toBigthreeAverage(double benchAvg, double deadliftAvg, double squatAvg) {
         return BigthreeAverage.builder()
+            .bigthreeAverageId(1L)
             .benchAverage(benchAvg)
             .deadliftAverage(deadliftAvg)
             .squatAverage(squatAvg)
@@ -71,5 +100,9 @@ public class BigthreeAverageScheduler {
     /** 소수점 둘째 자리까지 반올림해서 DB에 저장 */
     private double roundTo2(double value) {
         return Math.round(value * 100.0) / 100.0;
+    }
+
+    /** 부팅 시에 이벤트로 계산을 수행하도록 하는 사용자 정의 이벤트 클래스 */
+    public record BigthreeAverageInitEvent(Object source) {
     }
 }
