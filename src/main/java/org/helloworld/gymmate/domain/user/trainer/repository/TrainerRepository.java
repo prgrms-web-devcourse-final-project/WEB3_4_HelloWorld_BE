@@ -42,8 +42,13 @@ public interface TrainerRepository extends JpaRepository<Trainer, Long> {
         WHERE (:searchOption = 'NONE' OR
                (:searchOption = 'TRAINER' AND t.trainer_name LIKE CONCAT('%', :searchTerm, '%')) OR
                (:searchOption = 'DISTRICT' AND g.address LIKE CONCAT('%', :searchTerm, '%')))
+          AND ST_Within(
+              g.location,
+              ST_GeomFromText(:boundingBox, 4326)
+          )
         ORDER BY ST_Distance_Sphere(
-            ST_GeomFromText(CONCAT('POINT(', :y, ' ', :x, ')'), 4326), g.location
+            ST_GeomFromText(CONCAT('POINT(', :y, ' ', :x, ')'), 4326),
+            g.location
         ) ASC
         """,
         countQuery = """
@@ -53,10 +58,15 @@ public interface TrainerRepository extends JpaRepository<Trainer, Long> {
             WHERE (:searchOption = 'NONE' OR
                    (:searchOption = 'TRAINER' AND t.trainer_name LIKE CONCAT('%', :searchTerm, '%')) OR
                    (:searchOption = 'DISTRICT' AND g.address LIKE CONCAT('%', :searchTerm, '%')))
+              AND ST_Within(
+                  g.location,
+                  ST_GeomFromText(:boundingBox, 4326)
+              )
             """,
         nativeQuery = true)
     Page<Trainer> findNearbyTrainersWithSearch(
         @Param("x") Double x, @Param("y") Double y,
+        @Param("boundingBox") String boundingBoxWkt,
         @Param("searchOption") String searchOption, @Param("searchTerm") String searchTerm,
         Pageable pageable);
 
