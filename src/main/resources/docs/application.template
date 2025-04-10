@@ -77,3 +77,8 @@ kakao-map:
 business:
   url: ${BUSINESS_URL}
   serviceKey: ${BUSINESS_KEY}
+
+  payment:
+    secret-key: ${PAYMENT_SECRET_KEY}
+    base-url: ${PAYMENT_BASE_URL}
+    confirm-url: ${ PAYMENT_CONFIRM_URL }
