@@ -3,6 +3,10 @@ package org.helloworld.gymmate.infra.domain.trainer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.helloworld.gymmate.domain.pt.classtime.dto.ClasstimeRequest;
+import org.helloworld.gymmate.domain.pt.classtime.entity.Classtime;
+import org.helloworld.gymmate.domain.pt.classtime.mapper.ClasstimeMapper;
+import org.helloworld.gymmate.domain.pt.classtime.service.ClasstimeService;
 import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
 import org.helloworld.gymmate.domain.user.trainer.award.enums.AwardData;
 import org.helloworld.gymmate.domain.user.trainer.award.mapper.AwardMapper;
@@ -23,6 +27,7 @@ public class TrainerDummy {
     private final JdbcTemplate jdbcTemplate;
     private final AwardRepository awardRepository;
     private final TrainerRepository trainerRepository;
+    private final ClasstimeService classtimeService;
 
     @Transactional
     public void processAwardsForTrainers(List<Trainer> trainers) {
@@ -67,6 +72,42 @@ public class TrainerDummy {
         } catch (Exception e) {
 
             log.error("award 데이터 저장 중 오류 발생: ", e);
+        }
+
+    }
+
+    @Transactional
+    public void processClassTimeForTrainers(List<Trainer> trainers) {
+        if (trainers.isEmpty()) {
+            return;
+        }
+        List<Classtime> classTimesToInsert = new ArrayList<>();
+
+        // 모든 트레이너에 대해 각각 월~금의 9~20시의 classTime 객체 생성
+        // -> ClassTimeToInsert리스트에 저장
+        for (Trainer trainer : trainers) {
+            Long trainerId = trainer.getTrainerId();
+            for (int dayOfWeek = 0; dayOfWeek <= 4; dayOfWeek++) { // 월(0)~금(4)
+                for (int time = 9; time <= 20; time++) {            // 9~20시
+                    ClasstimeRequest request = new ClasstimeRequest(dayOfWeek, time);
+                    Classtime classtime = ClasstimeMapper.toEntity(request, trainerId);
+                    classTimesToInsert.add(classtime);
+                }
+            }
+        }
+        // class_time INSERT 쿼리
+        String sql = "INSERT INTO class_time (day_of_week, time, trainer_id) VALUES (?, ?, ?)";
+        try {
+            jdbcTemplate.batchUpdate(sql, classTimesToInsert, BATCH_SIZE, (ps, classtime) -> {
+                ps.setInt(1, classtime.getDayOfWeek());
+                ps.setInt(2, classtime.getTime());
+                ps.setLong(3, classtime.getTrainerId());
+            });
+
+            log.debug("총 {}개의 class_time 데이터 저장 완료!", classTimesToInsert.size());
+
+        } catch (Exception e) {
+            log.error("class_time 데이터 저장 중 오류 발생: ", e);
         }
 
     }
