@@ -1,6 +1,7 @@
 package org.helloworld.gymmate.domain.user.trainer.award.mapper;
 
 import org.helloworld.gymmate.domain.user.trainer.award.dto.AwardRequest;
+import org.helloworld.gymmate.domain.user.trainer.award.dto.AwardResponse;
 import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
 import org.helloworld.gymmate.domain.user.trainer.award.enums.AwardData;
 
@@ -22,6 +23,15 @@ public class AwardMapper {
             .awardName(awardRequest.awardName())
             .awardInfo(awardRequest.awardInfo())
             .build();
+    }
+
+    public static AwardResponse toDto(Award award) {
+        return new AwardResponse(
+            award.getAwardId(),
+            award.getAwardYear(),
+            award.getAwardName(),
+            award.getAwardInfo()
+        );
     }
 
 }

@@ -1,8 +1,12 @@
 package org.helloworld.gymmate.domain.user.trainer.award.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.domain.user.trainer.award.dto.AwardRequest;
+import org.helloworld.gymmate.domain.user.trainer.award.dto.AwardResponse;
 import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
 import org.helloworld.gymmate.domain.user.trainer.award.mapper.AwardMapper;
 import org.helloworld.gymmate.domain.user.trainer.award.repository.AwardRepository;
@@ -36,6 +40,11 @@ public class AwardService {
         return awardRepository.findById(awardId).orElseThrow(
             () -> new BusinessException(ErrorCode.AWARD_NOT_FOUND)
         );
+    }
+
+    public List<AwardResponse> getAwards(Long userId) {
+        return awardRepository.findByTrainerId(userId)
+            .stream().map(AwardMapper::toDto).collect(Collectors.toList());
     }
 
 }
