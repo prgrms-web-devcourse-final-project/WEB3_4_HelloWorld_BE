@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
-import org.helloworld.gymmate.common.util.StringUtil;
 import org.helloworld.gymmate.domain.gym.facility.entity.Facility;
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.GymImage;
@@ -115,13 +114,6 @@ public class PartnerGymService {
 
         return PartnerGymMapper.toDto(partnerGym);
 
-    }
-
-    // 가까운 헬스장 조회
-    @Transactional(readOnly = true)
-    public List<Gym> findNearbyGyms(double longitude, double latitude, double radiusInMeters, int limit) {
-        String point = StringUtil.format("POINT({} {})", latitude, longitude);
-        return gymRepository.findNearbyGyms(point, radiusInMeters, limit);
     }
 
     public PartnerGym getPartnerGymByOwnerId(Long ownerId) {

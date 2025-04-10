@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
+import org.helloworld.gymmate.common.util.GeometryUtil;
 import org.helloworld.gymmate.domain.gym.enums.GymSearchOption;
 import org.helloworld.gymmate.domain.gym.enums.GymSortOption;
 import org.helloworld.gymmate.domain.gym.facility.dto.FacilityResponse;
@@ -114,8 +115,9 @@ public class GymService {
     public Page<GymListResponse> fetchNearbyGymsUsingXY(GymSearchOption gymSearchOption,
         String searchTerm, Pageable pageable, Double x, Double y, Boolean isPartner) {
         String searchValue = (gymSearchOption == GymSearchOption.NONE) ? "" : searchTerm;
+        String boundingBoxWKT = GeometryUtil.toPolygonWKT(x, y);
         Page<Gym> gyms = gymRepository.findNearByGymWithSearchAndIsPartner(x, y,
-            gymSearchOption.name(),
+            boundingBoxWKT, gymSearchOption.name(),
             searchValue, isPartner, pageable);
 
         return fetchAndMapGyms(gyms, pageable);
@@ -169,15 +171,15 @@ public class GymService {
             .toList();
     }
 
-	@Transactional(readOnly = true)
-	public Page<GymSearchResponse> getSearch(String searchTerm, int page, int pageSize) {
-		Pageable pageable = PageRequest.of(page, pageSize);
-		Page<Gym> gyms = gymRepository.searchGymsByName(searchTerm, pageable);
-		List<GymSearchResponse> responses = gyms.stream()
-			.map(GymMapper::toSearchResponse)
-			.toList();
+    @Transactional(readOnly = true)
+    public Page<GymSearchResponse> getSearch(String searchTerm, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Gym> gyms = gymRepository.searchGymsByName(searchTerm, pageable);
+        List<GymSearchResponse> responses = gyms.stream()
+            .map(GymMapper::toSearchResponse)
+            .toList();
 
-		return new PageImpl<>(responses, pageable, gyms.getTotalElements());
-	}
+        return new PageImpl<>(responses, pageable, gyms.getTotalElements());
+    }
 
 }

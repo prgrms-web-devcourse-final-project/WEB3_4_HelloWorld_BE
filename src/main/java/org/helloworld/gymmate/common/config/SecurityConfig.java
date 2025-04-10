@@ -116,7 +116,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
-            List.of("http://localhost:3000", "https://web-3-4-hello-world-fe.vercel.app")); // 허용할 Origin
+            List.of("http://localhost:3000", "https://web-3-4-hello-world-fe.vercel.app",
+                "https://api.gymmate.my")); // 허용할 Origin
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH")); // 허용할 HTTP 메소드
         configuration.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
         configuration.setAllowCredentials(true); // 인증 정보 포함 허용
