@@ -1,7 +1,7 @@
 package org.helloworld.gymmate.domain.user.trainer.trainerreview.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
@@ -34,11 +34,20 @@ public class TrainerReviewService {
         Long memberId) {
         Trainer trainer = trainerService.findByUserId(reviewCreateRequest.trainerId());
 
-        // PT 수업을 수강했는지 확인
         Reservation reservation = reservationRepository.findByMemberIdAndTrainerId(memberId,
                 reviewCreateRequest.trainerId())
             .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
-        if (Optional.ofNullable(reservation.getCompletedDate()).isEmpty()) {
+
+        // 현재 시간이 예약 시간 이후인지 확인
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime reservationDateTime = reservation.getDate().atTime(reservation.getTime(), 0);
+
+        if (now.isBefore(reservationDateTime)) {
+            throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
+
+        // 취소된 예약은 리뷰 작성 불가
+        if (reservation.getCancelDate() != null) {
             throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
         }
 
