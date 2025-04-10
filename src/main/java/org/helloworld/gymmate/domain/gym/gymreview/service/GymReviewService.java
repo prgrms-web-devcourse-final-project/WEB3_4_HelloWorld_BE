@@ -3,6 +3,7 @@ package org.helloworld.gymmate.domain.gym.gymreview.service;
 import java.util.List;
 
 import org.helloworld.gymmate.common.s3.FileManager;
+import org.helloworld.gymmate.domain.gym.gymreview.dto.GymReviewModifyRequest;
 import org.helloworld.gymmate.domain.gym.gymreview.dto.GymReviewRequest;
 import org.helloworld.gymmate.domain.gym.gymreview.entity.GymReview;
 import org.helloworld.gymmate.domain.gym.gymreview.entity.GymReviewImage;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -45,4 +47,8 @@ public class GymReviewService {
         gymReview.getImages().addAll(gymReviewImages);
     }
 
+    public Long modifyGymReview(@Valid GymReviewModifyRequest request, List<MultipartFile> images,
+        long gymReviewId, Long userId) {
+        return 1L;
+    }
 }

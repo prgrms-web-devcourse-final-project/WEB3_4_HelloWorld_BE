@@ -3,6 +3,7 @@ package org.helloworld.gymmate.domain.gym.gymreview.controller;
 import java.util.List;
 
 import org.helloworld.gymmate.common.validate.custom.ValidImageFile;
+import org.helloworld.gymmate.domain.gym.gymreview.dto.GymReviewModifyRequest;
 import org.helloworld.gymmate.domain.gym.gymreview.dto.GymReviewRequest;
 import org.helloworld.gymmate.domain.gym.gymreview.service.GymReviewService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
@@ -11,7 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,4 +46,16 @@ public class GymReviewController {
             .body(gymReviewService.createGymReview(request, images, customOAuth2User.getUserId()));
     }
 
+    @Operation(summary = "[일반 회원] 헬스장 리뷰 수정")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @PutMapping(value = "/{gymReviewId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> modifyGymReview(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+        @RequestPart("gymReviewData") @Valid GymReviewModifyRequest request,
+        @RequestPart(value = "images", required = false) @ValidImageFile List<MultipartFile> images,
+        @PathVariable long gymReviewId
+    ) {
+        return ResponseEntity.ok()
+            .body(gymReviewService.modifyGymReview(request, images, gymReviewId, customOAuth2User.getUserId()));
+    }
 }
