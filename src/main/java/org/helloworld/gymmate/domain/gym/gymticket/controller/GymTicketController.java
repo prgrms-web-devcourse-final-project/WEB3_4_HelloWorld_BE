@@ -26,64 +26,67 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "제휴 헬스장 이용권 API", description = "제휴 헬스장 이용권의 구매 및 판매 API")
+@Tag(name = "제휴 헬스장 이용권 API", description = "제휴 헬스장 이용권 구매 및 이용권 티켓 조회")
 @RestController
 @RequestMapping("/gymTicket")
 @RequiredArgsConstructor
 public class GymTicketController {
     private final GymTicketService gymTicketService;
 
-    @Operation(summary = "[일반 회원] 제휴 헬스장 이용권 구매 가능 여부 확인", description = "제휴 헬스장 이용권 구매 페이지에서 구매 가능 여부 반환")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @Operation(summary = "[일반 회원] 제휴 헬스장 이용권 구매 가능 여부 확인", description = "일반 회원이 자신이 보유한 캐시로 선택한 제휴 헬스장 이용권 구매 가능 여부 조회")
     @GetMapping("/purchase/{gymProductId}")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity<GymTicketPurchaseResponse> checkPurchaseAvailability(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
         @PathVariable Long gymProductId
     ) {
-        return ResponseEntity.ok().body(
-            gymTicketService.getPurchaseData(customOAuth2User.getUserId(), gymProductId));
+        GymTicketPurchaseResponse response = gymTicketService.getPurchaseData(customOAuth2User.getUserId(),
+            gymProductId);
+        return ResponseEntity.ok().body(response);
     }
 
-    @Operation(summary = "[일반 회원]  제휴 헬스장 이용권 구매", description = "제휴 헬스장 이용권 구매 페이지에서 이용권 구매")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @Operation(summary = "[일반 회원]  제휴 헬스장 이용권 구매 및 티켓 생성", description = "일반 회원이 자신이 보유한 캐시로 선택한 제휴 헬스장 이용권 구매 및 이용권 티켓 생성")
     @PostMapping("/purchase/{gymProductId}")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity<Long> buyGymProduct(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
         @PathVariable Long gymProductId
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-            gymTicketService.createTicket(customOAuth2User.getUserId(), gymProductId));
+        Long ticketId = gymTicketService.createTicket(customOAuth2User.getUserId(), gymProductId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ticketId);
     }
 
-    @Operation(summary = "[일반 회원]  구매한 제휴 헬스장 이용권 목록", description = "일반 회원이 자신이 구매한 이용권 목록 반환")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @Operation(summary = "[일반 회원]  구매한 제휴 헬스장 이용권 티켓 목록", description = "일반 회원이 자신이 구매 및 보유하고 있는 이용권 티켓 목록 조회")
     @GetMapping("/member")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     @Validated
     public ResponseEntity<PageDto<MemberGymTicketResponse>> getMemberTickets(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
         @RequestParam(defaultValue = "0") @Min(0) int page,
         @RequestParam(defaultValue = "10") @Min(1) @Max(10) int pageSize
     ) {
-        return ResponseEntity.ok(PageMapper.toPageDto(
-            gymTicketService.getMemberTickets(customOAuth2User.getUserId(), page, pageSize)));
+        PageDto<MemberGymTicketResponse> pageResponse = PageMapper.toPageDto(
+            gymTicketService.getMemberTickets(customOAuth2User.getUserId(), page, pageSize));
+        return ResponseEntity.ok().body(pageResponse);
     }
 
-    @Operation(summary = "[헬스장 운영자]  판매한 제휴 헬스장 이용권 목록 ", description = "자신이 운영중인 헬스장에서 판매한 헬스장 이용권 목록을 반환")
-    @PreAuthorize("hasRole('ROLE_TRAINER')")
+    @Operation(summary = "[헬스장 운영자]  판매한 제휴 헬스장 이용권 티켓 목록", description = "헬스장 운영자가 자신이 운영중인 헬스장에서 판매한 헬스장 이용권 티켓 목록 조회")
     @GetMapping("/owner")
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
     @Validated
     public ResponseEntity<PageDto<PartnerGymTicketResponse>> getPartnerGymTickets(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
         @RequestParam(defaultValue = "0") @Min(0) int page,
         @RequestParam(defaultValue = "10") @Min(1) @Max(10) int pageSize
     ) {
-        return ResponseEntity.ok(PageMapper.toPageDto(
-            gymTicketService.getPartnerGymTickets(customOAuth2User.getUserId(), page, pageSize)));
+        PageDto<PartnerGymTicketResponse> pageResponse = PageMapper.toPageDto(
+            gymTicketService.getPartnerGymTickets(customOAuth2User.getUserId(), page, pageSize));
+        return ResponseEntity.ok().body(pageResponse);
     }
 
-    @Operation(summary = "[일반 회원]  제휴 헬스장 이용권 환불 ", description = "일반 회원이 자신이 구매한 이용권 환불")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @Operation(summary = "[일반 회원]  제휴 헬스장 이용권 티켓 환불", description = "일반 회원이 자신이 구매한 이용권 티켓의 남은 기간 만큼 캐시 환불, 이후 티켓 목록에서 환불 상태로 표시")
     @PatchMapping("/{gymTicketId}")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity<Void> cancelGymTicket(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
         @PathVariable Long gymTicketId
