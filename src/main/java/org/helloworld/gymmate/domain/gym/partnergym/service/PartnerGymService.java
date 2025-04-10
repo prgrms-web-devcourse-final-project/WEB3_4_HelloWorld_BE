@@ -2,6 +2,7 @@ package org.helloworld.gymmate.domain.gym.partnergym.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
@@ -204,7 +205,8 @@ public class PartnerGymService {
     }
 
     public PartnerGym getPartnerGymByGymId(Long gymId) {
-        return partnerGymRepository.findByGym_GymId(gymId);
+        return Optional.ofNullable(partnerGymRepository.findByGym_GymId(gymId))
+            .orElseThrow(() -> new BusinessException(ErrorCode.PARTNER_GYM_NOT_FOUND));
     }
 }
 

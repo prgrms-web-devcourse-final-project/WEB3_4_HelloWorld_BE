@@ -8,6 +8,7 @@ import org.helloworld.gymmate.domain.gym.gymreview.entity.GymReview;
 import org.helloworld.gymmate.domain.gym.gymreview.entity.GymReviewImage;
 import org.helloworld.gymmate.domain.gym.gymreview.mapper.GymReviewMapper;
 import org.helloworld.gymmate.domain.gym.gymreview.repository.GymReviewRepository;
+import org.helloworld.gymmate.domain.gym.gymticket.service.GymTicketService;
 import org.helloworld.gymmate.domain.gym.partnergym.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.partnergym.service.PartnerGymService;
 import org.springframework.stereotype.Service;
@@ -20,12 +21,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GymReviewService {
     private final PartnerGymService partnerGymService;
+    private final GymTicketService gymTicketService;
     private final GymReviewRepository gymReviewRepository;
     private final FileManager fileManager;
 
     @Transactional
     public Long createGymReview(GymReviewRequest request, List<MultipartFile> images, Long memberId) {
         PartnerGym partnerGym = partnerGymService.getPartnerGymByGymId(request.gymId());
+        gymTicketService.hasTicket(partnerGym.getPartnerGymId(), memberId);
         GymReview gymReview = GymReviewMapper.toEntity(request, memberId, partnerGym);
         gymReview = gymReviewRepository.save(gymReview);
         if (images != null && !images.isEmpty()) {

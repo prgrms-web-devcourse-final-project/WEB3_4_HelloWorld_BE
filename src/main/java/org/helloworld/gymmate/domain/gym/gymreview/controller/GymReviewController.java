@@ -17,10 +17,13 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@Tag(name = "헬스장 리뷰 API", description = "헬스장 리뷰 등록 수정 삭제")
 @RestController
 @RequestMapping("/gymReview")
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GymReviewController {
     private final GymReviewService gymReviewService;
 
+    @Operation(summary = "[일반 회원] 헬스장 리뷰 등록")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> createGymReview(
