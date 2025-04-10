@@ -35,9 +35,9 @@ public class TrainerMapper {
             trainer.getBank(),
             trainer.getAccount(),
             trainer.getGenderType().toString(),
+			trainer.getEmail(),
+			trainer.getPhoneNumber(),
             trainer.getProfileUrl(),
-            trainer.getPhoneNumber(),
-            trainer.getEmail(),
             trainer.getIsOwner(),
             trainer.getCash(),
             trainer.getIntro(),
@@ -45,52 +45,52 @@ public class TrainerMapper {
             trainer.getField());
     }
 
-    public static TrainerCheckResponse toCheckResponse(Trainer trainer) {
-        return new TrainerCheckResponse(
-            UserType.TRAINER.toString(),
-            trainer.getIsOwner()
-        );
-    }
+	public static TrainerCheckResponse toCheckResponse(Trainer trainer) {
+		return new TrainerCheckResponse(
+			UserType.TRAINER.toString(),
+			trainer.getIsOwner()
+		);
+	}
 
-    public static TrainerListResponse toListResponse(Trainer trainer, Map<Long, List<String>> awardsMap) {
-        return new TrainerListResponse(
-            trainer.getTrainerId(),
-            trainer.getTrainerName(),
-            trainer.getProfileUrl(),
-            trainer.getScore(),
-            trainer.getIntro(),
-            trainer.getCareer(),
-            trainer.getField(),
-            awardsMap.getOrDefault(trainer.getTrainerId(), Collections.emptyList()) // 수상 경력 없으면 빈 리스트
-        );
-    }
+	public static TrainerListResponse toListResponse(Trainer trainer, Map<Long, List<String>> awardsMap) {
+		return new TrainerListResponse(
+			trainer.getTrainerId(),
+			trainer.getTrainerName(),
+			trainer.getProfileUrl(),
+			trainer.getScore(),
+			trainer.getIntro(),
+			trainer.getCareer(),
+			trainer.getField(),
+			awardsMap.getOrDefault(trainer.getTrainerId(), Collections.emptyList()) // 수상 경력 없으면 빈 리스트
+		);
+	}
 
-    public TrainerDetailResponse toTrainerDetailResponse(
-        Trainer trainer,
-        List<Award> awards,
-        List<PtProduct> ptProducts
-    ) {
-        List<TrainerDetailResponse.AwardResponse> awardDtos = awards.stream()
-            .map(award -> new TrainerDetailResponse.AwardResponse(
-                award.getAwardYear(),
-                award.getAwardName(),
-                award.getAwardInfo()
-            )).toList();
+	public TrainerDetailResponse toTrainerDetailResponse(
+		Trainer trainer,
+		List<Award> awards,
+		List<PtProduct> ptProducts
+	) {
+		List<TrainerDetailResponse.AwardResponse> awardDtos = awards.stream()
+			.map(award -> new TrainerDetailResponse.AwardResponse(
+				award.getAwardYear(),
+				award.getAwardName(),
+				award.getAwardInfo()
+			)).toList();
 
-        List<TrainerDetailResponse.PtProductResponse> productDtos = ptProducts.stream()
-            .map(p -> new TrainerDetailResponse.PtProductResponse(
-                p.getPtProductName(),
-                p.getPtProductFee().intValue()
-            )).toList();
+		List<TrainerDetailResponse.PtProductResponse> productDtos = ptProducts.stream()
+			.map(p -> new TrainerDetailResponse.PtProductResponse(
+				p.getPtProductName(),
+				p.getPtProductFee().intValue()
+			)).toList();
 
-        return new TrainerDetailResponse(
-            trainer.getTrainerName(),
-            trainer.getIntro(),
-            trainer.getField(),
-            trainer.getCareer(),
-            trainer.getProfileUrl(),
-            awardDtos,
-            productDtos
-        );
-    }
+		return new TrainerDetailResponse(
+			trainer.getTrainerName(),
+			trainer.getIntro(),
+			trainer.getField(),
+			trainer.getCareer(),
+			trainer.getProfileUrl(),
+			awardDtos,
+			productDtos
+		);
+	}
 }
