@@ -106,6 +106,9 @@ public class MemberService {
         //3. 객체 정보 수정
         member.modifyMemberInfo(request, imageUrl);
 
+        kakaoMapRestTemplateComponent.getCoordinatesFromAddress(request.address())
+            .ifPresent(cord -> member.updateXY(cord.getX(), cord.getY()));
+
         //4.객체 저장
         return memberRepository.save(member).getMemberId();
     }
