@@ -63,8 +63,10 @@ public enum ErrorCode {
     MACHINE_MAX_UPLOAD(HttpStatus.FORBIDDEN, "MACHINE-003", "기구정보는 최대 30개 등록 가능합니다."),
 
     // Myself
-    BIGTHREE_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-BIGTHREE-001", "해당 3대 측정 기록을 찾을 수 없습니다."),
-    DIARY_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-RECORD-001", "해당 운동 기록을 찾을 수 없습니다."),
+    BIGTHREE_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-001", "해당 3대 측정 기록을 찾을 수 없습니다."),
+    DIARY_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-002", "해당 운동 기록을 찾을 수 없습니다."),
+    BIGTHREE_ALREADY_EXISTS(HttpStatus.CONFLICT, "MYSELF-003", "해당 날짜에 3대 측정 기록이 이미 존재합니다."),
+    BIGTHREE_AVERAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-004", "3대 측정 평균 기록을 찾을 수 없습니다."),
 
     // 인증 관련
     AUTH_REQUIRED(HttpStatus.UNAUTHORIZED, "AUTH-001", "인증이 필요합니다. 로그인 후 다시 시도해주세요."),
