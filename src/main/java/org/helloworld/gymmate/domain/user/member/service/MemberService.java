@@ -13,6 +13,7 @@ import org.helloworld.gymmate.domain.user.member.dto.MemberResponse;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
 import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
+import org.helloworld.gymmate.infra.service.KakaoMapRestTemplateComponent;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 import org.helloworld.gymmate.security.oauth.repository.OauthRepository;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ public class MemberService {
     private final EntityManager entityManager;
     private final FileManager fileManager;
     private final BigthreeService bigthreeService;
+    private final KakaoMapRestTemplateComponent kakaoMapRestTemplateComponent;
 
     @Transactional
     public Long createMember(Oauth oauth) {
@@ -52,6 +54,9 @@ public class MemberService {
 
         // 2. 멤버 객체 수정
         member.registerMemberInfo(request);
+
+        kakaoMapRestTemplateComponent.getCoordinatesFromAddress(request.address())
+            .ifPresent(cord -> member.updateXY(cord.getX(), cord.getY()));
 
         // 3. 3대 기록 저장
         bigthreeService.createInitialBigthree(member);
