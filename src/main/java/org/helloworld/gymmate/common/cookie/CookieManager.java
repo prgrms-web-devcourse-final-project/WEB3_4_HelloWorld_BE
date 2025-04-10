@@ -34,7 +34,7 @@ public class CookieManager {
 	public void setCookie(TokenType tokenType, String token, long expiration) {
 		ResponseCookie cookie = ResponseCookie.from(tokenType.getName(), token)
 			.maxAge(expiration)
-			.domain("localhost")
+			.sameSite("None")
 			.path("/")
 			.secure(true)
 			.httpOnly(true)
@@ -46,7 +46,7 @@ public class CookieManager {
 	public void removeCookie(TokenType tokenType) {
 		ResponseCookie cookie = ResponseCookie.from(tokenType.getName(), "")
 			.maxAge(0)
-			.domain("localhost")
+			.sameSite("None")
 			.path("/")
 			.secure(true)
 			.httpOnly(true)
