@@ -34,11 +34,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReservationService {
 
-	private final ReservationRepository reservationRepository;
-	private final PtProductService ptProductService;
-	private final StudentService studentService;
-	private final MemberService memberService;
-	private final TrainerService trainerService;
+    private final ReservationRepository reservationRepository;
+    private final PtProductService ptProductService;
+    private final StudentService studentService;
+    private final MemberService memberService;
+    private final TrainerService trainerService;
 
     /*
      예약 생성 로직
@@ -56,25 +56,30 @@ public class ReservationService {
         // 3) 예약 엔티티 생성
         Reservation reservation = ReservationMapper.toEntity(ptProduct, request, userId);
 
-
-		// 4) Student 정보 생성
-		Member member = memberService.findByUserId(userId);
-		Trainer trainer = trainerService.findByUserId(ptProduct.getTrainerId());
-		studentService.makeStudent(trainer, member);
-		// 5) 저장 및 ID 반환
-		return reservationRepository.save(reservation).getReservationId();
-	}
+        // 4) Student 정보 생성
+        Member member = memberService.findByUserId(userId);
+        Trainer trainer = trainerService.findByUserId(ptProduct.getTrainerId());
+        studentService.makeStudent(trainer, member);
+        // 5) 저장 및 ID 반환
+        return reservationRepository.save(reservation).getReservationId();
+    }
 
     /*
-     회원의 예약 삭제 로직
+     회원의 예약 취소 로직
       - param : reservationId
      */
-    public void deleteMemberReservation(Long reservationId) {
+    public Long cancelMemberReservation(Long reservationId) {
         //1. 예약 객체 조회
         Reservation reservation = findReservationOrThrow(reservationId);
 
-        //2. 예약 객체 삭제
-        reservationRepository.delete(reservation);
+        // 2. 날짜와 시간 변경
+        reservation.addCancelDate(LocalDate.now());
+
+        // 3. 수정된 예약 저장
+        Reservation savedReservation = reservationRepository.save(reservation);
+
+        // 4. ReservationResponse 객체 반환
+        return savedReservation.getReservationId();
 
     }
 
@@ -161,18 +166,18 @@ public class ReservationService {
         return new ReservationByMonthResponse(reservationsByDate);
     }
 
-    public ReservationResponse updateReservation(Long reservationId, LocalDate newDate, Integer newTime) {
+    public Long updateReservation(Long reservationId, LocalDate newDate, Integer newTime) {
         //1.Reservation객체 조회
         Reservation reservation = findReservationOrThrow(reservationId);
 
         // 2. 날짜와 시간 변경
-        Reservation updatedReservation = reservation.modifyDateAndTime(newDate, newTime);
+        reservation.modifyDateAndTime(newDate, newTime);
 
         // 3. 수정된 예약 저장
-        Reservation savedReservation = reservationRepository.save(updatedReservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
 
         // 4. ReservationResponse 객체 반환
-        return ReservationMapper.toDto(savedReservation);
+        return savedReservation.getReservationId();
     }
 
 }
