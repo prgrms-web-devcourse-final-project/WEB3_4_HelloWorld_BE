@@ -24,14 +24,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "트레이너 정보 API", description = "트레이너 or 헬스장 운영자 마이페이지, 트레이너 목록 등")
+@Tag(name = "일반 회원 정보 API", description = "일반 회원 정보에 대한 등록, 수정, 삭제, 일반 목록 및 검색 목록 조회")
 @RestController
 @RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
 
-    @Operation(summary = "일반 회원 회원가입", description = "일반 로그인 선택했을 때 회원가입")
+    @Operation(summary = "[정보 등록 전 일반 회원] 일반 회원 회원가입", description = "요청한 일반 회원 자신의 정보를 최초로 등록")
     @PostMapping
     public ResponseEntity<Long> registerAdditionalInfo(
         @AuthenticationPrincipal CustomOAuth2User oAuth2User,
@@ -41,7 +41,7 @@ public class MemberController {
         return ResponseEntity.ok(memberId);
     }
 
-    @Operation(summary = "일반 회원 마이페이지 정보 수정", description = "일반 회원이 마이페이지에서 자신의 개인 정보 수정")
+    @Operation(summary = "[일반 회원] 일반 회원 정보 수정", description = "요청한 일반 회원 자신의 개인 정보를 수정")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     @PutMapping
     public ResponseEntity<Long> modify(@AuthenticationPrincipal CustomOAuth2User oAuth2User,
@@ -56,17 +56,7 @@ public class MemberController {
             );
     }
 
-    @Operation(summary = "일반 회원 마이페이지 정보 조회", description = "일반 회원이 마이페이지로 이동했을 때 띄워주는 정보")
-    @GetMapping
-    public ResponseEntity<MemberResponse> getMyInfo(
-        @AuthenticationPrincipal CustomOAuth2User oAuth2User
-    ) {
-        MemberResponse memberResponse = memberService.getMember(oAuth2User.getUserId());
-
-        return ResponseEntity.ok(memberResponse);
-    }
-
-    @Operation(summary = "일반 회원 계정 삭제", description = "일반 회원이 자신의 계정을 삭제")
+    @Operation(summary = "[일반 회원] 일반 회원 계정 삭제", description = "요청한 일반 회원 자신의 계정을 삭제")
     @DeleteMapping
     public ResponseEntity<Long> deleteMember(
         @AuthenticationPrincipal CustomOAuth2User oAuth2User
@@ -76,14 +66,18 @@ public class MemberController {
         return ResponseEntity.ok(oAuth2User.getUserId());
     }
 
-    @Operation(summary = "일반 or 트레이너 체크", description = "일반 회원인지 트레이너 회원(직원, 사장)인지 반환, 메인페이지 로직에 사용")
+    @Operation(summary = "[일반 회원] 일반 회원 정보 조회", description = "일요청한 일반 회원 자신의 개인 정보를 조회")
+    @GetMapping
+    public ResponseEntity<MemberResponse> getMyInfo(
+        @AuthenticationPrincipal CustomOAuth2User oAuth2User
+    ) {
+        return ResponseEntity.ok(memberService.getMember(oAuth2User.getUserId()));
+    }
+
+    @Operation(summary = "일반 or 트레이너 체크", description = "요청한 사용자가 일반 회원인지 트레이너 회원(직원, 사장 구분 없음)인지 반환")
     @GetMapping("/check")
     public ResponseEntity<MemberCheckResponse> check(@AuthenticationPrincipal CustomOAuth2User oAuth2User) {
         return ResponseEntity.ok()
-            .body(memberService.checkUserType(
-                    memberService.findByUserId(oAuth2User.getUserId())
-                )
-            );
+            .body(memberService.checkUserType(oAuth2User.getUserId()));
     }
-
 }

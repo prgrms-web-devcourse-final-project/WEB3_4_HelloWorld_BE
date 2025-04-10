@@ -127,8 +127,8 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberCheckResponse checkUserType(Member member) {
-        return MemberMapper.toCheckResponse(member);
+    public MemberCheckResponse checkUserType(Long memberId) {
+        return MemberMapper.toCheckResponse(findByUserId(memberId));
     }
 
 }

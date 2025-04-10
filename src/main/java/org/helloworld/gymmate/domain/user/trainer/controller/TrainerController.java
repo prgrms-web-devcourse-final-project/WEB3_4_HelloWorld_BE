@@ -37,14 +37,14 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "트레이너 정보 API", description = "트레이너 or 헬스장 운영자 정보에 대한 등록, 수정, 삭제, 일반 목록 및 검색 목록 조회")
+@Tag(name = "트레이너 정보 API", description = "트레이너(선생님 & 제휴 헬스장 운영자) 정보에 대한 등록, 수정, 삭제, 일반 목록 및 검색 목록 조회")
 @RestController
 @RequestMapping("/trainer")
 @RequiredArgsConstructor
 public class TrainerController {
     private final TrainerService trainerService;
 
-    @Operation(summary = "[정보 등록 전 트레이너] 트레이너 선생님 회원가입", description = "트레이너 선생님(트레이너 직원)의 정보를 최초로 등록")
+    @Operation(summary = "[정보 등록 전 트레이너] 트레이너 선생님 회원가입", description = "요청한 트레이너 선생님(트레이너 직원) 자신의 정보를 최초로 등록")
     @PreAuthorize("hasRole('ROLE_TRAINER')")
     @PostMapping
     public ResponseEntity<Long> register(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
@@ -54,7 +54,7 @@ public class TrainerController {
                 registerRequest));
     }
 
-    @Operation(summary = "[정보 등록 전 트레이너] 헬스장 운영자 회원가입", description = "제휴 헬스장 운영자(트레이너 사장)의 정보를 최초로 등록")
+    @Operation(summary = "[정보 등록 전 트레이너] 헬스장 운영자 회원가입", description = "요청한 제휴 헬스장 운영자(트레이너 사장) 자신의 정보를 최초로 등록")
     @PreAuthorize("hasRole('ROLE_TRAINER')")
     @PostMapping("/owner")
     public ResponseEntity<Long> register(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
@@ -64,7 +64,7 @@ public class TrainerController {
                 registerRequest));
     }
 
-    @Operation(summary = "[트레이너] 트레이너 개인 정보 수정", description = "트레이너 선생님 또는 헬스장 운영자가 자신의 개인 정보를 수정")
+    @Operation(summary = "[트레이너] 트레이너 개인 정보 수정", description = "요청한 트레이너 선생님 또는 헬스장 운영자 자신의 개인 정보를 수정")
     @PreAuthorize("hasRole('ROLE_TRAINER')")
     @PutMapping("/modify")
     public ResponseEntity<Long> modify(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
@@ -75,15 +75,7 @@ public class TrainerController {
                 modifyRequest, profile));
     }
 
-    @Operation(summary = "[트레이너] 트레이너 계정 삭제", description = "트레이너 선생님 또는 헬스장 운영자가 자신의 계정을 삭제")
-    @PreAuthorize("hasRole('ROLE_TRAINER')")
-    @DeleteMapping
-    public ResponseEntity<Void> delete(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        trainerService.deleteTrainer(trainerService.findByUserId(customOAuth2User.getUserId()));
-        return ResponseEntity.ok().build();
-    }
-
-    @Operation(summary = "[트레이너] 트레이너 프로필 정보 수정", description = "트레이너 선생님 또는 헬스장 운영자가 자신의 한줄소개, 경력, 전문 분야를 수정")
+    @Operation(summary = "[트레이너] 트레이너 프로필 정보 수정", description = "요청한 트레이너 선생님 또는 헬스장 운영자 자신의 한줄소개, 경력, 전문 분야를 수정")
     @PreAuthorize("hasRole('ROLE_TRAINER')")
     @PutMapping("/profile")
     public ResponseEntity<Long> updateProfile(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
@@ -92,8 +84,16 @@ public class TrainerController {
             .body(trainerService.updateTrainerProfile(trainerService.findByUserId(customOAuth2User.getUserId()),
                 profileRequest));
     }
+    
+    @Operation(summary = "[트레이너] 트레이너 계정 삭제", description = "요청한 트레이너 선생님 또는 헬스장 운영자 자신의 계정을 삭제")
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
+    @DeleteMapping
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        trainerService.deleteTrainer(trainerService.findByUserId(customOAuth2User.getUserId()));
+        return ResponseEntity.ok().build();
+    }
 
-    @Operation(summary = "[트레이너] 개인 정보 조회", description = "트레이너 선생님 또는 헬스장 운영자가  자신의 개인 정보를 조회")
+    @Operation(summary = "[트레이너] 개인 정보 조회", description = "요청한 트레이너 선생님 또는 헬스장 운영자 자신의 개인 정보를 조회")
     @GetMapping
     public ResponseEntity<TrainerResponse> getInfo(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         return ResponseEntity.ok()
@@ -111,8 +111,20 @@ public class TrainerController {
     @GetMapping("/list")
     @Validated
     public ResponseEntity<PageDto<TrainerListResponse>> getTrainerList(
+        @Parameter(
+            name = "sortOption",
+            description = "정렬 옵션",
+            schema = @Schema(allowableValues = {"latest", "score", "nearby"}, example = "score", defaultValue = "score")
+        )
         @RequestParam(defaultValue = "score") String sortOption,
+        @Parameter(
+            name = "searchOption",
+            description = "검색 옵션",
+            schema = @Schema(allowableValues = {"trainer", "district"}, example = "trainer")
+        )
         @RequestParam(required = false) String searchOption,
+        @Parameter(description = "검색어", examples = {
+            @ExampleObject(name = "트레이너 이름", value = "박선생"), @ExampleObject(name = "헬스장 지역", value = "판교")})
         @RequestParam(defaultValue = "") String searchTerm,
         @RequestParam(defaultValue = "0") @Min(0) int page,
         @RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize,
@@ -134,11 +146,9 @@ public class TrainerController {
             description = "검색 옵션",
             schema = @Schema(allowableValues = {"trainer", "district"}, example = "trainer")
         )
-        // @Parameter(description = "검색 옵션", examples = {
-        //     @ExampleObject(name = "트레이너 이름", value = "trainer"), @ExampleObject(name = "헬스장 지역", value = "district")})
         @RequestParam(required = false) String searchOption,
         @Parameter(description = "검색어", examples = {
-            @ExampleObject(name = "트레이너 이름", value = "trainer"), @ExampleObject(name = "헬스장 지역", value = "district")})
+            @ExampleObject(name = "트레이너 이름", value = "박선생"), @ExampleObject(name = "헬스장 지역", value = "판교")})
         @RequestParam(defaultValue = "") String searchTerm,
         @RequestParam(defaultValue = "0") @Min(0) int page,
         @RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize
