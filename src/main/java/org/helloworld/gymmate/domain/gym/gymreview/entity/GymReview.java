@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.helloworld.gymmate.common.entity.BaseEntity;
+import org.helloworld.gymmate.domain.gym.gymreview.dto.GymReviewModifyRequest;
 import org.helloworld.gymmate.domain.gym.partnergym.entity.PartnerGym;
 
 import jakarta.persistence.CascadeType;
@@ -17,6 +18,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,4 +58,12 @@ public class GymReview extends BaseEntity {
 
     // ====== Business Logic ======
 
+    public void removeImageByUrl(String imageUrl) {
+        this.images.removeIf(image -> image.getUrl().equals(imageUrl));
+    }
+
+    public void update(@Valid GymReviewModifyRequest request) {
+        this.score = request.score();
+        this.content = request.content();
+    }
 }

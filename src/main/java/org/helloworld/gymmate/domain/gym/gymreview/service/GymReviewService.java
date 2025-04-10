@@ -1,7 +1,10 @@
 package org.helloworld.gymmate.domain.gym.gymreview.service;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.helloworld.gymmate.common.exception.BusinessException;
+import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
 import org.helloworld.gymmate.domain.gym.gymreview.dto.GymReviewModifyRequest;
 import org.helloworld.gymmate.domain.gym.gymreview.dto.GymReviewRequest;
@@ -47,8 +50,34 @@ public class GymReviewService {
         gymReview.getImages().addAll(gymReviewImages);
     }
 
-    public Long modifyGymReview(@Valid GymReviewModifyRequest request, List<MultipartFile> images,
-        long gymReviewId, Long userId) {
-        return 1L;
+    @Transactional
+    public Long modifyGymReview(@Valid GymReviewModifyRequest request,
+        List<MultipartFile> images, long gymReviewId, Long memberId) {
+        GymReview gymReview = findById(gymReviewId);
+        checkPermission(gymReview, memberId); // 작성자 확인
+        gymReview.update(request);
+        deleteImagesIfExists(gymReview, request.deleteImageUrls()); // 삭제요청 들어온 이미지 삭제
+        saveGymReviewImages(gymReview, images); // 추가요청 들어온 이미지 추가
+        return gymReview.getGymReviewId();
+    }
+
+    private void deleteImagesIfExists(GymReview gymReview, List<String> deleteImageUrls) {
+        Optional.ofNullable(deleteImageUrls)
+            .ifPresent(imageUrls -> imageUrls.forEach(url -> {
+                gymReview.removeImageByUrl(url);
+                fileManager.deleteFile(url);
+            }));
+    }
+
+    public GymReview findById(long gymReviewId) {
+        return gymReviewRepository.findById(gymReviewId).orElseThrow(
+            () -> new BusinessException(ErrorCode.GYM_REVIEW_NOT_FOUND)
+        );
+    }
+
+    private void checkPermission(GymReview gymReview, long memberId) {
+        if (!gymReview.getMemberId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
     }
 }
