@@ -78,9 +78,10 @@ public enum ErrorCode {
 
     // S3 관련
     S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3-001", "이미지 업로드 중 오류가 발생했습니다. 다시 시도해주세요."),
-
+    
     // API 관련
-    API_UNEXPECTED_RESPONSE(HttpStatus.INTERNAL_SERVER_ERROR, "API-001", "API 응답이 올바르지 않습니다.");
+    API_UNEXPECTED_RESPONSE(HttpStatus.INTERNAL_SERVER_ERROR, "API-001", "API 응답이 올바르지 않습니다."),
+    PAYMENT_CONFIRM_FAILED(HttpStatus.BAD_REQUEST, "API-002", "결제 승인에 실패하였습니다.");
 
     private final HttpStatus httpStatus;
     private final String errorCode;
