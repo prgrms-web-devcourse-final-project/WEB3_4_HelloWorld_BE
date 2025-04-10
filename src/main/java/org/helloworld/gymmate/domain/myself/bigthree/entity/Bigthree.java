@@ -50,4 +50,10 @@ public class Bigthree {
 
     // ====== Business Logic ======
 
+    public void update(double bench, double deadlift, double squat) {
+        this.bench = bench;
+        this.deadlift = deadlift;
+        this.squat = squat;
+    }
+
 }

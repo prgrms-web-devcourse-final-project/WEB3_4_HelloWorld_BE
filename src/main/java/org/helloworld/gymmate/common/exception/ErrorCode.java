@@ -37,6 +37,9 @@ public enum ErrorCode {
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION-001", "예약이 존재하지 않습니다"),
     CANNOT_CANCEL_THIS_WEEK_RESERVATION(HttpStatus.BAD_REQUEST, "RESERVATION-002", "이번 주 예약은 취소할 수 없습니다."),
 
+    // Award
+    AWARD_NOT_FOUND(HttpStatus.NOT_FOUND, "AWARD-001", "존재하지 않는 수상이력입니다."),
+
     // Gym
     GYM_INVALID_REQUEST(HttpStatus.BAD_REQUEST, "GYM-001", "잘못된 입력값입니다."),
     GYM_NOT_FOUND(HttpStatus.NOT_FOUND, "GYM-002", "요청한 헬스장이 존재하지 않습니다."),
@@ -60,8 +63,10 @@ public enum ErrorCode {
     MACHINE_MAX_UPLOAD(HttpStatus.FORBIDDEN, "MACHINE-003", "기구정보는 최대 30개 등록 가능합니다."),
 
     // Myself
-    BIGTHREE_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-BIGTHREE-001", "해당 3대 측정 기록을 찾을 수 없습니다."),
-    DIARY_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-RECORD-001", "해당 운동 기록을 찾을 수 없습니다."),
+    BIGTHREE_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-001", "해당 3대 측정 기록을 찾을 수 없습니다."),
+    DIARY_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-002", "해당 운동 기록을 찾을 수 없습니다."),
+    BIGTHREE_ALREADY_EXISTS(HttpStatus.CONFLICT, "MYSELF-003", "해당 날짜에 3대 측정 기록이 이미 존재합니다."),
+    BIGTHREE_AVERAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "MYSELF-004", "3대 측정 평균 기록을 찾을 수 없습니다."),
 
     // 인증 관련
     AUTH_REQUIRED(HttpStatus.UNAUTHORIZED, "AUTH-001", "인증이 필요합니다. 로그인 후 다시 시도해주세요."),
@@ -73,13 +78,10 @@ public enum ErrorCode {
 
     // S3 관련
     S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3-001", "이미지 업로드 중 오류가 발생했습니다. 다시 시도해주세요."),
-
+    
     // API 관련
     API_UNEXPECTED_RESPONSE(HttpStatus.INTERNAL_SERVER_ERROR, "API-001", "API 응답이 올바르지 않습니다."),
-
-    // 결제 관련
-    PAYMENT_CONFIRM_FAILED(HttpStatus.BAD_REQUEST, "PAYMENT-001", "결제 승인에 실패하였습니다."),
-    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "PAYMNENT-002", "결제 정보를 찾을 수 없습니다.");
+    PAYMENT_CONFIRM_FAILED(HttpStatus.BAD_REQUEST, "API-002", "결제 승인에 실패하였습니다.");
 
     private final HttpStatus httpStatus;
     private final String errorCode;
