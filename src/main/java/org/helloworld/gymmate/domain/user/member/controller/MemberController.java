@@ -38,7 +38,7 @@ public class MemberController {
         @Valid @RequestBody MemberRequest request
     ) {
         Long memberId = memberService.registerMember(oAuth2User.getUserId(), request);
-        return ResponseEntity.ok(memberId);
+        return ResponseEntity.ok().body(memberId);
     }
 
     @Operation(summary = "[일반 회원] 일반 회원 정보 수정", description = "요청한 일반 회원 자신의 개인 정보를 수정")
@@ -48,12 +48,8 @@ public class MemberController {
         @RequestPart("memberData") @Valid MemberRequest request,
         @RequestPart(value = "image", required = false) @ValidImageFile MultipartFile profile
     ) {
-        return ResponseEntity.ok()
-            .body(memberService.modifyMember(
-                //매개변수 : member id, memberModifyRequest객체, profile
-                oAuth2User.getUserId(), request, profile)
-
-            );
+        Long memberId = memberService.modifyMember(oAuth2User.getUserId(), request, profile);
+        return ResponseEntity.ok().body(memberId);
     }
 
     @Operation(summary = "[일반 회원] 일반 회원 계정 삭제", description = "요청한 일반 회원 자신의 계정을 삭제")
@@ -61,9 +57,8 @@ public class MemberController {
     public ResponseEntity<Long> deleteMember(
         @AuthenticationPrincipal CustomOAuth2User oAuth2User
     ) {
-        memberService.deleteMember(oAuth2User.getUserId());
-
-        return ResponseEntity.ok(oAuth2User.getUserId());
+        Long memberId = memberService.deleteMember(oAuth2User.getUserId());
+        return ResponseEntity.ok().body(memberId);
     }
 
     @Operation(summary = "[일반 회원] 일반 회원 정보 조회", description = "일요청한 일반 회원 자신의 개인 정보를 조회")
@@ -71,13 +66,16 @@ public class MemberController {
     public ResponseEntity<MemberResponse> getMyInfo(
         @AuthenticationPrincipal CustomOAuth2User oAuth2User
     ) {
-        return ResponseEntity.ok(memberService.getMember(oAuth2User.getUserId()));
+        MemberResponse response = memberService.getMemberInfo(oAuth2User.getUserId());
+        return ResponseEntity.ok().body(response);
     }
 
-    @Operation(summary = "일반 or 트레이너 체크", description = "요청한 사용자가 일반 회원인지 트레이너 회원(직원, 사장 구분 없음)인지 반환")
+    @Operation(summary = "[로그인한 사용자] 일반 or 트레이너 체크", description = "요청한 사용자가 일반 회원인지 트레이너 회원(직원, 사장 구분 없음)인지 반환")
     @GetMapping("/check")
-    public ResponseEntity<MemberCheckResponse> check(@AuthenticationPrincipal CustomOAuth2User oAuth2User) {
-        return ResponseEntity.ok()
-            .body(memberService.checkUserType(oAuth2User.getUserId()));
+    public ResponseEntity<MemberCheckResponse> check(
+        @AuthenticationPrincipal CustomOAuth2User oAuth2User
+    ) {
+        MemberCheckResponse response = memberService.checkUserType(oAuth2User.getUserId());
+        return ResponseEntity.ok().body(response);
     }
 }

@@ -33,6 +33,7 @@ public class MemberService {
     private final FileManager fileManager;
     private final BigthreeService bigthreeService;
 
+    /** 빈 member 객체 생성 */
     @Transactional
     public Long createMember(Oauth oauth) {
         if (!entityManager.contains(oauth)) {
@@ -44,7 +45,7 @@ public class MemberService {
         return memberRepository.save(member).getMemberId();
     }
 
-    //추가정보 등록
+    /** member 정보 최초 등록 */
     @Transactional
     public Long registerMember(Long memberId, MemberRequest request) {
         // 1. 멤버 id로 멤버 조회
@@ -60,25 +61,7 @@ public class MemberService {
         return memberRepository.save(member).getMemberId();
     }
 
-    //추가정보 등록 여부 확인
-    @Transactional(readOnly = true)
-    public boolean check(Member member) {
-        return member.getAdditionalInfoCompleted();
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<Long> getMemberIdByOauth(String providerId) {
-        return oauthRepository.findByProviderIdAndUserType(providerId, UserType.MEMBER)
-            .flatMap(oauth -> memberRepository.findByOauth(oauth)
-                .map(Member::getMemberId));
-    }
-
-    public Member findByUserId(Long userId) {
-        return memberRepository.findByMemberId(userId).orElseThrow(() -> new BusinessException(
-            ErrorCode.USER_NOT_FOUND));
-    }
-
-    // 멤버 정보 수정
+    /** member 정보 수정 */
     @Transactional
     public Long modifyMember(Long memberId, MemberRequest request, MultipartFile image) {
 
@@ -105,10 +88,14 @@ public class MemberService {
         return memberRepository.save(member).getMemberId();
     }
 
+    /** member 삭제 */
     @Transactional
-    public void deleteMember(Long memberId) {
+    public Long deleteMember(Long memberId) {
         //1.멤버 객체를 찾기
         Member member = findByUserId(memberId);
+
+        // TODO: 유요한  reservation, ticket 존재 시 예외처리, 유효하지 않으면 삭제
+        // TODO: dairy, bigthree, review x 2, 캐시로그 삭제
 
         //2.프로필 URL이 존재할 경우에만 파일 삭제
         String profileUrl = member.getProfileUrl();
@@ -118,10 +105,25 @@ public class MemberService {
 
         //3.멤버 테이블에서 멤버 삭제
         memberRepository.deleteByMemberId(memberId);
+
+        return memberId;
+    }
+
+    /** 로그인 인증 객체로 member 조회 */
+    @Transactional(readOnly = true)
+    public Optional<Long> getMemberIdByOauth(String providerId) {
+        return oauthRepository.findByProviderIdAndUserType(providerId, UserType.MEMBER)
+            .flatMap(oauth -> memberRepository.findByOauth(oauth)
+                .map(Member::getMemberId));
+    }
+
+    public Member findByUserId(Long userId) {
+        return memberRepository.findByMemberId(userId).orElseThrow(() -> new BusinessException(
+            ErrorCode.USER_NOT_FOUND));
     }
 
     @Transactional
-    public MemberResponse getMember(Long userId) {
+    public MemberResponse getMemberInfo(Long userId) {
         Member member = findByUserId(userId);
         return MemberMapper.toResponseDto(member);
     }
@@ -130,5 +132,4 @@ public class MemberService {
     public MemberCheckResponse checkUserType(Long memberId) {
         return MemberMapper.toCheckResponse(findByUserId(memberId));
     }
-
 }
