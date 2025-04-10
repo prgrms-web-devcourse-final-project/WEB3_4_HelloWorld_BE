@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gymproduct.entity.GymProduct;
+import org.helloworld.gymmate.domain.gym.gymreview.entity.GymReview;
 import org.hibernate.annotations.BatchSize;
 
 import jakarta.persistence.CascadeType;
@@ -49,6 +50,10 @@ public class PartnerGym {
     @Builder.Default
     private List<GymProduct> gymProducts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "partnerGym", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<GymReview> gymReviews = new ArrayList<>();
+    
     // ====== Business Logic ======
 
 }
