@@ -45,6 +45,9 @@ jobs:
           export KAKAO_API_KEY=${{ secrets.KAKAO_API_KEY }}
           export BUSINESS_URL=${{ secrets.BUSINESS_URL }}
           export BUSINESS_KEY=${{ secrets.BUSINESS_KEY }}
+          export PAYMENT_SECRET_KEY=${{ secrets.PAYMENT_SECRET_KEY }}
+          export PAYMENT_BASE_URL=${{ secrets.PAYMENT_BASE_URL }}
+          export PAYMENT_CONFIRM_URL=${{ secrets.PAYMENT_CONFIRM_URL }}
           envsubst < ./src/main/resources/docs/application.template > ./src/main/resources/application.yml
 
       # application-deploy.yml 환경 변수 포함 생성
