@@ -80,14 +80,15 @@ public class ReservationController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "멤버 - 예약 삭제")
+    @Operation(summary = "멤버 - 예약 취소")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     @DeleteMapping("/{reservationId}")
-    public ResponseEntity<Void> deleteMemberReservation(
+    public ResponseEntity<ReservationResponse> deleteMemberReservation(
         @PathVariable Long reservationId
     ) {
-        reservationService.deleteMemberReservation(reservationId);
-        return ResponseEntity.ok().build();
+        ReservationResponse response =
+            reservationService.cancelMemberReservation(reservationId);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "멤버 - 예약 목록 조회")
