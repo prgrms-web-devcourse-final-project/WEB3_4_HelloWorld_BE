@@ -52,8 +52,12 @@ public class Reservation {
     private Long trainerId;
 
     // 날짜와 시간을 변경하는 메서드
-    public Reservation modifyDateAndTime(LocalDate newDate, Integer newTime) {
-        return new Reservation(this.reservationId, this.productName, newDate, newTime, this.price, this.cancelDate,
-            this.completedDate, this.memberId, this.trainerId);
+    public void modifyDateAndTime(LocalDate newDate, Integer newTime) {
+        this.date = newDate;
+        this.time = newTime;
+    }
+
+    public void addCancelDate(LocalDate date) {
+        this.cancelDate = date;
     }
 }

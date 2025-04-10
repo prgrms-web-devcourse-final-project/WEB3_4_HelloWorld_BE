@@ -70,24 +70,24 @@ public class ReservationController {
     @Operation(summary = "멤버 - 예약 수정")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     @PutMapping("/{reservationId}")
-    public ResponseEntity<ReservationResponse> updateReservation(
+    public ResponseEntity<Long> updateReservation(
         @PathVariable Long reservationId,
         @RequestBody ReservationRequest request) {
 
-        ReservationResponse response
-            = reservationService.updateReservation(reservationId, request.date(), request.time());
+        Long updateId = reservationService.updateReservation(reservationId, request.date(), request.time());
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(updateId);
     }
 
-    @Operation(summary = "멤버 - 예약 삭제")
+    @Operation(summary = "멤버 - 예약 취소")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     @DeleteMapping("/{reservationId}")
-    public ResponseEntity<Void> deleteMemberReservation(
+    public ResponseEntity<Long> deleteMemberReservation(
         @PathVariable Long reservationId
     ) {
-        reservationService.deleteMemberReservation(reservationId);
-        return ResponseEntity.ok().build();
+        Long deleteId =
+            reservationService.cancelMemberReservation(reservationId);
+        return ResponseEntity.ok(deleteId);
     }
 
     @Operation(summary = "멤버 - 예약 목록 조회")
