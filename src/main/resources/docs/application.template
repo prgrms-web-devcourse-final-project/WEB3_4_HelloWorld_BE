@@ -7,7 +7,7 @@ server:
   url: http://localhost:8080
 client:
   url: http://localhost:3000
-  
+
 spring:
   config:
     import: optional:file:.env[.properties]
@@ -56,7 +56,7 @@ jwt:
     expiration-time: 3600000
   refresh-token:
     expiration-time: 604800000
-    
+
 cloud:
   aws:
     s3:
@@ -69,16 +69,16 @@ cloud:
       auto: false
     stack:
       auto: false
-      
+
 kakao-map:
   api:
     key: ${KAKAO_API_KEY}
-    
+
 business:
   url: ${BUSINESS_URL}
   serviceKey: ${BUSINESS_KEY}
 
-  payment:
-    secret-key: ${PAYMENT_SECRET_KEY}
-    base-url: ${PAYMENT_BASE_URL}
-    confirm-url: ${ PAYMENT_CONFIRM_URL }
+payment:
+  secret-key: ${PAYMENT_SECRET_KEY}
+  base-url: ${PAYMENT_BASE_URL}
+  confirm-url: ${PAYMENT_CONFIRM_URL}
