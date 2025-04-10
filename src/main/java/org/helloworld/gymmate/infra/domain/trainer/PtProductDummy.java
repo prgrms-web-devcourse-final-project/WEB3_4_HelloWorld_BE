@@ -1,5 +1,10 @@
 package org.helloworld.gymmate.infra.domain.trainer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import lombok.Getter;
 
 @Getter
@@ -23,4 +28,9 @@ public enum PtProductDummy {
         this.ptProductFee = ptProductFee;
     }
 
+    public static PtProductDummy getRandomPtProductDummy() {
+        List<PtProductDummy> allPtProductDummy = new ArrayList<>(Arrays.asList(values()));
+        Collections.shuffle(allPtProductDummy);
+        return allPtProductDummy.get(0);
+    }
 }
