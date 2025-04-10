@@ -68,7 +68,7 @@ public class ReservationService {
      회원의 예약 취소 로직
       - param : reservationId
      */
-    public ReservationResponse cancelMemberReservation(Long reservationId) {
+    public Long cancelMemberReservation(Long reservationId) {
         //1. 예약 객체 조회
         Reservation reservation = findReservationOrThrow(reservationId);
 
@@ -79,7 +79,7 @@ public class ReservationService {
         Reservation savedReservation = reservationRepository.save(reservation);
 
         // 4. ReservationResponse 객체 반환
-        return ReservationMapper.toDto(savedReservation);
+        return savedReservation.getReservationId();
 
     }
 
@@ -166,7 +166,7 @@ public class ReservationService {
         return new ReservationByMonthResponse(reservationsByDate);
     }
 
-    public ReservationResponse updateReservation(Long reservationId, LocalDate newDate, Integer newTime) {
+    public Long updateReservation(Long reservationId, LocalDate newDate, Integer newTime) {
         //1.Reservation객체 조회
         Reservation reservation = findReservationOrThrow(reservationId);
 
@@ -177,7 +177,7 @@ public class ReservationService {
         Reservation savedReservation = reservationRepository.save(reservation);
 
         // 4. ReservationResponse 객체 반환
-        return ReservationMapper.toDto(savedReservation);
+        return savedReservation.getReservationId();
     }
 
 }
