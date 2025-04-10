@@ -118,10 +118,10 @@ public class TrainerController {
         return ResponseEntity.ok().body(response);
     }
 
-    @Operation(summary = "트레이너 목록 조회", description = "요청한 값에 해당하는 트레이너 목록을 조회")
+    @Operation(summary = "트레이너 목록 조회", description = "요청한 조건에 해당하는 트레이너 목록을 조회")
     @GetMapping("/list")
     @Validated
-    public ResponseEntity<PageDto<TrainerListResponse>> getTrainerList(
+    public ResponseEntity<PageDto<TrainerListResponse>> getTrainerListNearby(
         @Parameter(
             name = "sortOption",
             description = "정렬 옵션",
@@ -147,11 +147,11 @@ public class TrainerController {
         return ResponseEntity.ok().body(pageResponse);
     }
 
-    @Operation(summary = "[일반 회원] 00 주변 트레이너 목록 조회", description = "요청한 위치를 기준으로 가까운 트레이너 중 요청한 값에 해당하는 목록을 조회")
+    @Operation(summary = "[일반 회원] 주변 트레이너 목록 조회", description = "요청한 사용자 근처의 트레이너 목록을 조회 + 요청한 조건에 해당하는 트레이너 목록을 조회")
     @GetMapping("/list/nearby")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     @Validated
-    public ResponseEntity<PageDto<TrainerListResponse>> getTrainerList(
+    public ResponseEntity<PageDto<TrainerListResponse>> getTrainerListNearby(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
         @Parameter(
             name = "searchOption",
