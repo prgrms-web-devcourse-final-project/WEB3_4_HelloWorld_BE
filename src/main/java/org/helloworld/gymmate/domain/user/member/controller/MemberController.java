@@ -37,7 +37,7 @@ public class MemberController {
         @AuthenticationPrincipal CustomOAuth2User oAuth2User,
         @Valid @RequestBody MemberRequest request
     ) {
-        Long memberId = memberService.registerMember(oAuth2User.getUserId(), request);
+        Long memberId = memberService.registerMemberInfo(oAuth2User.getUserId(), request);
         return ResponseEntity.ok().body(memberId);
     }
 
@@ -48,7 +48,7 @@ public class MemberController {
         @RequestPart("memberData") @Valid MemberRequest request,
         @RequestPart(value = "image", required = false) @ValidImageFile MultipartFile profile
     ) {
-        Long memberId = memberService.modifyMember(oAuth2User.getUserId(), request, profile);
+        Long memberId = memberService.modifyMemberInfo(oAuth2User.getUserId(), request, profile);
         return ResponseEntity.ok().body(memberId);
     }
 

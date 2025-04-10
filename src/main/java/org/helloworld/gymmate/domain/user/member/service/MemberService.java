@@ -39,31 +39,26 @@ public class MemberService {
         if (!entityManager.contains(oauth)) {
             oauth = entityManager.merge(oauth);
         }
-
         Member member = MemberMapper.toMember(oauth);
-
         return memberRepository.save(member).getMemberId();
     }
 
     /** member 정보 최초 등록 */
     @Transactional
-    public Long registerMember(Long memberId, MemberRequest request) {
+    public Long registerMemberInfo(Long memberId, MemberRequest request) {
         // 1. 멤버 id로 멤버 조회
         Member member = findByUserId(memberId);
-
         // 2. 멤버 객체 수정
         member.registerMemberInfo(request);
-
         // 3. 3대 기록 저장
         bigthreeService.createInitialBigthree(member);
-
         // 4. 저장
         return memberRepository.save(member).getMemberId();
     }
 
     /** member 정보 수정 */
     @Transactional
-    public Long modifyMember(Long memberId, MemberRequest request, MultipartFile image) {
+    public Long modifyMemberInfo(Long memberId, MemberRequest request, MultipartFile image) {
 
         //1. memberId로 member 조회
         Member member = findByUserId(memberId);
@@ -102,14 +97,12 @@ public class MemberService {
         if (profileUrl != null && !profileUrl.isEmpty()) {
             fileManager.deleteFile(profileUrl);
         }
-
         //3.멤버 테이블에서 멤버 삭제
         memberRepository.deleteByMemberId(memberId);
-
         return memberId;
     }
 
-    /** 로그인 인증 객체로 member 조회 */
+    /** 로그인 인증 객체로 memberId 조회 */
     @Transactional(readOnly = true)
     public Optional<Long> getMemberIdByOauth(String providerId) {
         return oauthRepository.findByProviderIdAndUserType(providerId, UserType.MEMBER)
@@ -117,11 +110,7 @@ public class MemberService {
                 .map(Member::getMemberId));
     }
 
-    public Member findByUserId(Long userId) {
-        return memberRepository.findByMemberId(userId).orElseThrow(() -> new BusinessException(
-            ErrorCode.USER_NOT_FOUND));
-    }
-
+    /** member 개인정보 조회 */
     @Transactional
     public MemberResponse getMemberInfo(Long userId) {
         Member member = findByUserId(userId);
@@ -131,5 +120,11 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberCheckResponse checkUserType(Long memberId) {
         return MemberMapper.toCheckResponse(findByUserId(memberId));
+    }
+
+    @Transactional(readOnly = true)
+    public Member findByUserId(Long userId) {
+        return memberRepository.findByMemberId(userId).orElseThrow(() -> new BusinessException(
+            ErrorCode.USER_NOT_FOUND));
     }
 }

@@ -47,65 +47,75 @@ public class TrainerController {
     @Operation(summary = "[정보 등록 전 트레이너] 트레이너 선생님 회원가입", description = "요청한 트레이너 선생님(트레이너 직원) 자신의 정보를 최초로 등록")
     @PostMapping
     @PreAuthorize("hasRole('ROLE_TRAINER')")
-    public ResponseEntity<Long> register(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-        @RequestBody @Valid TrainerRegisterRequest registerRequest) {
-        return ResponseEntity.ok()
-            .body(trainerService.registerInfoByTrainer(trainerService.findByUserId(customOAuth2User.getUserId()),
-                registerRequest));
+    public ResponseEntity<Long> register(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+        @RequestBody @Valid TrainerRegisterRequest registerRequest
+    ) {
+        Long trainerId = trainerService.registerTrainerInfo(customOAuth2User.getUserId(), registerRequest);
+        return ResponseEntity.ok().body(trainerId);
     }
 
     @Operation(summary = "[정보 등록 전 트레이너] 헬스장 운영자 회원가입", description = "요청한 제휴 헬스장 운영자(트레이너 사장) 자신의 정보를 최초로 등록")
     @PostMapping("/owner")
     @PreAuthorize("hasRole('ROLE_TRAINER')")
-    public ResponseEntity<Long> register(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-        @RequestBody @Valid OwnerRegisterRequest registerRequest) {
-        return ResponseEntity.ok()
-            .body(trainerService.registerInfoByOwner(trainerService.findByUserId(customOAuth2User.getUserId()),
-                registerRequest));
+    public ResponseEntity<Long> register(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+        @RequestBody @Valid OwnerRegisterRequest registerRequest
+    ) {
+        Long trainerId = trainerService.registerOwnerInfo(customOAuth2User.getUserId(), registerRequest);
+        return ResponseEntity.ok().body(trainerId);
     }
 
     @Operation(summary = "[트레이너] 트레이너 개인 정보 수정", description = "요청한 트레이너 선생님 또는 헬스장 운영자 자신의 개인 정보를 수정")
     @PutMapping("/modify")
     @PreAuthorize("hasRole('ROLE_TRAINER')")
-    public ResponseEntity<Long> modify(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+    public ResponseEntity<Long> modify(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
         @RequestPart("request") TrainerModifyRequest modifyRequest,
-        @RequestPart(value = "image", required = false) @ValidImageFile MultipartFile profile) {
-        return ResponseEntity.ok()
-            .body(trainerService.modifyTrainerInfo(trainerService.findByUserId(customOAuth2User.getUserId()),
-                modifyRequest, profile));
+        @RequestPart(value = "image", required = false) @ValidImageFile MultipartFile profile
+    ) {
+        Long trainerId = trainerService.modifyTrainerInfo(customOAuth2User.getUserId(), modifyRequest, profile);
+        return ResponseEntity.ok().body(trainerId);
     }
 
     @Operation(summary = "[트레이너] 트레이너 프로필 정보 수정", description = "요청한 트레이너 선생님 또는 헬스장 운영자 자신의 한줄소개, 경력, 전문 분야를 수정")
     @PutMapping("/profile")
     @PreAuthorize("hasRole('ROLE_TRAINER')")
-    public ResponseEntity<Long> updateProfile(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-        @RequestBody TrainerProfileRequest profileRequest) {
-        return ResponseEntity.ok()
-            .body(trainerService.updateTrainerProfile(trainerService.findByUserId(customOAuth2User.getUserId()),
-                profileRequest));
+    public ResponseEntity<Long> updateProfile(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+        @RequestBody TrainerProfileRequest profileRequest
+    ) {
+        Long trainerId = trainerService.updateTrainerProfile(customOAuth2User.getUserId(), profileRequest);
+        return ResponseEntity.ok().body(trainerId);
     }
 
     @Operation(summary = "[트레이너] 트레이너 계정 삭제", description = "요청한 트레이너 선생님 또는 헬스장 운영자 자신의 계정을 삭제")
     @DeleteMapping
     @PreAuthorize("hasRole('ROLE_TRAINER')")
-    public ResponseEntity<Void> delete(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        trainerService.deleteTrainer(trainerService.findByUserId(customOAuth2User.getUserId()));
+    public ResponseEntity<Void> delete(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+    ) {
+        trainerService.deleteTrainer(customOAuth2User.getUserId());
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "[트레이너] 개인 정보 조회", description = "요청한 트레이너 선생님 또는 헬스장 운영자 자신의 개인 정보를 조회")
     @GetMapping
     @PreAuthorize("hasRole('ROLE_TRAINER')")
-    public ResponseEntity<TrainerResponse> getInfo(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        return ResponseEntity.ok()
-            .body(trainerService.getInfo(trainerService.findByUserId(customOAuth2User.getUserId())));
+    public ResponseEntity<TrainerResponse> getInfo(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+    ) {
+        TrainerResponse response = trainerService.getTrainerInfo(customOAuth2User.getUserId());
+        return ResponseEntity.ok().body(response);
     }
 
     @Operation(summary = "[로그인한 사용자] 사장 여부 체크", description = "요청한 사용자가 헬스장 운영자인지 아닌지 반환")
     @GetMapping("/check")
-    public ResponseEntity<TrainerCheckResponse> check(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        return ResponseEntity.ok()
-            .body(trainerService.check(trainerService.findByUserId(customOAuth2User.getUserId())));
+    public ResponseEntity<TrainerCheckResponse> check(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+    ) {
+        TrainerCheckResponse response = trainerService.checkUserTypeAndOwner(customOAuth2User.getUserId());
+        return ResponseEntity.ok().body(response);
     }
 
     @Operation(summary = "트레이너 목록 조회", description = "요청한 값에 해당하는 트레이너 목록을 조회")
@@ -132,8 +142,9 @@ public class TrainerController {
         @RequestParam(required = false, defaultValue = "127.0276") Double x,
         @RequestParam(required = false, defaultValue = "37.4979") Double y
     ) {
-        return ResponseEntity.ok(PageMapper.toPageDto(
-            trainerService.getTrainers(sortOption, searchOption, searchTerm, page, pageSize, x, y)));
+        PageDto<TrainerListResponse> pageResponse = PageMapper.toPageDto(
+            trainerService.getTrainers(sortOption, searchOption, searchTerm, page, pageSize, x, y));
+        return ResponseEntity.ok().body(pageResponse);
     }
 
     @Operation(summary = "[일반 회원] 00 주변 트레이너 목록 조회", description = "요청한 위치를 기준으로 가까운 트레이너 중 요청한 값에 해당하는 목록을 조회")
@@ -154,7 +165,8 @@ public class TrainerController {
         @RequestParam(defaultValue = "0") @Min(0) int page,
         @RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize
     ) {
-        return ResponseEntity.ok(PageMapper.toPageDto(
-            trainerService.getNearbyTrainers(searchOption, searchTerm, page, pageSize, customOAuth2User)));
+        PageDto<TrainerListResponse> pageResponse = PageMapper.toPageDto(
+            trainerService.getNearbyTrainers(searchOption, searchTerm, page, pageSize, customOAuth2User.getUserId()));
+        return ResponseEntity.ok(pageResponse);
     }
 }
