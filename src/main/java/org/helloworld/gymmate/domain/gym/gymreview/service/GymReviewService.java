@@ -45,4 +45,11 @@ public class GymReviewService {
         gymReview.getImages().addAll(gymReviewImages);
     }
 
+    @Transactional
+    public void deleteGymReview(long gymReviewId, Long userId) {
+        GymReview gymReview = findById(gymReviewId);
+        checkPermission(gymReview, userId);
+        gymReviewRepository.delete(gymReview);
+    }
+
 }
