@@ -34,30 +34,40 @@ public class BigthreeMapper {
         return builder.build();
     }
 
-    public BigthreeStatsResponse toResponseDto(
-        Member member,
-        BigthreeAverage average,
+    public static BigthreeStatsResponse toResponseDto(
         int mostLevel,
         double benchRate,
         double deadliftRate,
         double squatRate,
-        double myAvg
+        BigthreeAverage average,
+        Member member
     ) {
         return new BigthreeStatsResponse(
             mostLevel,
+
             average.getSumAverage(),
             average.getBenchAverage(),
             average.getDeadliftAverage(),
             average.getSquatAverage(),
 
+            benchRate + deadliftRate + squatRate,
             member.getRecentBench(),
             member.getRecentDeadlift(),
             member.getRecentSquat(),
-            myAvg,
 
             benchRate,
             deadliftRate,
             squatRate
         );
+    }
+
+    public static Bigthree toInitialBigthree(Member member) {
+        return Bigthree.builder()
+            .member(member)
+            .bench(member.getRecentBench())
+            .deadlift(member.getRecentDeadlift())
+            .squat(member.getRecentSquat())
+            .date(LocalDate.now())
+            .build();
     }
 }

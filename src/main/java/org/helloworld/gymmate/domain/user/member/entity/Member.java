@@ -119,6 +119,7 @@ public class Member {
         this.recentBench = request.recentBench();
         this.recentDeadlift = request.recentDeadlift();
         this.recentSquat = request.recentSquat();
+        this.level = calculateLevel(request.recentBench(), request.recentDeadlift(), request.recentSquat());
         this.additionalInfoCompleted = true;
 
     }
@@ -137,6 +138,7 @@ public class Member {
         this.recentBench = request.recentBench();
         this.recentDeadlift = request.recentDeadlift();
         this.recentSquat = request.recentSquat();
+        this.level = calculateLevel(request.recentBench(), request.recentDeadlift(), request.recentSquat());
         this.profileUrl = profileUrl;
         this.additionalInfoCompleted = true;
     }
@@ -149,6 +151,23 @@ public class Member {
         this.recentBench = bench;
         this.recentDeadlift = deadlift;
         this.recentSquat = squat;
+        this.level = calculateLevel(bench, deadlift, squat);
     }
 
+    private int calculateLevel(double bench, double deadlift, double squat) {
+        double total = bench + deadlift + squat;
+        if (total >= 400) {
+            return 4;
+        }
+        if (total >= 300) {
+            return 3;
+        }
+        if (total >= 200) {
+            return 2;
+        }
+        if (total >= 100) {
+            return 1;
+        }
+        return 0;
+    }
 }

@@ -16,9 +16,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByMemberId(Long memberId);
 
     void deleteByMemberId(Long memberId);
-
-    boolean existsByMemberId(Long memberId);
-
+    
     @Query(value = """
         SELECT level
         FROM gymmate_member
