@@ -109,9 +109,9 @@ public class TrainerController {
         return ResponseEntity.ok().body(response);
     }
 
-    @Operation(summary = "[로그인한 사용자] 사장 여부 체크", description = "요청한 사용자가 헬스장 운영자인지 아닌지 반환")
+    @Operation(summary = "[트레이너] 사장 여부 체크", description = "요청한 사용자가 헬스장 운영자인지 아닌지 반환, 일반 회원일 경우 에러")
     @GetMapping("/check")
-    public ResponseEntity<TrainerCheckResponse> check(
+    public ResponseEntity<TrainerCheckResponse> checkIsOwner(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ) {
         TrainerCheckResponse response = trainerService.checkUserTypeAndOwner(customOAuth2User.getUserId());
@@ -121,7 +121,7 @@ public class TrainerController {
     @Operation(summary = "트레이너 목록 조회", description = "요청한 조건에 해당하는 트레이너 목록을 조회")
     @GetMapping("/list")
     @Validated
-    public ResponseEntity<PageDto<TrainerListResponse>> getTrainerListNearby(
+    public ResponseEntity<PageDto<TrainerListResponse>> getTrainerList(
         @Parameter(
             name = "sortOption",
             description = "정렬 옵션",
