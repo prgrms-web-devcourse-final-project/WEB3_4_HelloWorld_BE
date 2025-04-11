@@ -64,7 +64,7 @@ public class MemberController {
     }
 
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    @Operation(summary = "[일반 회원] 일반 회원 정보 조회", description = "일요청한 일반 회원 자신의 개인 정보를 조회")
+    @Operation(summary = "[일반 회원] 일반 회원 정보 조회", description = "요청한 일반 회원 자신의 개인 정보를 조회")
     @GetMapping
     public ResponseEntity<MemberResponse> getMyInfo(
         @AuthenticationPrincipal CustomOAuth2User oAuth2User
