@@ -1,0 +1,51 @@
+-- insert_facility_if_missing.sql
+
+DELIMITER $$
+
+CREATE PROCEDURE insert_missing_facilities()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE g_id BIGINT;
+
+    DECLARE cur CURSOR FOR
+        SELECT gym_id FROM gym WHERE facility_id IS NULL;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN cur;
+
+    read_loop:
+    LOOP
+        FETCH cur INTO g_id;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- 랜덤한 boolean 값들로 facility 생성
+        INSERT INTO facility (parking, shower_room, in_body, locker, wifi, sports_wear, towel, sauna)
+        VALUES (RAND() > 0.5,
+                RAND() > 0.5,
+                RAND() > 0.5,
+                RAND() > 0.5,
+                RAND() > 0.5,
+                RAND() > 0.5,
+                RAND() > 0.5,
+                RAND() > 0.5);
+
+        -- 생성된 facility_id를 해당 gym에 연결
+        UPDATE gym
+        SET facility_id = LAST_INSERT_ID()
+        WHERE gym_id = g_id;
+
+    END LOOP;
+
+    CLOSE cur;
+END $$
+
+DELIMITER ;
+
+-- 프로시저 실행
+CALL insert_missing_facilities();
+
+-- 필요 시 프로시저 삭제
+DROP PROCEDURE insert_missing_facilities;
