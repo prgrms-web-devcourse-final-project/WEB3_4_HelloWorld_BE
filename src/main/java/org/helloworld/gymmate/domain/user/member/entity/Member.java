@@ -148,6 +148,22 @@ public class Member {
         this.additionalInfoCompleted = true;
     }
 
+    public void updateCash(Long updateCash) {
+        this.cash = updateCash;
+    }
+
+    public void updateRecentBigthree(double bench, double deadlift, double squat) {
+        this.recentBench = bench;
+        this.recentDeadlift = deadlift;
+        this.recentSquat = squat;
+        this.level = calculateLevel(bench, deadlift, squat);
+    }
+
+    public void updateXY(double x, double y) {
+        this.xField = x;
+        this.yField = y;
+    }
+
     private int calculateLevel(double bench, double deadlift, double squat) {
         double total = bench + deadlift + squat;
         if (total >= 400) {

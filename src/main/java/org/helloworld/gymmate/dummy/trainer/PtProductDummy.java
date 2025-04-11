@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.infra.domain.trainer;
+package org.helloworld.gymmate.dummy.trainer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
