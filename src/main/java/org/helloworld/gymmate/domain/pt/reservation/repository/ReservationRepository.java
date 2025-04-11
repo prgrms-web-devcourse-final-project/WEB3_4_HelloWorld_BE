@@ -10,9 +10,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-	Page<Reservation> findByMemberId(Long memberId, Pageable pageable);
+    Page<Reservation> findByMemberId(Long memberId, Pageable pageable);
 
-	Page<Reservation> findByTrainerId(Long trainerId, Pageable pageable);
+    Page<Reservation> findByTrainerId(Long trainerId, Pageable pageable);
 
-	List<Reservation> findByTrainerId(Long trainerId);
+    List<Reservation> findByTrainerId(Long trainerId);
+
+    boolean existsByMemberIdAndCancelDateIsNullAndCompletedDateIsNull(Long memberId);
 }

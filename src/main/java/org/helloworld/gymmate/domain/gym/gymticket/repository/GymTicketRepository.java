@@ -20,4 +20,6 @@ public interface GymTicketRepository extends JpaRepository<GymTicket, Long> {
     Page<GymTicket> findAllByPartnerGymId(Long partnerGymId, Pageable pageable);
 
     Optional<GymTicket> findByPartnerGymIdAndMember_MemberId(Long partnerGymId, Long memberId);
+
+    boolean existsByMember_MemberIdAndStatus(Long memberId, GymTicketStatus gymTicketStatus);
 }

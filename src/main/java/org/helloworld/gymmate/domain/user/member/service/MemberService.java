@@ -5,7 +5,14 @@ import java.util.Optional;
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
+import org.helloworld.gymmate.domain.gym.gymreview.repository.GymReviewRepository;
+import org.helloworld.gymmate.domain.gym.gymticket.enums.GymTicketStatus;
+import org.helloworld.gymmate.domain.gym.gymticket.repository.GymTicketRepository;
+import org.helloworld.gymmate.domain.myself.bigthree.repository.BigthreeRepository;
 import org.helloworld.gymmate.domain.myself.bigthree.service.BigthreeService;
+import org.helloworld.gymmate.domain.myself.diary.repository.DiaryRepository;
+import org.helloworld.gymmate.domain.pt.reservation.repository.ReservationRepository;
+import org.helloworld.gymmate.domain.pt.student.repository.StudentRepository;
 import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.member.dto.MemberCheckResponse;
 import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
@@ -34,6 +41,12 @@ public class MemberService {
     private final FileManager fileManager;
     private final BigthreeService bigthreeService;
     private final KakaoMapRestTemplateComponent kakaoMapRestTemplateComponent;
+    private final DiaryRepository diaryRepository;
+    private final BigthreeRepository bigthreeRepository;
+    private final GymReviewRepository gymReviewRepository;
+    private final StudentRepository studentRepository;
+    private final ReservationRepository reservationRepository;
+    private final GymTicketRepository gymTicketRepository;
 
     /** 빈 member 객체 생성 */
     @Transactional
@@ -97,16 +110,16 @@ public class MemberService {
     public Long deleteMember(Long memberId) {
         //1.멤버 객체를 찾기
         Member member = findByUserId(memberId);
-
-        // TODO: 유요한  reservation, ticket 존재 시 예외처리, 유효하지 않으면 삭제
-        // TODO: dairy, bigthree, review x 2, 캐시로그 삭제
-
-        //2.프로필 URL이 존재할 경우에만 파일 삭제
+        //2. 삭제 가능 여부 검증
+        validateDeletable(memberId);
+        //3. 연관된 엔티티 삭제
+        deleteRelatedEntitiesOfMember(memberId);
+        //4.프로필 URL이 존재할 경우에만 파일 삭제
         String profileUrl = member.getProfileUrl();
         if (profileUrl != null && !profileUrl.isEmpty()) {
             fileManager.deleteFile(profileUrl);
         }
-        //3.멤버 테이블에서 멤버 삭제
+        //5.멤버 테이블에서 멤버 삭제
         memberRepository.deleteByMemberId(memberId);
         return memberId;
     }
@@ -135,5 +148,25 @@ public class MemberService {
     public Member findByUserId(Long userId) {
         return memberRepository.findByMemberId(userId).orElseThrow(() -> new BusinessException(
             ErrorCode.USER_NOT_FOUND));
+    }
+
+    private void validateDeletable(Long memberId) {
+        // 유효한 PT예약이 있을 경우
+        if (reservationRepository.existsByMemberIdAndCancelDateIsNullAndCompletedDateIsNull(memberId)) {
+            throw new BusinessException(ErrorCode.CANNOT_DELETE_MEMBER_VALID_RESERVATION);
+        }
+        // 유효한 헬스장 이용권이 있을 경우
+        if (gymTicketRepository.existsByMember_MemberIdAndStatus(memberId, GymTicketStatus.ACTIVE)) {
+            throw new BusinessException(ErrorCode.CANNOT_DELETE_MEMBER_VALID_GYM_TICKET);
+        }
+    }
+
+    private void deleteRelatedEntitiesOfMember(Long memberId) {
+        // TODO: trainerReview, 캐시로그 삭제
+        // 설명 : 연관관계가 설정된 경우에는 Member_MemberId, 컬럼으로만 추가한 경우에는 MemberId
+        diaryRepository.deleteAllByMember_MemberId(memberId);
+        bigthreeRepository.deleteAllByMember_MemberId(memberId);
+        gymReviewRepository.deleteAllByMemberId(memberId);
+        studentRepository.deleteAllByMemberId(memberId);
     }
 }
