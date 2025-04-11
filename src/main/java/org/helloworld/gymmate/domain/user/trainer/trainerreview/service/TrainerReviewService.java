@@ -1,12 +1,10 @@
 package org.helloworld.gymmate.domain.user.trainer.trainerreview.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
-import org.helloworld.gymmate.domain.pt.reservation.entity.Reservation;
 import org.helloworld.gymmate.domain.pt.reservation.repository.ReservationRepository;
 import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
@@ -34,22 +32,8 @@ public class TrainerReviewService {
         Long memberId) {
         Trainer trainer = trainerService.findByUserId(reviewCreateRequest.trainerId());
 
-        Reservation reservation = reservationRepository.findByMemberIdAndTrainerId(memberId,
-                reviewCreateRequest.trainerId())
+        reservationRepository.find(memberId, reviewCreateRequest.trainerId())
             .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
-
-        // 현재 시간이 예약 시간 이후인지 확인
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime reservationDateTime = reservation.getDate().atTime(reservation.getTime(), 0);
-
-        if (now.isBefore(reservationDateTime)) {
-            throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
-        }
-
-        // 취소된 예약은 리뷰 작성 불가
-        if (reservation.getCancelDate() != null) {
-            throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
-        }
 
         TrainerReview review = TrainerReviewMapper.toEntity(reviewCreateRequest, trainer, memberId);
         trainerReviewRepository.save(review);
