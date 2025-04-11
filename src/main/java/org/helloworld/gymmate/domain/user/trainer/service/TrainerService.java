@@ -12,6 +12,9 @@ import org.helloworld.gymmate.common.util.GeometryUtil;
 import org.helloworld.gymmate.common.util.StringUtil;
 import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gyminfo.repository.GymRepository;
+import org.helloworld.gymmate.domain.pt.classtime.repository.ClasstimeRepository;
+import org.helloworld.gymmate.domain.pt.ptproduct.repository.PtProductRepository;
+import org.helloworld.gymmate.domain.pt.student.repository.StudentRepository;
 import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
@@ -55,6 +58,9 @@ public class TrainerService {
     private final BusinessValidateService businessValidateService;
     private final MemberService memberService;
     private final FileManager fileManager;
+    private final PtProductRepository ptProductRepository;
+    private final ClasstimeRepository classtimeRepository;
+    private final StudentRepository studentRepository;
 
     @Transactional
     public Long createTrainer(Oauth oauth) {
@@ -111,6 +117,17 @@ public class TrainerService {
     // 추후 추가되는 기능에 따라 수정 필요
     @Transactional
     public void deleteTrainer(Trainer trainer) {
+        // TODO : 트레이너 리뷰 만들어지면 트레이너 리뷰 삭제 + 트레이너 리뷰 이미지 삭제 추가
+        // 수상 경력 삭제
+        awardRepository.deleteAllByTrainerId(trainer.getTrainerId());
+        // 수강중인 회원 목록 삭제
+        studentRepository.deleteAllByTrainer_TrainerId(trainer.getTrainerId());
+        // PT 상품 삭제
+        ptProductRepository.deleteAllByTrainerId(trainer.getTrainerId());
+        // 수업 가능 시간 삭제
+        classtimeRepository.deleteAllByTrainerId(trainer.getTrainerId());
+
+        // 트레이너 삭제
         trainerRepository.delete(trainer);
     }
 
@@ -139,6 +156,7 @@ public class TrainerService {
             ErrorCode.USER_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
     public Page<TrainerListResponse> getTrainers(String sortOption, String searchOption, String searchTerm,
         int page, int pageSize, Double x, Double y) {
         TrainerSortOption sort = TrainerSortOption.from(sortOption);
@@ -176,6 +194,7 @@ public class TrainerService {
         return fetchAndMapTrainers(trainers, pageable);
     }
 
+    @Transactional(readOnly = true)
     public Page<TrainerListResponse> getNearbyTrainers(String searchOption, String searchTerm, int page,
         int pageSize, CustomOAuth2User customOAuth2User) {
         TrainerSearchOption search = TrainerSearchOption.from(searchOption);
