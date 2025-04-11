@@ -99,7 +99,9 @@ public class GymMapper {
     }
 
     public static GymSearchResponse toSearchResponse(Gym gym) {
-        return new GymSearchResponse(gym.getGymName(),
+        return new GymSearchResponse(
+            gym.getGymId(),
+            gym.getGymName(),
             gym.getAddress(),
             Optional.ofNullable(gym.getImages())
                 .filter(images -> !images.isEmpty())

@@ -76,7 +76,7 @@ public class TrainerService {
     public Long registerTrainerInfo(Long trainerId, TrainerRegisterRequest request) {
         Trainer trainer = findByUserId(trainerId);
         trainer.registerTrainerInfo(request);
-        Gym gym = gymRepository.findGymByGymName(request.gymName())
+        Gym gym = gymRepository.findById(request.gymId())
             .orElseThrow(() -> new BusinessException(ErrorCode.GYM_NOT_FOUND));
         trainer.assignGym(gym);
         return trainerRepository.save(trainer).getTrainerId();
