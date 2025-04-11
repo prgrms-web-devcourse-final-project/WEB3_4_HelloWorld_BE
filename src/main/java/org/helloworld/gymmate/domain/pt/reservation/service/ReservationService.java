@@ -148,6 +148,11 @@ public class ReservationService {
         Map<LocalDate, List<Integer>> reservationsByDate = new HashMap<>();
 
         for (Reservation reservation : reservations) { // 각 예약 객체별로
+            
+            if (reservation.getCancelDate() != null) { // 취소날짜가 있는 경우
+                continue; // 다음 루프로 이동
+            }
+
             LocalDate reservationDate = reservation.getDate(); //예약 날짜 조회
 
             if (reservationDate.getYear() == year && reservationDate.getMonthValue() == month) {

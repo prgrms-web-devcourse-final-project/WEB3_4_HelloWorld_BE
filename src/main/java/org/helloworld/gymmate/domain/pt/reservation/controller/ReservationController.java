@@ -127,15 +127,14 @@ public class ReservationController {
     }
 
     @Operation(summary = "트레이너 - 월별 예약 목록 조회")
-    @PreAuthorize("hasRole('ROLE_TRAINER')")
-    @GetMapping("/trainer/month")
+    @GetMapping("/trainer/{trainerId}/month")   // oauth대신 url로 trainerId받음
     public ResponseEntity<ReservationByMonthResponse> getTrainerReservationsByMonth(
-        @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+        @PathVariable Long trainerId,
         @RequestParam int year,
         @RequestParam int month
     ) {
         ReservationByMonthResponse reservations = reservationService.getTrainerReservationsByMonth(
-            customOAuth2User.getUserId(),
+            trainerId,
             year,
             month
         );
