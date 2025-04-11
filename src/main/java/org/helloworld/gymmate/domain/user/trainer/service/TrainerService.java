@@ -33,7 +33,6 @@ import org.helloworld.gymmate.domain.user.trainer.enums.TrainerSearchOption;
 import org.helloworld.gymmate.domain.user.trainer.enums.TrainerSortOption;
 import org.helloworld.gymmate.domain.user.trainer.mapper.TrainerMapper;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
-import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 import org.helloworld.gymmate.security.oauth.repository.OauthRepository;
 import org.springframework.data.domain.Page;
@@ -62,6 +61,7 @@ public class TrainerService {
     private final ClasstimeRepository classtimeRepository;
     private final StudentRepository studentRepository;
 
+    /** 빈 trainer 객체 생성 */
     @Transactional
     public Long createTrainer(Oauth oauth) {
         if (!entityManager.contains(oauth)) {
@@ -71,9 +71,10 @@ public class TrainerService {
         return trainerRepository.save(trainer).getTrainerId();
     }
 
-    // 추가 정보 등록 (직원)
+    /** trainer 트레이너 선생님 정보 최초 등록, isOwner = false */
     @Transactional
-    public Long registerInfoByTrainer(Trainer trainer, TrainerRegisterRequest request) {
+    public Long registerTrainerInfo(Long trainerId, TrainerRegisterRequest request) {
+        Trainer trainer = findByUserId(trainerId);
         trainer.registerTrainerInfo(request);
         Gym gym = gymRepository.findGymByGymName(request.gymName())
             .orElseThrow(() -> new BusinessException(ErrorCode.GYM_NOT_FOUND));
@@ -81,17 +82,21 @@ public class TrainerService {
         return trainerRepository.save(trainer).getTrainerId();
     }
 
-    // 추가 정보 등록 (사장)
+    /** trainer 제휴 헬스장 운영자 정보 최초 등록, isOwner = true */
     @Transactional
-    public Long registerInfoByOwner(Trainer trainer, OwnerRegisterRequest request) {
+    public Long registerOwnerInfo(Long trainerId, OwnerRegisterRequest request) {
+        Trainer trainer = findByUserId(trainerId);
+        // 사업자 등록증 검사
         businessValidateService.validateBusiness(request);
         trainer.registerOwnerInfo(request);
-        return trainerRepository.save(trainer).getTrainerId();
+        trainerRepository.save(trainer);
+        return trainerId;
     }
 
-    // 직원 및 사장 개인정보 수정
+    /** trainer 정보 수정 */
     @Transactional
-    public Long modifyTrainerInfo(Trainer trainer, TrainerModifyRequest modifyRequest, MultipartFile profile) {
+    public Long modifyTrainerInfo(Long trainerId, TrainerModifyRequest modifyRequest, MultipartFile profile) {
+        Trainer trainer = findByUserId(trainerId);
         String imageUrl = trainer.getProfileUrl();
 
         // 프로필 이미지 변경 된 경우
@@ -103,20 +108,23 @@ public class TrainerService {
             imageUrl = fileManager.uploadFile(profile, "trainer");
         }
         trainer.modifyTrainerInfo(modifyRequest, imageUrl);
-        return trainerRepository.save(trainer).getTrainerId();
+        trainerRepository.save(trainer);
+        return trainerId;
     }
 
-    // 직원 및 사장 한줄소개, 경력, 전문 분야 입력
+    /** trainer 한 줄 소개, 경력, 전문 분야 수정 */
     @Transactional
-    public Long updateTrainerProfile(Trainer trainer, TrainerProfileRequest profileRequest) {
+    public Long updateTrainerProfile(Long trainerId, TrainerProfileRequest profileRequest) {
+        Trainer trainer = findByUserId(trainerId);
         trainer.updateTrainerProfile(profileRequest);
-        return trainerRepository.save(trainer).getTrainerId();
+        trainerRepository.save(trainer);
+        return trainerId;
     }
 
-    // 직원 및 사장 삭제
-    // 추후 추가되는 기능에 따라 수정 필요
+    /** trainer 삭제 */
     @Transactional
-    public void deleteTrainer(Trainer trainer) {
+    public void deleteTrainer(Long trainerId) {
+        Trainer trainer = findByUserId(trainerId);
         // TODO : 트레이너 리뷰 만들어지면 트레이너 리뷰 삭제 + 트레이너 리뷰 이미지 삭제 추가
         // 수상 경력 삭제
         awardRepository.deleteAllByTrainerId(trainer.getTrainerId());
@@ -127,27 +135,32 @@ public class TrainerService {
         // 수업 가능 시간 삭제
         classtimeRepository.deleteAllByTrainerId(trainer.getTrainerId());
 
+        // 트레이너 프로필 이미지 삭제
+        fileManager.deleteFile(trainer.getProfileUrl());
         // 트레이너 삭제
         trainerRepository.delete(trainer);
     }
 
-    // 마이페이지 정보
-    @Transactional(readOnly = true)
-    public TrainerResponse getInfo(Trainer trainer) {
-        return TrainerMapper.toResponse(trainer);
-    }
-
-    // 사장여부
-    @Transactional(readOnly = true)
-    public TrainerCheckResponse check(Trainer trainer) {
-        return TrainerMapper.toCheckResponse(trainer);
-    }
-
+    /** 로그인 인증 객체로 trainerId 조회 */
     @Transactional(readOnly = true)
     public Optional<Long> getTrainerIdByOauth(String providerId) {
         return oauthRepository.findByProviderIdAndUserType(providerId, UserType.TRAINER)
             .flatMap(oauth -> trainerRepository.findByOauth(oauth)
                 .map(Trainer::getTrainerId));
+    }
+
+    /** trainer 개인정보 조회 */
+    @Transactional(readOnly = true)
+    public TrainerResponse getTrainerInfo(Long trainerId) {
+        Trainer trainer = findByUserId(trainerId);
+        return TrainerMapper.toResponse(trainer);
+    }
+
+    // 사장여부
+    @Transactional(readOnly = true)
+    public TrainerCheckResponse checkUserTypeAndOwner(Long trainerId) {
+        Trainer trainer = findByUserId(trainerId);
+        return TrainerMapper.toCheckResponse(trainer);
     }
 
     @Transactional(readOnly = true)
@@ -170,8 +183,7 @@ public class TrainerService {
         };
     }
 
-    @Transactional(readOnly = true)
-    public Page<TrainerListResponse> fetchLatestTrainers(TrainerSearchOption search, String searchTerm,
+    private Page<TrainerListResponse> fetchLatestTrainers(TrainerSearchOption search, String searchTerm,
         Pageable pageable) {
         Page<Trainer> trainers = switch (search) {
             case NONE -> trainerRepository.findAllByOrderByTrainerIdDesc(pageable);
@@ -182,8 +194,7 @@ public class TrainerService {
         return fetchAndMapTrainers(trainers, pageable);
     }
 
-    @Transactional(readOnly = true)
-    public Page<TrainerListResponse> fetchScoreSortedTrainers(TrainerSearchOption search, String searchTerm,
+    private Page<TrainerListResponse> fetchScoreSortedTrainers(TrainerSearchOption search, String searchTerm,
         Pageable pageable) {
         Page<Trainer> trainers = switch (search) {
             case NONE -> trainerRepository.findAllByOrderByScoreDesc(pageable);
@@ -196,9 +207,9 @@ public class TrainerService {
 
     @Transactional(readOnly = true)
     public Page<TrainerListResponse> getNearbyTrainers(String searchOption, String searchTerm, int page,
-        int pageSize, CustomOAuth2User customOAuth2User) {
+        int pageSize, Long memberId) {
         TrainerSearchOption search = TrainerSearchOption.from(searchOption);
-        Member member = memberService.findByUserId(customOAuth2User.getUserId());
+        Member member = memberService.findByUserId(memberId);
         Double x = member.getXField();
         Double y = member.getYField();
         Pageable pageable = PageRequest.of(page, pageSize);
@@ -206,8 +217,7 @@ public class TrainerService {
         return fetchNearbyTrainersUsingXY(search, searchTerm, pageable, x, y);
     }
 
-    @Transactional(readOnly = true)
-    public Page<TrainerListResponse> fetchNearbyTrainersUsingXY(TrainerSearchOption trainerSearchOption,
+    private Page<TrainerListResponse> fetchNearbyTrainersUsingXY(TrainerSearchOption trainerSearchOption,
         String searchTerm, Pageable pageable, Double x, Double y) {
         String searchValue = (trainerSearchOption == TrainerSearchOption.NONE) ? "" : searchTerm;
         String boundingBoxWKT = GeometryUtil.toPolygonWKT(x, y);
@@ -217,8 +227,7 @@ public class TrainerService {
         return fetchAndMapTrainers(trainers, pageable);
     }
 
-    @Transactional(readOnly = true)
-    public Page<TrainerListResponse> fetchAndMapTrainers(Page<Trainer> trainers, Pageable pageable) {
+    private Page<TrainerListResponse> fetchAndMapTrainers(Page<Trainer> trainers, Pageable pageable) {
         List<Long> trainerIds = trainers.stream()
             .map(Trainer::getTrainerId)
             .toList();
