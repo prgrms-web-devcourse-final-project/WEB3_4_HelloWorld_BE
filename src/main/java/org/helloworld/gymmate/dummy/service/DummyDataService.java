@@ -45,25 +45,26 @@ public class DummyDataService {
     private final PartnerGymRepository partnerGymRepository;
     private final GymProductRepository gymProductRepository;
     private final GymImageRepository gymImageRepository;
-
+    private final int GYM_COUNT = 500;
     // 선택된 PartnerGym 후보 Gym ID 목록 (크기 1000)
     private List<Long> selectedPartnerGymIds;
 
     @Transactional
     public void generateDummyData() {
         int gymCount = (int)gymRepository.count();
-        final int normalTrainersCount = 2000; // 일반 트레이너 수 고정
-        final int totalTrainers = 3000;        // 총 트레이너 수 (일반 2000 + 사장 1000)
+        final int normalTrainersCount = GYM_COUNT * 2; // 일반 트레이너 수 고정
+        final int totalTrainers = GYM_COUNT * 3;        // 총 트레이너 수 (일반 2000 + 사장 1000)
 
-        // 모든 gym ID를 1부터 gymCount까지 생성
+        // 전체 gym id 가져오기
+        List<Gym> allGyms = gymRepository.findAll();
         List<Long> allGymIds = new ArrayList<>();
-        for (long i = 1; i <= gymCount; i++) {
-            allGymIds.add(i);
+        for (Gym gym : allGyms) {
+            allGymIds.add(gym.getGymId());
         }
         Random random = new Random();
         // 무작위로 섞은 후, 제휴 헬스장 후보로 1000개 Gym ID 선택
         Collections.shuffle(allGymIds, random);
-        selectedPartnerGymIds = new ArrayList<>(allGymIds.subList(0, Math.min(1000, allGymIds.size())));
+        selectedPartnerGymIds = new ArrayList<>(allGymIds.subList(0, Math.min(GYM_COUNT, allGymIds.size())));
 
         // 일반 트레이너의 Gym 할당을 위해, 각 partner gym ID가 두 번씩 나타나는 리스트 생성 (2000개)
         List<Long> partnerGymCandidateIds = new ArrayList<>();
@@ -187,19 +188,19 @@ public class DummyDataService {
     public void generatePartnerGyms() {
         // 제휴 헬스장 소유자(사장)만 사용: 1000명 필요
         List<Trainer> ownerTrainers = trainerRepository.findByIsOwnerTrue();
-        if (ownerTrainers.size() < 1000) {
+        if (ownerTrainers.size() < GYM_COUNT) {
             throw new IllegalStateException("Owner trainer 수가 부족합니다. 필요한 1000개, 실제: " + ownerTrainers.size());
         }
         Collections.shuffle(ownerTrainers, new Random());
-        List<Trainer> selectedOwners = ownerTrainers.subList(0, 1000);
+        List<Trainer> selectedOwners = ownerTrainers.subList(0, GYM_COUNT);
 
-        if (selectedPartnerGymIds == null || selectedPartnerGymIds.size() < 1000) {
+        if (selectedPartnerGymIds == null || selectedPartnerGymIds.size() < GYM_COUNT) {
             throw new BusinessException(ErrorCode.GYM_NOT_FOUND); // 적어도 1000개의 PartnerGym 후보
         }
 
         Random random = new Random();
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < GYM_COUNT; i++) {
             Gym gym = gymRepository.findById(selectedPartnerGymIds.get(i))
                 .orElseThrow(() -> new BusinessException(ErrorCode.GYM_NOT_FOUND));
 
