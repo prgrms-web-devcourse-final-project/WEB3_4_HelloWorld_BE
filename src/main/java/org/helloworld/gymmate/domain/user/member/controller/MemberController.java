@@ -30,63 +30,67 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MemberController {
 
-	private final MemberService memberService;
-	private final CustomOAuth2UserService customOAuth2UserService;
+    private final MemberService memberService;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
-	//회원 추가정보 등록
-	@PostMapping
-	public ResponseEntity<Long> registerAdditionalInfo(
-		@AuthenticationPrincipal CustomOAuth2User oAuth2User,
-		@Valid @RequestBody MemberRequest request
-	) {
-		Long memberId = memberService.registerMember(oAuth2User.getUserId(), request);
-		return ResponseEntity.ok(memberId);
-	}
+    //회원 추가정보 등록
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @PostMapping
+    public ResponseEntity<Long> registerAdditionalInfo(
+        @AuthenticationPrincipal CustomOAuth2User oAuth2User,
+        @Valid @RequestBody MemberRequest request
+    ) {
+        Long memberId = memberService.registerMember(oAuth2User.getUserId(), request);
+        return ResponseEntity.ok(memberId);
+    }
 
-	//멤버 정보 수정
-	// 직원 및 사장 개인정보 수정
-	@PreAuthorize("hasRole('ROLE_MEMBER')")
-	@PutMapping
-	public ResponseEntity<Long> modify(@AuthenticationPrincipal CustomOAuth2User oAuth2User,
-		@RequestPart("memberData") @Valid MemberRequest request,
-		@RequestPart(value = "image", required = false) @ValidImageFile MultipartFile profile
-	) {
-		return ResponseEntity.ok()
-			.body(memberService.modifyMember(
-				//매개변수 : member id, memberModifyRequest객체, profile
-				oAuth2User.getUserId(), request, profile)
+    //멤버 정보 수정
+    // 직원 및 사장 개인정보 수정
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @PutMapping
+    public ResponseEntity<Long> modify(@AuthenticationPrincipal CustomOAuth2User oAuth2User,
+        @RequestPart("memberData") @Valid MemberRequest request,
+        @RequestPart(value = "image", required = false) @ValidImageFile MultipartFile profile
+    ) {
+        return ResponseEntity.ok()
+            .body(memberService.modifyMember(
+                //매개변수 : member id, memberModifyRequest객체, profile
+                oAuth2User.getUserId(), request, profile)
 
-			);
-	}
+            );
+    }
 
-	//회원 정보 조회
-	@GetMapping
-	public ResponseEntity<MemberResponse> getMyInfo(
-		@AuthenticationPrincipal CustomOAuth2User oAuth2User
-	) {
-		MemberResponse memberResponse = memberService.getMember(oAuth2User.getUserId());
+    //회원 정보 조회
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @GetMapping
+    public ResponseEntity<MemberResponse> getMyInfo(
+        @AuthenticationPrincipal CustomOAuth2User oAuth2User
+    ) {
+        MemberResponse memberResponse = memberService.getMember(oAuth2User.getUserId());
 
-		return ResponseEntity.ok(memberResponse);
-	}
+        return ResponseEntity.ok(memberResponse);
+    }
 
-	//회원 삭제
-	@DeleteMapping
-	public ResponseEntity<Long> deleteMember(
-		@AuthenticationPrincipal CustomOAuth2User oAuth2User
-	) {
-		memberService.deleteMember(oAuth2User.getUserId());
+    //회원 삭제
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @DeleteMapping
+    public ResponseEntity<Long> deleteMember(
+        @AuthenticationPrincipal CustomOAuth2User oAuth2User
+    ) {
+        memberService.deleteMember(oAuth2User.getUserId());
 
-		return ResponseEntity.ok(oAuth2User.getUserId());
-	}
+        return ResponseEntity.ok(oAuth2User.getUserId());
+    }
 
-	//마이페이지 정보
-	@GetMapping("/check")
-	public ResponseEntity<MemberCheckResponse> check(@AuthenticationPrincipal CustomOAuth2User oAuth2User) {
-		return ResponseEntity.ok()
-			.body(memberService.checkUserType(
-					memberService.findByUserId(oAuth2User.getUserId())
-				)
-			);
-	}
+    //마이페이지 정보
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @GetMapping("/check")
+    public ResponseEntity<MemberCheckResponse> check(@AuthenticationPrincipal CustomOAuth2User oAuth2User) {
+        return ResponseEntity.ok()
+            .body(memberService.checkUserType(
+                    memberService.findByUserId(oAuth2User.getUserId())
+                )
+            );
+    }
 
 }
