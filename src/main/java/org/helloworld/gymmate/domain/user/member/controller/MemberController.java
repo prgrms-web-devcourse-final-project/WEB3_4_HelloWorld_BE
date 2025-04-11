@@ -6,7 +6,6 @@ import org.helloworld.gymmate.domain.user.member.dto.MemberRequest;
 import org.helloworld.gymmate.domain.user.member.dto.MemberResponse;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
-import org.helloworld.gymmate.security.oauth.service.CustomOAuth2UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,7 +23,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Tag(name = "일반 회원 정보 API", description = "일반 회원 정보에 대한 등록, 수정, 삭제, 일반 목록 및 검색 목록 조회")
 @RestController
