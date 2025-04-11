@@ -105,26 +105,32 @@ public class Member {
 
     // ====== Business Logic ======
 
+    /** 개인정보 등록 */
     public void registerMemberInfo(MemberRequest request) {
-        this.phoneNumber = request.phoneNumber();
-        this.memberName = request.memberName();
-        this.email = request.email();
-        this.birthday = request.birthday();
-        this.genderType = GenderType.fromString(request.gender());
-        this.height = request.height();
-        this.weight = request.weight();
-        this.address = request.address();
-        this.xField = request.xField();
-        this.yField = request.yField();
-        this.recentBench = request.recentBench();
-        this.recentDeadlift = request.recentDeadlift();
-        this.recentSquat = request.recentSquat();
-        this.level = calculateLevel(request.recentBench(), request.recentDeadlift(), request.recentSquat());
-        this.additionalInfoCompleted = true;
+        updateMemberInfo(request);
 
     }
 
+    /** 개인정보 수정 */
     public void modifyMemberInfo(MemberRequest request, String profileUrl) {
+        updateMemberInfo(request);
+        this.profileUrl = profileUrl;
+    }
+
+    /** 보유 캐시 수정 */
+    public void updateCash(Long updateCash) {
+        this.cash = updateCash;
+    }
+
+    /** 3대 무게 수정 */
+    public void updateRecentBigthree(double bench, double deadlift, double squat) {
+        this.recentBench = bench;
+        this.recentDeadlift = deadlift;
+        this.recentSquat = squat;
+        this.level = calculateLevel(bench, deadlift, squat);
+    }
+
+    private void updateMemberInfo(MemberRequest request) {
         this.phoneNumber = request.phoneNumber();
         this.memberName = request.memberName();
         this.email = request.email();
@@ -139,7 +145,6 @@ public class Member {
         this.recentDeadlift = request.recentDeadlift();
         this.recentSquat = request.recentSquat();
         this.level = calculateLevel(request.recentBench(), request.recentDeadlift(), request.recentSquat());
-        this.profileUrl = profileUrl;
         this.additionalInfoCompleted = true;
     }
 
