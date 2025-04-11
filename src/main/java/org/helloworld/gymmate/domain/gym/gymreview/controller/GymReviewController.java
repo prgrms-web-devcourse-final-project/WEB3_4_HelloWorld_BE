@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Tag(name = "헬스장 리뷰 API", description = "헬스장 리뷰 등록 수정 삭제")
 @RestController
-@RequestMapping("/gymReview")
+@RequestMapping("/gymreview")
 @RequiredArgsConstructor
 @Slf4j
 public class GymReviewController {
