@@ -49,6 +49,7 @@ public enum ErrorCode {
 
     // PartnerGym
     PARTNER_GYM_NOT_FOUND(HttpStatus.NOT_FOUND, "PARTNER-GYM-001", "파트너 헬스장이 등록되어 있지 않습니다."),
+    OWNER_ALREADY_HAS_GYM(HttpStatus.CONFLICT, "PARTNER-GYM-002", "운영자는 하나의 헬스장만 등록할 수 있습니다."),
 
     // GymProduct
     GYMPRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "GYM-PRODUCT-001", "존재하지 않는 헬스장 이용권입니다."),
@@ -70,7 +71,7 @@ public enum ErrorCode {
 
     // 인증 관련
     AUTH_REQUIRED(HttpStatus.UNAUTHORIZED, "AUTH-001", "인증이 필요합니다. 로그인 후 다시 시도해주세요."),
-    USER_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "AUTH-002", "권한이 부족합니다."),
+    USER_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "AUTH-002", "해당 API에 접근할 수 있는 권한이 없습니다."),
 
     // 이미지 관련
     IMAGE_TOO_LARGE(HttpStatus.PAYLOAD_TOO_LARGE, "IMAGE-002", "업로드한 파일 크기가 너무 큽니다. 최대 5MB까지 가능합니다."),
@@ -78,7 +79,7 @@ public enum ErrorCode {
 
     // S3 관련
     S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3-001", "이미지 업로드 중 오류가 발생했습니다. 다시 시도해주세요."),
-    
+
     // API 관련
     API_UNEXPECTED_RESPONSE(HttpStatus.INTERNAL_SERVER_ERROR, "API-001", "API 응답이 올바르지 않습니다."),
     PAYMENT_CONFIRM_FAILED(HttpStatus.BAD_REQUEST, "API-002", "결제 승인에 실패하였습니다.");

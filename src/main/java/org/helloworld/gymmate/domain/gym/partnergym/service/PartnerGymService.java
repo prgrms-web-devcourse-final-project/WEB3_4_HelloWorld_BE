@@ -24,6 +24,7 @@ import org.helloworld.gymmate.domain.gym.partnergym.mapper.PartnerGymMapper;
 import org.helloworld.gymmate.domain.gym.partnergym.repository.PartnerGymRepository;
 import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,21 +55,34 @@ public class PartnerGymService {
         // 운영자 맞는지 확인
         validatePartnerGymOwner(ownerId);
 
-        // 중복 등록 방지
-        if (partnerGymRepository.existsByOwnerIdAndGym_GymId(ownerId, request.gymId())) {
-            throw new BusinessException(ErrorCode.GYM_ALREADY_EXISTS);
-        }
-
         // gym 있는지 확인
         Gym existingGym = gymService.getExistingGym(request.gymId());
 
-        // partnerGym 저장
-        PartnerGym partnerGym = createPartnerGym(ownerId, existingGym);
+        try {
+            // 중복 등록 방지 : 같은 owner가 같은 gym을 등록하려는 경우
+            if (partnerGymRepository.existsByOwnerIdAndGym_GymId(ownerId, request.gymId())) {
+                throw new BusinessException(ErrorCode.GYM_ALREADY_EXISTS);
+            }
 
-        // 전체 정보 업데이트
-        updatePartnerGymInfos(request.gymInfoRequest(), null, images, existingGym, partnerGym);
+            // partnerGym 저장
+            PartnerGym partnerGym = createPartnerGym(ownerId, existingGym);
 
-        return partnerGym.getPartnerGymId();
+            // 전체 정보 업데이트
+            updatePartnerGymInfos(request.gymInfoRequest(), null, images, existingGym, partnerGym);
+
+            return partnerGym.getPartnerGymId();
+        } catch (DataIntegrityViolationException e) {
+            // 중복된 gym_id로 인해 유니크 제약 위반이 발생했을 경우
+            if (e.getMessage().contains("Duplicate entry") && e.getMessage().contains("partner_gym.gym_id")) {
+                throw new BusinessException(ErrorCode.GYM_ALREADY_EXISTS);
+            }
+            // owner_id가 있는 상태에서 다른 GYM을 등록하려는 경우 중복 에러 발생
+            if (e.getMessage().contains("partner_gym.owner_id")) {
+                throw new BusinessException(ErrorCode.OWNER_ALREADY_HAS_GYM);
+            }
+            throw e;
+        }
+
     }
 
     @Transactional
