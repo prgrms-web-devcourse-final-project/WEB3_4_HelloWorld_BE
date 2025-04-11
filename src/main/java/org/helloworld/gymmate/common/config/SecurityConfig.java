@@ -83,7 +83,7 @@ public class SecurityConfig {
                     "/", "/actuator/**", "/v3/**", "/swagger-ui/**",
                     "/api/logistics", "/error"
                 )
-                .requestMatchers(HttpMethod.GET, "/ptProduct", "/ptProduct/{id:\\d+}")
+                .requestMatchers(HttpMethod.GET, "/ptProduct", "/ptProduct/{id:\\d+}", "/ptProduct/trainer/{id:\\d+}")
                 .requestMatchers(HttpMethod.GET, "/trainer/list")
                 .requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}/facility")
                 .requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}")
