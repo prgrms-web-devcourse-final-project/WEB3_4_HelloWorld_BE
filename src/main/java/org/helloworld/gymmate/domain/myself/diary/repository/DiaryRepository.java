@@ -9,5 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DiaryRepository extends JpaRepository<Diary, Long> {
-	Page<Diary> findByMember(Member member, Pageable pageable);
+    Page<Diary> findByMember(Member member, Pageable pageable);
+
+    void deleteAllByMember_MemberId(Long memberId);
 }

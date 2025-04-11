@@ -7,6 +7,7 @@ import org.helloworld.gymmate.domain.pt.reservation.entity.Reservation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -28,4 +29,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
         LIMIT 1
         """, nativeQuery = true)
     Optional<Reservation> find(@Param("memberId") Long memberId, @Param("trainerId") Long trainerId);
+
+    boolean existsByMemberIdAndCancelDateIsNullAndCompletedDateIsNull(Long memberId);
+
+    @Modifying
+    @Query("UPDATE Reservation r SET r.memberId = null WHERE r.memberId = :memberId")
+    void setMemberIdNullByMemberId(@Param("memberId") Long memberId);
 }

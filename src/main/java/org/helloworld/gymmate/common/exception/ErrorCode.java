@@ -23,6 +23,10 @@ public enum ErrorCode {
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "PARAMETER-001", "요청 파라미터가 유효하지 않습니다."),
     INVALID_BUSINESS_NUMBER(HttpStatus.BAD_REQUEST, "BUSINESS-001", "사업자 등록번호가 유효하지 않습니다."),
 
+    // 계정 삭제
+    CANNOT_DELETE_MEMBER_VALID_RESERVATION(HttpStatus.BAD_REQUEST, "MEMBER_DELETE-001", "유효한 PT 예약이 있어 계정삭제가 불가능합니다."),
+    CANNOT_DELETE_MEMBER_VALID_GYM_TICKET(HttpStatus.BAD_REQUEST, "MEMBER_DELETE-002", "유효한 헬스장 이용권이 있어 계정삭제가 불가능합니다."),
+
     // PT
     CLASSTIME_DUPLICATED(HttpStatus.BAD_REQUEST, "PT-CLASSTIME-001", "이미 등록된 수업 시간입니다."),
     CLASSTIME_NOT_FOUND(HttpStatus.NOT_FOUND, "PT-CLASSTIME-002", "존재하지 않는 PT 수강 가능 시간입니다."),
@@ -81,7 +85,7 @@ public enum ErrorCode {
 
     // S3 관련
     S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3-001", "이미지 업로드 중 오류가 발생했습니다. 다시 시도해주세요."),
-    
+
     // API 관련
     API_UNEXPECTED_RESPONSE(HttpStatus.INTERNAL_SERVER_ERROR, "API-001", "API 응답이 올바르지 않습니다."),
     PAYMENT_CONFIRM_FAILED(HttpStatus.BAD_REQUEST, "API-002", "결제 승인에 실패하였습니다.");

@@ -9,4 +9,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     Page<Student> findByTrainer_TrainerId(Long trainerId, Pageable pageable);
 
     void deleteAllByTrainer_TrainerId(Long trainerId);
+
+    void deleteAllByMemberId(Long memberId);
 }
