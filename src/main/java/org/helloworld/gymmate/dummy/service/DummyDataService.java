@@ -55,11 +55,11 @@ public class DummyDataService {
         final int normalTrainersCount = GYM_COUNT * 2; // 일반 트레이너 수 고정
         final int totalTrainers = GYM_COUNT * 3;        // 총 트레이너 수 (일반 2000 + 사장 1000)
 
-        // 모든 gym ID를 1부터 gymCount까지 생성
-        // TODO: 변경 필요
+        // 전체 gym id 가져오기
+        List<Gym> allGyms = gymRepository.findAll();
         List<Long> allGymIds = new ArrayList<>();
-        for (long i = 1; i <= gymCount; i++) {
-            allGymIds.add(i);
+        for (Gym gym : allGyms) {
+            allGymIds.add(gym.getGymId());
         }
         Random random = new Random();
         // 무작위로 섞은 후, 제휴 헬스장 후보로 1000개 Gym ID 선택
