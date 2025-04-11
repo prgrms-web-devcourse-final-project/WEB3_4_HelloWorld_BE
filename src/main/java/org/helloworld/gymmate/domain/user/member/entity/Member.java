@@ -126,8 +126,6 @@ public class Member {
         this.height = request.height();
         this.weight = request.weight();
         this.address = request.address();
-        this.xField = request.xField();
-        this.yField = request.yField();
         this.recentBench = request.recentBench();
         this.recentDeadlift = request.recentDeadlift();
         this.recentSquat = request.recentSquat();
