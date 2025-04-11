@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.infra.domain.trainer;
+package org.helloworld.gymmate.dummy.trainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +14,13 @@ import org.helloworld.gymmate.domain.user.trainer.award.repository.AwardReposito
 import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@Service
 @RequiredArgsConstructor
 @Slf4j
 public class TrainerDummyCreate {
@@ -29,7 +31,15 @@ public class TrainerDummyCreate {
     private final TrainerRepository trainerRepository;
 
     @Transactional
-    public void processAwardsForTrainers(List<Trainer> trainers) {
+    public void createTrainerDummy() {
+        List<Trainer> trainers = trainerRepository.findAll();
+        processAwardsForTrainers(trainers);
+        processPtProductsForTrainers(trainers);
+        List<PtProduct> ptProducts = new ArrayList<>();
+        processPtProductImagesForPtProduct(ptProducts);
+    }
+
+    private void processAwardsForTrainers(List<Trainer> trainers) {
         if (trainers.isEmpty()) {
             log.debug("저장할 트레이너 데이터가 없습니다.");
             return;
@@ -75,8 +85,7 @@ public class TrainerDummyCreate {
 
     }
 
-    @Transactional
-    public void processPtProductsForTrainers(List<Trainer> trainers) {
+    private void processPtProductsForTrainers(List<Trainer> trainers) {
         if (trainers.isEmpty()) {
             log.debug("저장할 트레이너 데이터가 없습니다.");
             return;
@@ -98,7 +107,7 @@ public class TrainerDummyCreate {
 
         }
 
-        String sql = "INSERT INTO pt_product (name, info, fee, trainer_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO pt_product (pt_product_name, info, pt_product_fee, trainer_id) VALUES (?, ?, ?, ?)";
         //sql문 실행
         try {
             jdbcTemplate.batchUpdate(sql, ptProductsToInsert, BATCH_SIZE, (ps, ptProduct) -> {
@@ -118,7 +127,7 @@ public class TrainerDummyCreate {
 
     }
 
-    public void processPtProductImagesForPtProduct(List<PtProduct> ptProducts) {
+    private void processPtProductImagesForPtProduct(List<PtProduct> ptProducts) {
         if (ptProducts.isEmpty()) {
             return;
         }
