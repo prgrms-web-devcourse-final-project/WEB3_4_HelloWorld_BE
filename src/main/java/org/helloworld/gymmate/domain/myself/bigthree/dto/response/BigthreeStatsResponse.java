@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.domain.myself.bigthree.dto;
+package org.helloworld.gymmate.domain.myself.bigthree.dto.response;
 
 public record BigthreeStatsResponse(
     int mostLevel,            // 가장 많은 일반 회원이 속한 레벨
