@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -18,6 +19,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findByTrainerId(Long trainerId);
 
-    @Query(value = "SELECT r FROM Reservation r WHERE r.trainerId = :trainerId AND r.memberId = :memberId AND r.cancelDate IS NULL AND r.date >= CURRENT_DATE")
-    Optional<Reservation> find(Long memberId, Long trainerId);
+    @Query(value = """
+        SELECT r.* FROM reservation r
+        WHERE r.trainer_id = :trainerId
+          AND r.member_id = :memberId
+          AND r.cancel_date IS NULL
+          AND DATE_ADD(r.date, INTERVAL r.time HOUR) <= CURRENT_TIMESTAMP
+        LIMIT 1
+        """, nativeQuery = true)
+    Optional<Reservation> find(@Param("memberId") Long memberId, @Param("trainerId") Long trainerId);
 }

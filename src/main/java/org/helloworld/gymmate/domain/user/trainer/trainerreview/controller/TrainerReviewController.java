@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "트레이너 리뷰 API", description = "트레이너 리뷰 등록 수정 삭제")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/trainerReview")
+@RequestMapping("/trainerreview")
 public class TrainerReviewController {
 
     private final TrainerReviewService trainerReviewService;
