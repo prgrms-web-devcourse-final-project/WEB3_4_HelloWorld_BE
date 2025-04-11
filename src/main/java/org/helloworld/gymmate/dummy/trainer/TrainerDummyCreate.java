@@ -3,10 +3,14 @@ package org.helloworld.gymmate.dummy.trainer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.helloworld.gymmate.domain.pt.classtime.dto.ClasstimeRequest;
+import org.helloworld.gymmate.domain.pt.classtime.entity.Classtime;
+import org.helloworld.gymmate.domain.pt.classtime.mapper.ClasstimeMapper;
 import org.helloworld.gymmate.domain.pt.ptproduct.dto.PtProductCreateRequest;
 import org.helloworld.gymmate.domain.pt.ptproduct.entity.PtProduct;
 import org.helloworld.gymmate.domain.pt.ptproduct.entity.PtProductImage;
 import org.helloworld.gymmate.domain.pt.ptproduct.mapper.PtProductMapper;
+import org.helloworld.gymmate.domain.pt.ptproduct.repository.PtProductRepository;
 import org.helloworld.gymmate.domain.user.trainer.award.entity.Award;
 import org.helloworld.gymmate.domain.user.trainer.award.enums.AwardData;
 import org.helloworld.gymmate.domain.user.trainer.award.mapper.AwardMapper;
@@ -29,13 +33,15 @@ public class TrainerDummyCreate {
     private final JdbcTemplate jdbcTemplate;
     private final AwardRepository awardRepository;
     private final TrainerRepository trainerRepository;
+    private final PtProductRepository ptProductRepository;
 
     @Transactional
     public void createTrainerDummy() {
         List<Trainer> trainers = trainerRepository.findAll();
         processAwardsForTrainers(trainers);
+        processClassTimeForTrainers(trainers);
         processPtProductsForTrainers(trainers);
-        List<PtProduct> ptProducts = new ArrayList<>();
+        List<PtProduct> ptProducts = ptProductRepository.findAll();
         processPtProductImagesForPtProduct(ptProducts);
     }
 
@@ -85,7 +91,44 @@ public class TrainerDummyCreate {
 
     }
 
-    private void processPtProductsForTrainers(List<Trainer> trainers) {
+    @Transactional
+    public void processClassTimeForTrainers(List<Trainer> trainers) {
+        if (trainers.isEmpty()) {
+            return;
+        }
+        List<Classtime> classTimesToInsert = new ArrayList<>();
+
+        // 모든 트레이너에 대해 각각 월~금의 9~20시의 classTime 객체 생성
+        // -> ClassTimeToInsert리스트에 저장
+        for (Trainer trainer : trainers) {
+            Long trainerId = trainer.getTrainerId();
+            for (int dayOfWeek = 0; dayOfWeek <= 4; dayOfWeek++) { // 월(0)~금(4)
+                for (int time = 9; time <= 20; time++) {            // 9~20시
+                    ClasstimeRequest request = new ClasstimeRequest(dayOfWeek, time);
+                    Classtime classtime = ClasstimeMapper.toEntity(request, trainerId);
+                    classTimesToInsert.add(classtime);
+                }
+            }
+        }
+        // class_time INSERT 쿼리
+        String sql = "INSERT INTO class_time (day_of_week, time, trainer_id) VALUES (?, ?, ?)";
+        try {
+            jdbcTemplate.batchUpdate(sql, classTimesToInsert, BATCH_SIZE, (ps, classtime) -> {
+                ps.setInt(1, classtime.getDayOfWeek());
+                ps.setInt(2, classtime.getTime());
+                ps.setLong(3, classtime.getTrainerId());
+            });
+
+            log.debug("총 {}개의 class_time 데이터 저장 완료!", classTimesToInsert.size());
+
+        } catch (Exception e) {
+            log.error("class_time 데이터 저장 중 오류 발생: ", e);
+        }
+
+    }
+
+    @Transactional
+    public void processPtProductsForTrainers(List<Trainer> trainers) {
         if (trainers.isEmpty()) {
             log.debug("저장할 트레이너 데이터가 없습니다.");
             return;
@@ -96,14 +139,19 @@ public class TrainerDummyCreate {
         //Pt 상품을 리스트에 저장
         for (Trainer trainer : trainers) { //각 트레이너마다
             //1. pt상품 생성
-            PtProductDummy ptProductDummy = PtProductDummy.getRandomPtProductDummy(); //무작위 ptProduct 정보 가져오기(name,info,fee)
-            PtProductCreateRequest request = new PtProductCreateRequest
-                (ptProductDummy.getPtProductName(), ptProductDummy.getPtProductInfo(),
-                    ptProductDummy.getPtProductFee());
-            PtProduct ptProduct = PtProductMapper.toEntity(request, trainer.getTrainerId()); //ptProduct객체
+            List<PtProductDummy> ptProductDummys = PtProductDummy.getRandomPtProductDummy(
+                2); //무작위 ptProduct 정보 가져오기(name,info,fee)
+            for (PtProductDummy ptProductDummy : ptProductDummys) {
+                PtProductCreateRequest request = new PtProductCreateRequest
+                    (ptProductDummy.getPtProductName(), ptProductDummy.getPtProductInfo(),
+                        ptProductDummy.getPtProductFee());
+                PtProduct ptProduct = PtProductMapper.toEntity(request, trainer.getTrainerId()); //ptProduct객체
 
-            //리스트에 ptProduct객체 추가
-            ptProductsToInsert.add(ptProduct);
+                //리스트에 ptProduct객체 추가
+                if (ptProduct != null) {
+                    ptProductsToInsert.add(ptProduct);
+                }
+            }
 
         }
 
