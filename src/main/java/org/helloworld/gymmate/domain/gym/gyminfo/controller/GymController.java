@@ -39,7 +39,7 @@ public class GymController {
         @RequestParam(required = false) String searchOption,
         @RequestParam(defaultValue = "") String searchTerm,
         @RequestParam(defaultValue = "0") @Min(0) int page,
-        @RequestParam(defaultValue = "6") @Min(1) @Max(50) int pageSize,
+        @RequestParam(defaultValue = "6") @Min(1) @Max(200) int pageSize,
         @RequestParam(required = false, defaultValue = "127.0276") Double x,
         @RequestParam(required = false, defaultValue = "37.4979") Double y,
         @RequestParam(required = false, defaultValue = "") Boolean isPartner
@@ -56,7 +56,7 @@ public class GymController {
         @RequestParam(required = false) String searchOption,
         @RequestParam(defaultValue = "") String searchTerm,
         @RequestParam(defaultValue = "0") @Min(0) int page,
-        @RequestParam(defaultValue = "6") @Min(1) @Max(50) int pageSize,
+        @RequestParam(defaultValue = "6") @Min(1) @Max(200) int pageSize,
         @RequestParam(required = false, defaultValue = "") Boolean isPartner,
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ) {
