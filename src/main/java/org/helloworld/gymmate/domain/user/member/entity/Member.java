@@ -117,19 +117,6 @@ public class Member {
         this.profileUrl = profileUrl;
     }
 
-    /** 보유 캐시 수정 */
-    public void updateCash(Long updateCash) {
-        this.cash = updateCash;
-    }
-
-    /** 3대 무게 수정 */
-    public void updateRecentBigthree(double bench, double deadlift, double squat) {
-        this.recentBench = bench;
-        this.recentDeadlift = deadlift;
-        this.recentSquat = squat;
-        this.level = calculateLevel(bench, deadlift, squat);
-    }
-
     private void updateMemberInfo(MemberRequest request) {
         this.phoneNumber = request.phoneNumber();
         this.memberName = request.memberName();
@@ -148,10 +135,12 @@ public class Member {
         this.additionalInfoCompleted = true;
     }
 
+    /** 보유 캐시 수정 */
     public void updateCash(Long updateCash) {
         this.cash = updateCash;
     }
 
+    /** 3대 무게 수정 */
     public void updateRecentBigthree(double bench, double deadlift, double squat) {
         this.recentBench = bench;
         this.recentDeadlift = deadlift;
