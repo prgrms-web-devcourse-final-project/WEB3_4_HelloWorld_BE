@@ -86,6 +86,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/ptProduct", "/ptProduct/{id:\\d+}", "/ptProduct/trainer/{id:\\d+}")
                 .requestMatchers(HttpMethod.GET, "/trainer/list")
                 .requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}/facility")
+                .requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}/trainer")
                 .requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}")
                 .requestMatchers(HttpMethod.GET, "/gym")
                 .requestMatchers(HttpMethod.GET, "/dummy/**")
