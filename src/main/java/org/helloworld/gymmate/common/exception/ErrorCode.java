@@ -82,7 +82,10 @@ public enum ErrorCode {
 
     // API 관련
     API_UNEXPECTED_RESPONSE(HttpStatus.INTERNAL_SERVER_ERROR, "API-001", "API 응답이 올바르지 않습니다."),
-    PAYMENT_CONFIRM_FAILED(HttpStatus.BAD_REQUEST, "API-002", "결제 승인에 실패하였습니다.");
+    PAYMENT_CONFIRM_FAILED(HttpStatus.BAD_REQUEST, "API-002", "결제 승인에 실패하였습니다."),
+
+    // DB관련
+    CONSTRAINT_VIOLATION(HttpStatus.CONFLICT, "DB-001", "제약조건 위반입니다.");
 
     private final HttpStatus httpStatus;
     private final String errorCode;
