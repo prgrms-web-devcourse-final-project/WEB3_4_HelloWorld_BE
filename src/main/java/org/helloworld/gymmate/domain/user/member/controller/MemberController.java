@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
     private final MemberService memberService;
 
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     @Operation(summary = "[정보 등록 전 일반 회원] 일반 회원 회원가입", description = "요청한 일반 회원 자신의 정보를 최초로 등록")
     @PostMapping
     public ResponseEntity<Long> registerAdditionalInfo(
@@ -52,6 +53,7 @@ public class MemberController {
         return ResponseEntity.ok().body(memberId);
     }
 
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     @Operation(summary = "[일반 회원] 일반 회원 계정 삭제", description = "요청한 일반 회원 자신의 계정을 삭제")
     @DeleteMapping
     public ResponseEntity<Long> deleteMember(
@@ -61,7 +63,8 @@ public class MemberController {
         return ResponseEntity.ok().body(memberId);
     }
 
-    @Operation(summary = "[일반 회원] 일반 회원 정보 조회", description = "일요청한 일반 회원 자신의 개인 정보를 조회")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @Operation(summary = "[일반 회원] 일반 회원 정보 조회", description = "요청한 일반 회원 자신의 개인 정보를 조회")
     @GetMapping
     public ResponseEntity<MemberResponse> getMyInfo(
         @AuthenticationPrincipal CustomOAuth2User oAuth2User
@@ -70,6 +73,7 @@ public class MemberController {
         return ResponseEntity.ok().body(response);
     }
 
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     @Operation(summary = "[로그인한 사용자] 일반 or 트레이너 체크", description = "요청한 사용자가 일반 회원인지 트레이너 회원(직원, 사장 구분 없음)인지 반환")
     @GetMapping("/check")
     public ResponseEntity<MemberCheckResponse> check(
