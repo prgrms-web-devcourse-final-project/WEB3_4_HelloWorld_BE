@@ -111,6 +111,7 @@ public class TrainerController {
 
     @Operation(summary = "[트레이너] 사장 여부 체크", description = "요청한 사용자가 헬스장 운영자인지 아닌지 반환, 일반 회원일 경우 에러")
     @GetMapping("/check")
+	@PreAuthorize("hasRole('ROLE_TRAINER')")
     public ResponseEntity<TrainerCheckResponse> checkIsOwner(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ) {

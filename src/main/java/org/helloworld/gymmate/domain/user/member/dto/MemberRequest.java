@@ -12,8 +12,6 @@ public record MemberRequest(
     String height, // 키
     String weight, //몸무게
     String address, //주소
-    Double xField, // TODO: 프론트와 논의 후 제거
-    Double yField, // TODO: 프론트와 논의 후 제거
     @PositiveOrZero Double recentBench,
     @PositiveOrZero Double recentDeadlift,
     @PositiveOrZero Double recentSquat
