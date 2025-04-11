@@ -168,7 +168,7 @@ public class MemberService {
         bigthreeRepository.deleteAllByMember_MemberId(memberId);
         gymReviewRepository.deleteAllByMemberId(memberId);
         studentRepository.deleteAllByMemberId(memberId);
-        reservationRepository.deleteAllByMemberId(memberId);
+        reservationRepository.setMemberIdNullByMemberId(memberId); // 예약내역은 삭제 대신 memberId = null
         gymTicketRepository.deleteAllByMember_MemberId(memberId);
     }
 }
