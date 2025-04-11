@@ -136,7 +136,9 @@ public class TrainerService {
         classtimeRepository.deleteAllByTrainerId(trainer.getTrainerId());
 
         // 트레이너 프로필 이미지 삭제
-        fileManager.deleteFile(trainer.getProfileUrl());
+        if (trainer.getProfileUrl() != null) {
+            fileManager.deleteFile(trainer.getProfileUrl());
+        }
         // 트레이너 삭제
         trainerRepository.delete(trainer);
     }
