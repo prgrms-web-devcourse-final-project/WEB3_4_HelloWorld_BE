@@ -22,4 +22,6 @@ public interface GymTicketRepository extends JpaRepository<GymTicket, Long> {
     Optional<GymTicket> findByPartnerGymIdAndMember_MemberId(Long partnerGymId, Long memberId);
 
     boolean existsByMember_MemberIdAndStatus(Long memberId, GymTicketStatus gymTicketStatus);
+
+    void deleteAllByMember_MemberId(Long memberId);
 }

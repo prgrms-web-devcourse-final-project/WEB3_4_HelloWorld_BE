@@ -17,4 +17,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findByTrainerId(Long trainerId);
 
     boolean existsByMemberIdAndCancelDateIsNullAndCompletedDateIsNull(Long memberId);
+
+    void deleteAllByMemberId(Long memberId);
 }

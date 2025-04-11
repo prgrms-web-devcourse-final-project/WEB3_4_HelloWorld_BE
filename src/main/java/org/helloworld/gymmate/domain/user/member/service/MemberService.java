@@ -162,11 +162,13 @@ public class MemberService {
     }
 
     private void deleteRelatedEntitiesOfMember(Long memberId) {
-        // TODO: trainerReview, 캐시로그 삭제
+        // TODO: trainerReview 삭제 , 캐시로그도 삭제?
         // 설명 : 연관관계가 설정된 경우에는 Member_MemberId, 컬럼으로만 추가한 경우에는 MemberId
         diaryRepository.deleteAllByMember_MemberId(memberId);
         bigthreeRepository.deleteAllByMember_MemberId(memberId);
         gymReviewRepository.deleteAllByMemberId(memberId);
         studentRepository.deleteAllByMemberId(memberId);
+        reservationRepository.deleteAllByMemberId(memberId);
+        gymTicketRepository.deleteAllByMember_MemberId(memberId);
     }
 }
