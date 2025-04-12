@@ -182,4 +182,14 @@ public class GymService {
         return new PageImpl<>(responses, pageable, gyms.getTotalElements());
     }
 
+    @Transactional(readOnly = true)
+    public Page<GymSearchResponse> getAvailablePartnerGymSearch(String searchTerm, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Gym> gyms = gymRepository.searchAvailableGymsByName(searchTerm, pageable);
+        List<GymSearchResponse> responses = gyms.stream()
+            .map(GymMapper::toSearchResponse)
+            .toList();
+        return new PageImpl<>(responses, pageable, gyms.getTotalElements());
+    }
+
 }

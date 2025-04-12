@@ -104,4 +104,17 @@ public class GymController {
             gymService.getSearch(searchTerm, page, pageSize));
         return ResponseEntity.ok().body(pageResponse);
     }
+
+    @Operation(summary = "[헬스장 운영자] 주인될 헬스장 조회", description = "주인될 헬스장을 조회, 검색어 기준으로 조회하며, 검색어가 비어있으면 전체 헬스장 목록 반환, 이미 주인이 등록된 헬스장은 제외")
+    @GetMapping("/search/owner")
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
+    public ResponseEntity<PageDto<GymSearchResponse>> getGymForOwner(
+        @RequestParam(defaultValue = "") String searchTerm,
+        @RequestParam(defaultValue = "0") @Min(0) int page,
+        @RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize
+    ) {
+        PageDto<GymSearchResponse> pageResponse = PageMapper.toPageDto(
+            gymService.getAvailablePartnerGymSearch(searchTerm, page, pageSize));
+        return ResponseEntity.ok().body(pageResponse);
+    }
 }
