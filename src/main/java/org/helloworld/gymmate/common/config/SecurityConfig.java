@@ -35,12 +35,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-
+    public static final List<AllowedEndpoint> ALLOWED_ENDPOINTS = List.of(
+        new AllowedEndpoint(HttpMethod.GET, "/ptProduct"),
+        new AllowedEndpoint(HttpMethod.GET, "/ptProduct/{id:\\d+}"),
+        new AllowedEndpoint(HttpMethod.GET, "/ptProduct/trainer/{id:\\d+}"),
+        new AllowedEndpoint(HttpMethod.GET, "/trainer/list"),
+        new AllowedEndpoint(HttpMethod.GET, "/gym/{id:\\d+}/facility"),
+        new AllowedEndpoint(HttpMethod.GET, "/gym/{id:\\d+}/trainer"),
+        new AllowedEndpoint(HttpMethod.GET, "/gym/{id:\\d+}"),
+        new AllowedEndpoint(HttpMethod.GET, "/gym"),
+        new AllowedEndpoint(HttpMethod.GET, "/dummy/**"),
+        new AllowedEndpoint(HttpMethod.POST, "/dummy/**")
+    );
     private final LoginSuccessHandler loginSuccessHandler;
     private final CustomAuthenticationFilter customAuthenticationFilter;
     private final LogoutSuccessHandler logoutSuccessHandler;
     private final CustomAuthorizationRequestResolver customAuthorizationRequestResolver;
-
     @Value("${client.url}")
     private String clientUrl;
 
@@ -49,6 +59,7 @@ public class SecurityConfig {
         http.addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
+                    .requestMatchers(HttpMethod.GET, "/gym").permitAll()
                     .anyRequest() // 나머지
                     .authenticated())
             .sessionManagement(sessionManagement ->
@@ -82,15 +93,7 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/", "/actuator/**", "/v3/**", "/swagger-ui/**",
                     "/api/logistics", "/error"
-                )
-                .requestMatchers(HttpMethod.GET, "/ptProduct", "/ptProduct/{id:\\d+}", "/ptProduct/trainer/{id:\\d+}")
-                .requestMatchers(HttpMethod.GET, "/trainer/list")
-                .requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}/facility")
-                .requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}/trainer")
-                .requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}")
-                .requestMatchers(HttpMethod.GET, "/gym")
-                .requestMatchers(HttpMethod.GET, "/dummy/**")
-                .requestMatchers(HttpMethod.POST, "/dummy/**");
+                );
 
             // 개발 환경에서 추가로 무시할 경로
             if (Arrays.asList(env.getActiveProfiles()).contains("prod")) {
@@ -130,4 +133,8 @@ public class SecurityConfig {
 
         return source;
     }
+
+    public record AllowedEndpoint(HttpMethod method, String pattern) {
+    }
+
 }

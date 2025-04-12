@@ -1,12 +1,8 @@
 package org.helloworld.gymmate.security.filter;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.util.List;
+
 import org.helloworld.gymmate.common.cookie.CookieManager;
 import org.helloworld.gymmate.common.enums.TokenType;
 import org.helloworld.gymmate.security.policy.ExpirationPolicy;
@@ -17,8 +13,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.util.List;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -35,17 +36,17 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
 
-        List<String> excludePrefixes = List.of( // 여기에 다른 페이지는 추가하지 않습니다
-                "/login"
+        List<String> excludePrefixes = List.of( // 로그인 하지 않아도 작동할 페이지
+            "/login"
         );
-
+        
         return excludePrefixes.stream()
-                .anyMatch(requestURI::startsWith);
+            .anyMatch(requestURI::startsWith);
     }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+        @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         String accessToken;
         Authentication authentication;
@@ -117,11 +118,11 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         String newRefreshToken = tokens[1];
 
         cookieManager.setCookie(TokenType.ACCESS_TOKEN, newAccessToken,
-                expirationPolicy.getAccessTokenExpirationTime());
+            expirationPolicy.getAccessTokenExpirationTime());
         log.debug("새로운 엑세스 토큰 발급 완료");
 
         cookieManager.setCookie(TokenType.REFRESH_TOKEN, newRefreshToken,
-                expirationPolicy.getRefreshTokenExpirationTime());
+            expirationPolicy.getRefreshTokenExpirationTime());
         log.debug("새로운 리프레쉬 토큰 발급 완료");
 
         return newAccessToken;
