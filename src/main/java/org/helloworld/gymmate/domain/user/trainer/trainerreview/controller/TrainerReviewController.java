@@ -70,4 +70,5 @@ public class TrainerReviewController {
         trainerReviewService.deleteTrainerReview(trainerReviewId, customOAuth2User.getUserId());
         return ResponseEntity.ok().build();
     }
+
 }

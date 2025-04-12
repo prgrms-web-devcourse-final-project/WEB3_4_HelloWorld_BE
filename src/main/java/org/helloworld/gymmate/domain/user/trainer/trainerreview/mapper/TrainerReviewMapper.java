@@ -2,6 +2,7 @@ package org.helloworld.gymmate.domain.user.trainer.trainerreview.mapper;
 
 import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.request.TrainerReviewCreateRequest;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.response.TrainerReviewResponse;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.entity.TrainerReview;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.entity.TrainerReviewImage;
 
@@ -20,5 +21,20 @@ public class TrainerReviewMapper {
             .url(imageUrl)
             .trainerReview(trainerReview)
             .build();
+    }
+
+    public static TrainerReviewResponse toResponse(TrainerReview trainerReview) {
+        return new TrainerReviewResponse(
+            trainerReview.getTrainerReviewId(),
+            trainerReview.getScore(),
+            trainerReview.getContent(),
+            trainerReview.getImages().stream().map(TrainerReviewMapper::toImageResponse).toList());
+    }
+
+    public static TrainerReviewResponse.TrainerReviewImageResponse toImageResponse(TrainerReviewImage image) {
+        return new TrainerReviewResponse.TrainerReviewImageResponse(
+            image.getTrainerReviewImageId(),
+            image.getUrl()
+        );
     }
 }
