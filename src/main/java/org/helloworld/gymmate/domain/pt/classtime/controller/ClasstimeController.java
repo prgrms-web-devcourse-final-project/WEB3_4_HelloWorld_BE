@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,14 +55,24 @@ public class ClasstimeController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "수업 가능시간 전체조회")
+    @Operation(summary = "트레이너 - 본인 수업 가능시간 전체조회")
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
     public ResponseEntity<ClasstimesResponse> getClasstimes(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ) {
         return ResponseEntity.ok(
-            classtimeService.getAvailableTimes(customOAuth2User.getUserId())
-        );
+            classtimeService.getAvailableTimes(customOAuth2User.getUserId()));
+    }
+
+    @Operation(summary = "멤버 - 요일별 수업 가능시간(겸 예약 가능시간) 전체조회")
+    @GetMapping("/{trainerId}")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    public ResponseEntity<ClasstimesResponse> getTrainersClassTimes(
+        @PathVariable long trainerId
+    ) {
+        return ResponseEntity.ok(
+            classtimeService.getAvailableTimes(trainerId));
     }
 
 }
