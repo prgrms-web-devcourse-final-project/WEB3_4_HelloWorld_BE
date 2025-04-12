@@ -35,4 +35,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Modifying
     @Query("UPDATE Reservation r SET r.memberId = null WHERE r.memberId = :memberId")
     void setMemberIdNullByMemberId(@Param("memberId") Long memberId);
+
+    void deleteAllByTrainerId(Long trainerId);
 }
