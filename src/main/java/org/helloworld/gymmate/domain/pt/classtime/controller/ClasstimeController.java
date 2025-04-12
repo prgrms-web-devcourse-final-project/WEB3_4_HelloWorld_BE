@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class ClasstimeController {
     private final ClasstimeService classtimeService;
 
-    @Operation(summary = "트레이너 - 수업 가능시간 생성")
+    @Operation(summary = "[트레이너] 본인 요일별 수업 가능시간 생성")
     @PostMapping
     @PreAuthorize("hasRole('ROLE_TRAINER')")
     public ResponseEntity<Map<String, Long>> createClasstime(
@@ -42,7 +43,7 @@ public class ClasstimeController {
             Map.of("classTimeId", classTime.getClasstimeId()));
     }
 
-    @Operation(summary = "트레이너 - 수업 가능시간 삭제")
+    @Operation(summary = "[트레이너] 본인 요일별 수업 가능시간 삭제")
     @DeleteMapping
     @PreAuthorize("hasRole('ROLE_TRAINER')")
     public ResponseEntity<Void> deleteClasstime(
@@ -54,14 +55,24 @@ public class ClasstimeController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "수업 가능시간 전체조회")
+    @Operation(summary = "[트레이너] 본인 요일별 수업 가능시간 전체조회")
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
     public ResponseEntity<ClasstimesResponse> getClasstimes(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ) {
         return ResponseEntity.ok(
-            classtimeService.getAvailableTimes(customOAuth2User.getUserId())
-        );
+            classtimeService.getAvailableTimes(customOAuth2User.getUserId()));
+    }
+
+    @Operation(summary = "[일반 회원] 선택한 트레이너의 요일별 수업 시간 전체조회")
+    @GetMapping("/{trainerId}")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    public ResponseEntity<ClasstimesResponse> getTrainersClassTimes(
+        @PathVariable long trainerId
+    ) {
+        return ResponseEntity.ok(
+            classtimeService.getAvailableTimes(trainerId));
     }
 
 }

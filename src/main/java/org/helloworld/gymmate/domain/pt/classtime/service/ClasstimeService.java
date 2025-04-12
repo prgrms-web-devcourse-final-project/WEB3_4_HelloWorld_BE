@@ -18,26 +18,26 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ClasstimeService {
-	private final ClasstimeRepository classtimeRepository;
+    private final ClasstimeRepository classtimeRepository;
 
-	@Transactional
-	public Classtime createClasstime(@Valid ClasstimeRequest request, Long trainerId) {
-		if (classtimeRepository.findByTrainerIdAndDayOfWeekAndTime(trainerId, request.dayOfWeek(), request.time())
-			.isPresent()) {
-			throw new BusinessException(ErrorCode.CLASSTIME_DUPLICATED);
-		}
-		return classtimeRepository.save(
-			ClasstimeMapper.toEntity(request, trainerId));
-	}
+    @Transactional
+    public Classtime createClasstime(@Valid ClasstimeRequest request, Long trainerId) {
+        if (classtimeRepository.findByTrainerIdAndDayOfWeekAndTime(trainerId, request.dayOfWeek(), request.time())
+            .isPresent()) {
+            throw new BusinessException(ErrorCode.CLASSTIME_DUPLICATED);
+        }
+        return classtimeRepository.save(
+            ClasstimeMapper.toEntity(request, trainerId));
+    }
 
-	public void deleteClasstime(Integer dayOfWeek, Integer time, Long trainerId) {
-		Classtime classtime = classtimeRepository.findByTrainerIdAndDayOfWeekAndTime(trainerId, dayOfWeek, time)
-			.orElseThrow(() -> new BusinessException(ErrorCode.CLASSTIME_NOT_FOUND));
-		classtimeRepository.delete(classtime);
-	}
+    public void deleteClasstime(Integer dayOfWeek, Integer time, Long trainerId) {
+        Classtime classtime = classtimeRepository.findByTrainerIdAndDayOfWeekAndTime(trainerId, dayOfWeek, time)
+            .orElseThrow(() -> new BusinessException(ErrorCode.CLASSTIME_NOT_FOUND));
+        classtimeRepository.delete(classtime);
+    }
 
-	public ClasstimesResponse getAvailableTimes(Long trainerId) {
-		List<Classtime> classtimes = classtimeRepository.findByTrainerId(trainerId);
-		return new ClasstimesResponse(ClasstimeMapper.toClasstimesResponse(classtimes));
-	}
+    public ClasstimesResponse getAvailableTimes(Long trainerId) {
+        List<Classtime> classtimes = classtimeRepository.findByTrainerId(trainerId);
+        return new ClasstimesResponse(ClasstimeMapper.toClasstimesResponse(classtimes));
+    }
 }
