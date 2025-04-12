@@ -1,0 +1,86 @@
+DROP PROCEDURE IF EXISTS insert_pt_products_for_trainers;
+
+DELIMITER $$
+
+CREATE PROCEDURE insert_pt_products_for_trainers()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE v_trainer_id BIGINT;
+    DECLARE v_pt_exists INT DEFAULT 0;
+
+    DECLARE cur CURSOR FOR
+        SELECT trainer_id FROM gymmate_trainer;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN cur;
+    read_loop:
+    LOOP
+        FETCH cur INTO v_trainer_id;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- PT Product
+        SELECT COUNT(*) INTO v_pt_exists FROM pt_product WHERE trainer_id = v_trainer_id;
+        IF v_pt_exists = 0 THEN
+            SET @pt_count = FLOOR(2 + (RAND() * 3));
+            SET @k = 1;
+            WHILE @k <= @pt_count DO
+                SET @product_id = FLOOR(1 + RAND() * 7);
+                SET @pt_name = ELT(@product_id,
+                    '근육 증가 벌크업 PT',
+                    '다이어트 PT',
+                    '1:1 맞춤 재활 PT',
+                    '하체 강화 & 골반 교정 PT',
+                    '홈트 입문자를 위한 PT 기초',
+                    '체형 교정 & 자세 밸런스',
+                    '시니어 건강관리 PT');
+                SET @pt_info = ELT(@product_id,
+                    '웨이트 위주의 고강도 트레이닝, 체중 증가와 근육량 증진을 목표로 함',
+                    '체지방 감량에 집중된 유산소와 근력 복합 트레이닝, 식단 가이드 포함',
+                    '부상 이후 회복을 위한 저강도 안정성 운동 및 자세 교정 프로그램',
+                    '약한 하체 근육 강화와 골반 교정을 위한 스트레칭 프로그램',
+                    '운동 기구 없이 체중 활용, 올바른 자세 습득을 돕는 PT',
+                    '라운드숄더, 거북목, 틀어진 골반 개선을 위한 스트레칭과 근력 강화',
+                    '50대 이상 관절 보호와 균형감 유지에 초점을 맞춘 PT');
+                SET @pt_fee = ELT(@product_id, 30000, 40000, 50000, 60000, 50000, 70000, 80000);
+
+                INSERT INTO pt_product (pt_product_name, info, pt_product_fee, trainer_id)
+                VALUES (@pt_name, @pt_info, @pt_fee, v_trainer_id);
+                SET @last_pt_id = LAST_INSERT_ID();
+
+                -- PT Product Image
+                SET @img_index = 1;
+                WHILE @img_index <= 5 DO
+                    SET @random_index = FLOOR(1 + RAND() * 12);
+                    SET @url = ELT(@random_index,
+                        'https://.../8789c776.jpg',
+                        'https://.../67086ad4.jpg',
+                        'https://.../d736d0e7.jpg',
+                        'https://.../db76e3f4.jpeg',
+                        'https://.../d5068bf1.jpg',
+                        'https://.../a143c6ce.jpg',
+                        'https://.../a029391a.jpg',
+                        'https://.../d0886950.jpg',
+                        'https://.../b48b2ba3.jpg',
+                        'https://.../41d475dd.jpg',
+                        'https://.../7b5017aa.jpg',
+                        'https://.../39875ad8.jpg');
+                    INSERT INTO pt_product_image (url, pt_product_id)
+                    VALUES (@url, @last_pt_id);
+                    SET @img_index = @img_index + 1;
+                END WHILE;
+
+                SET @k = @k + 1;
+            END WHILE;
+        END IF;
+
+    END LOOP;
+    CLOSE cur;
+END$$
+
+DELIMITER ;
+
+-- 프로시저 실행 후 삭제
+CALL insert_pt_products_for_trainers();
+DROP PROCEDURE IF EXISTS insert_pt_products_for_trainers;

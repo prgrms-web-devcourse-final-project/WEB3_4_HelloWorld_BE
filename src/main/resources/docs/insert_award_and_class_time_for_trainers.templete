@@ -1,0 +1,82 @@
+DROP PROCEDURE IF EXISTS insert_award_and_class_time_for_trainers;
+
+DELIMITER $$
+
+CREATE PROCEDURE insert_award_and_class_time_for_trainers()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE v_trainer_id BIGINT;
+    DECLARE v_award_exists INT DEFAULT 0;
+
+    DECLARE cur CURSOR FOR
+        SELECT trainer_id FROM gymmate_trainer;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN cur;
+    read_loop:
+    LOOP
+        FETCH cur INTO v_trainer_id;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Award
+        SELECT COUNT(*) INTO v_award_exists FROM award WHERE trainer_id = v_trainer_id;
+        IF v_award_exists = 0 THEN
+            SET @award_count = FLOOR(2 + RAND());
+            SET @i = 1;
+            WHILE @i <= @award_count DO
+                SET @award_opt = FLOOR(1 + RAND() * 12);
+                SET @award_year = ELT(@award_opt, '2025','2024','2023','2025','2022','2023','2021','2025','2024','2023','2022','2021');
+                SET @award_name = ELT(@award_opt,
+                    'WBFF KOREA(국제 아마추어전) 1등',
+                    '서울특별시 보디빌딩 대회 1등',
+                    '전국 피트니스 챔피언십 1등',
+                    '대한민국 클래식 보디빌딩 2등',
+                    '부산광역시 스포츠대회 3등',
+                    'IFBB Korea 1등',
+                    '인천 전국 보디빌딩 대회 3등',
+                    '경기도 피트니스 페스티벌 1등',
+                    'WBFF ASIA(국제 프로 & 아마추어전) 2등',
+                    'KBBF 보디빌딩 대회',
+                    '대구광역시 보디빌딩 선수권 2등',
+                    '미스터제주 선발대회 1등');
+                SET @award_info = ELT(@award_opt,
+                    '남자 일반부 - 체급별 1위',
+                    '남자 고등부 - 전체 1위',
+                    '남자 피지크 - 체급별 1위',
+                    '남자 마스터즈 - 체급별 2위',
+                    '남자 피지크 - 전체 3위',
+                    '남자 피지크 - 체급별 1위',
+                    '남자 일반부 - 체급별 3위',
+                    '남자 피지크 - 체급별 1위',
+                    '남자 일반부 - 전체 2위',
+                    '남자 일반부 - 전체 1위',
+                    '남자 피지크 - 체급별 2위',
+                    '남자 피지크 - 체급별 1위');
+                INSERT INTO award (award_year, award_name, award_info, trainer_id)
+                VALUES (@award_year, @award_name, @award_info, v_trainer_id);
+                SET @i = @i + 1;
+            END WHILE;
+        END IF;
+
+        -- Class Time
+        SET @class_count = FLOOR(3 + RAND());
+        SET @j = 1;
+        WHILE @j <= @class_count DO
+            INSERT INTO class_time (`time`, day_of_week, trainer_id)
+            VALUES (10 + FLOOR(RAND() * 50),
+                    FLOOR(RAND() * 7),
+                    v_trainer_id);
+            SET @j = @j + 1;
+        END WHILE;
+
+    END LOOP;
+    CLOSE cur;
+END$$
+
+DELIMITER ;
+
+-- 프로시저 실행 후 삭제
+CALL insert_award_and_class_time_for_trainers();
+DROP PROCEDURE IF EXISTS insert_award_and_class_time_for_trainers;
