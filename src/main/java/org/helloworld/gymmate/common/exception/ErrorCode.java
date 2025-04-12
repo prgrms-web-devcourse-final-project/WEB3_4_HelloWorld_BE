@@ -64,7 +64,10 @@ public enum ErrorCode {
 
     // GymReview
     GYM_REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "GYM-REVIEW-001", "존재하지 않는 헬스장 리뷰입니다."),
-    
+
+    // TrainerReview
+    TRAINER_REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "TRAINER-REVIEW-001", "존재하지 않는 트레이너 리뷰입니다."),
+
     // Machine
     MACHINE_NOT_FOUND(HttpStatus.NOT_FOUND, "MACHINE-001", "해당 기구가 존재하지 않습니다."),
     MACHINE_FORBIDDEN(HttpStatus.FORBIDDEN, "MACHINE-002", "해당 기구에 대한 권한이 없습니다."),

@@ -1,6 +1,7 @@
 package org.helloworld.gymmate.domain.user.trainer.trainerreview.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
@@ -9,6 +10,7 @@ import org.helloworld.gymmate.domain.pt.reservation.repository.ReservationReposi
 import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.request.TrainerReviewCreateRequest;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.request.TrainerReviewModifyRequest;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.entity.TrainerReview;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.entity.TrainerReviewImage;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.mapper.TrainerReviewMapper;
@@ -42,6 +44,40 @@ public class TrainerReviewService {
         }
 
         return review.getTrainerReviewId();
+    }
+
+    @Transactional
+    public Long modifyTrainerReview(TrainerReviewModifyRequest modifyRequest, List<MultipartFile> images,
+        Long trainerReviewId, Long memberId) {
+        TrainerReview trainerReview = findById(trainerReviewId);
+        check(trainerReview, memberId);
+        trainerReview.update(modifyRequest);
+        deleteImages(trainerReview, modifyRequest.deleteImageUrls());
+        if (images != null && !images.isEmpty()) {
+            saveTrainerReviewImages(trainerReview, images);
+        }
+        trainerReviewRepository.save(trainerReview);
+
+        return trainerReview.getTrainerReviewId();
+    }
+
+    public TrainerReview findById(Long trainerReviewId) {
+        return trainerReviewRepository.findById(trainerReviewId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.TRAINER_REVIEW_NOT_FOUND));
+    }
+
+    private void check(TrainerReview trainerReview, Long memberId) {
+        if (!trainerReview.getMemberId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
+    }
+
+    private void deleteImages(TrainerReview trainerReview, List<String> deleteImageUrls) {
+        Optional.ofNullable(deleteImageUrls)
+            .ifPresent(imageUrls -> imageUrls.forEach(url -> {
+                trainerReview.removeImageUrl(url);
+                fileManager.deleteFile(url);
+            }));
     }
 
     private void saveTrainerReviewImages(TrainerReview trainerReview, List<MultipartFile> images) {
