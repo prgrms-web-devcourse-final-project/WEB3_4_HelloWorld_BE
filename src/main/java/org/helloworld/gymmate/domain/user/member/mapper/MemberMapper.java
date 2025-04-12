@@ -11,7 +11,7 @@ public class MemberMapper {
     public static Member toMember(Oauth oauth) {
         return Member.builder()
             .oauth(oauth)
-            .cash(100000000L)
+            .cash(5000L)
             .additionalInfoCompleted(false)
             .build();
     }

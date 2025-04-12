@@ -24,7 +24,7 @@ public class TrainerMapper {
             .isOwner(false)
             .isCheck(false)
             .score(0.0)
-            .cash(100000000L)
+            .cash(5000L)
             .additionalInfoCompleted(false)
             .build();
     }
