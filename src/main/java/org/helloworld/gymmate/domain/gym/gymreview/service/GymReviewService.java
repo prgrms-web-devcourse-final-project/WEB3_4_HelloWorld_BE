@@ -10,14 +10,17 @@ import org.helloworld.gymmate.domain.gym.gymreview.dto.GymReviewModifyRequest;
 import org.helloworld.gymmate.domain.gym.gymreview.dto.GymReviewRequest;
 import org.helloworld.gymmate.domain.gym.gymreview.entity.GymReview;
 import org.helloworld.gymmate.domain.gym.gymreview.entity.GymReviewImage;
+import org.helloworld.gymmate.domain.gym.gymreview.event.GymReviewDeleteEvent;
 import org.helloworld.gymmate.domain.gym.gymreview.mapper.GymReviewMapper;
 import org.helloworld.gymmate.domain.gym.gymreview.repository.GymReviewRepository;
 import org.helloworld.gymmate.domain.gym.gymticket.service.GymTicketService;
 import org.helloworld.gymmate.domain.gym.partnergym.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.partnergym.service.PartnerGymService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -27,6 +30,7 @@ public class GymReviewService {
     private final GymTicketService gymTicketService;
     private final GymReviewRepository gymReviewRepository;
     private final FileManager fileManager;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Long createGymReview(GymReviewRequest request, List<MultipartFile> images, Long memberId) {
@@ -78,11 +82,14 @@ public class GymReviewService {
             throw new BusinessException(ErrorCode.USER_NOT_AUTHORIZED);
         }
     }
+
     @Transactional
     public void deleteGymReview(long gymReviewId, Long userId) {
         GymReview gymReview = findById(gymReviewId);
         checkPermission(gymReview, userId);
         gymReviewRepository.delete(gymReview);
+        // 트랜잭션 커밋 후 처리될 이벤트 발행
+        eventPublisher.publishEvent(new GymReviewDeleteEvent(gymReview.getImages()));
     }
 
 }
