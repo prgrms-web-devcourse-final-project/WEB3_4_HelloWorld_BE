@@ -11,12 +11,16 @@ import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.request.TrainerReviewCreateRequest;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.request.TrainerReviewModifyRequest;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.response.TrainerReviewResponse;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.entity.TrainerReview;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.entity.TrainerReviewImage;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.event.TrainerReviewDeleteEvent;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.mapper.TrainerReviewMapper;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.repository.TrainerReviewRepository;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,6 +66,17 @@ public class TrainerReviewService {
         trainerReviewRepository.save(trainerReview);
 
         return trainerReview.getTrainerReviewId();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TrainerReviewResponse> getTrainerReviewList(int page, int size, Long trainerId) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<TrainerReview> reviewList = trainerReviewRepository.findAllByTrainer_TrainerId(pageable,
+            trainerId);
+
+        return reviewList.map(
+            TrainerReviewMapper::toResponse
+        );
     }
 
     @Transactional
