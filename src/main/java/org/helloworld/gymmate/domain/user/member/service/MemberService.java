@@ -1,5 +1,6 @@
 package org.helloworld.gymmate.domain.user.member.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
@@ -20,9 +21,14 @@ import org.helloworld.gymmate.domain.user.member.dto.MemberResponse;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.mapper.MemberMapper;
 import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.entity.TrainerReview;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.entity.TrainerReviewImage;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.event.TrainerReviewDeleteEvent;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.repository.TrainerReviewRepository;
 import org.helloworld.gymmate.infra.service.KakaoMapRestTemplateComponent;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 import org.helloworld.gymmate.security.oauth.repository.OauthRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +53,8 @@ public class MemberService {
     private final StudentRepository studentRepository;
     private final ReservationRepository reservationRepository;
     private final GymTicketRepository gymTicketRepository;
+    private final TrainerReviewRepository trainerReviewRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     /** 빈 member 객체 생성 */
     @Transactional
@@ -152,7 +160,7 @@ public class MemberService {
 
     private void validateDeletable(Long memberId) {
         // 유효한 PT예약이 있을 경우
-        if (reservationRepository.existsByMemberIdAndCancelDateIsNullAndCompletedDateIsNull(memberId)) {
+        if (reservationRepository.existsReservation(memberId) == 1) {
             throw new BusinessException(ErrorCode.CANNOT_DELETE_MEMBER_VALID_RESERVATION);
         }
         // 유효한 헬스장 이용권이 있을 경우
@@ -162,7 +170,6 @@ public class MemberService {
     }
 
     private void deleteRelatedEntitiesOfMember(Long memberId) {
-        // TODO: trainerReview 삭제 , 캐시로그도 삭제?
         // 설명 : 연관관계가 설정된 경우에는 Member_MemberId, 컬럼으로만 추가한 경우에는 MemberId
         diaryRepository.deleteAllByMember_MemberId(memberId);
         bigthreeRepository.deleteAllByMember_MemberId(memberId);
@@ -170,5 +177,15 @@ public class MemberService {
         studentRepository.deleteAllByMemberId(memberId);
         reservationRepository.setMemberIdNullByMemberId(memberId); // 예약내역은 삭제 대신 memberId = null
         gymTicketRepository.deleteAllByMember_MemberId(memberId);
+        List<TrainerReview> reviews = trainerReviewRepository.findAllByMemberId(memberId);
+        if (!reviews.isEmpty()) {
+            List<TrainerReviewImage> imagesToDelete = reviews.stream()
+                .flatMap(review -> review.getImages().stream())
+                .toList();
+            if (!imagesToDelete.isEmpty()) {
+                eventPublisher.publishEvent(new TrainerReviewDeleteEvent(imagesToDelete));
+            }
+            trainerReviewRepository.deleteAll(reviews);
+        }
     }
 }

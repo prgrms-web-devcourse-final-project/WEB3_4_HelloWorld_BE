@@ -30,9 +30,20 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
         """, nativeQuery = true)
     Optional<Reservation> find(@Param("memberId") Long memberId, @Param("trainerId") Long trainerId);
 
-    boolean existsByMemberIdAndCancelDateIsNullAndCompletedDateIsNull(Long memberId);
+    @Query(value = """
+        SELECT IF(
+          EXISTS(
+            SELECT 1 FROM reservation r
+            WHERE r.member_id = :memberId
+              AND r.cancel_date IS NULL
+              AND DATE_ADD(r.date, INTERVAL r.time HOUR) > CURRENT_TIMESTAMP
+          ), 1, 0)
+        """, nativeQuery = true)
+    Long existsReservation(@Param("memberId") Long memberId);
 
     @Modifying
     @Query("UPDATE Reservation r SET r.memberId = null WHERE r.memberId = :memberId")
     void setMemberIdNullByMemberId(@Param("memberId") Long memberId);
+
+    void deleteAllByTrainerId(Long trainerId);
 }

@@ -13,8 +13,10 @@ import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.request.Trai
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.request.TrainerReviewModifyRequest;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.entity.TrainerReview;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.entity.TrainerReviewImage;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.event.TrainerReviewDeleteEvent;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.mapper.TrainerReviewMapper;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.repository.TrainerReviewRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +30,7 @@ public class TrainerReviewService {
     private final TrainerService trainerService;
     private final FileManager fileManager;
     private final ReservationRepository reservationRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Long createTrainerReview(TrainerReviewCreateRequest reviewCreateRequest, List<MultipartFile> images,
@@ -59,6 +62,15 @@ public class TrainerReviewService {
         trainerReviewRepository.save(trainerReview);
 
         return trainerReview.getTrainerReviewId();
+    }
+
+    @Transactional
+    public void deleteTrainerReview(Long trainerReviewId, Long memberId) {
+        TrainerReview trainerReview = findById(trainerReviewId);
+        check(trainerReview, memberId);
+        trainerReviewRepository.delete(trainerReview);
+        // 트랜잭션 커밋 후 처리될 이벤트 발행
+        eventPublisher.publishEvent(new TrainerReviewDeleteEvent(trainerReview.getImages()));
     }
 
     public TrainerReview findById(Long trainerReviewId) {

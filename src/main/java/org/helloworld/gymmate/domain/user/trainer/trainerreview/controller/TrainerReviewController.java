@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -57,5 +58,16 @@ public class TrainerReviewController {
         return ResponseEntity.ok()
             .body(trainerReviewService.modifyTrainerReview(request, images, trainerReviewId,
                 customOAuth2User.getUserId()));
+    }
+
+    @Operation(summary = "[일반 회원] 트레이너 리뷰 삭제")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @DeleteMapping("/{trainerReviewId}")
+    public ResponseEntity<Void> deleteTrainerReview(
+        @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+        @PathVariable Long trainerReviewId
+    ) {
+        trainerReviewService.deleteTrainerReview(trainerReviewId, customOAuth2User.getUserId());
+        return ResponseEntity.ok().build();
     }
 }

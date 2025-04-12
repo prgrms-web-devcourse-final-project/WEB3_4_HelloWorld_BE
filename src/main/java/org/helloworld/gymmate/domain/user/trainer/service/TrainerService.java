@@ -14,6 +14,7 @@ import org.helloworld.gymmate.domain.gym.gyminfo.entity.Gym;
 import org.helloworld.gymmate.domain.gym.gyminfo.repository.GymRepository;
 import org.helloworld.gymmate.domain.pt.classtime.repository.ClasstimeRepository;
 import org.helloworld.gymmate.domain.pt.ptproduct.repository.PtProductRepository;
+import org.helloworld.gymmate.domain.pt.reservation.repository.ReservationRepository;
 import org.helloworld.gymmate.domain.pt.student.repository.StudentRepository;
 import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
@@ -33,8 +34,13 @@ import org.helloworld.gymmate.domain.user.trainer.enums.TrainerSearchOption;
 import org.helloworld.gymmate.domain.user.trainer.enums.TrainerSortOption;
 import org.helloworld.gymmate.domain.user.trainer.mapper.TrainerMapper;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.entity.TrainerReview;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.entity.TrainerReviewImage;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.event.TrainerReviewDeleteEvent;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.repository.TrainerReviewRepository;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 import org.helloworld.gymmate.security.oauth.repository.OauthRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -60,6 +66,9 @@ public class TrainerService {
     private final PtProductRepository ptProductRepository;
     private final ClasstimeRepository classtimeRepository;
     private final StudentRepository studentRepository;
+    private final TrainerReviewRepository trainerReviewRepository;
+    private final ApplicationEventPublisher eventPublisher;
+    private final ReservationRepository reservationRepository;
 
     /** 빈 trainer 객체 생성 */
     @Transactional
@@ -125,7 +134,15 @@ public class TrainerService {
     @Transactional
     public void deleteTrainer(Long trainerId) {
         Trainer trainer = findByUserId(trainerId);
-        // TODO : 트레이너 리뷰 만들어지면 트레이너 리뷰 삭제 + 트레이너 리뷰 이미지 삭제 추가
+        // 트레이너 리뷰 및 이미지 삭제(S3)
+        List<TrainerReview> trainerReviews = trainerReviewRepository.findAllByTrainer_TrainerId(trainer.getTrainerId());
+        trainerReviewRepository.deleteAll(trainerReviews);
+
+        List<TrainerReviewImage> imagesToDelete = trainerReviews.stream()
+            .flatMap(review -> review.getImages().stream())
+            .toList();
+
+        eventPublisher.publishEvent(new TrainerReviewDeleteEvent(imagesToDelete));
         // 수상 경력 삭제
         awardRepository.deleteAllByTrainerId(trainer.getTrainerId());
         // 수강중인 회원 목록 삭제
@@ -134,6 +151,8 @@ public class TrainerService {
         ptProductRepository.deleteAllByTrainerId(trainer.getTrainerId());
         // 수업 가능 시간 삭제
         classtimeRepository.deleteAllByTrainerId(trainer.getTrainerId());
+        // 예약 삭제
+        reservationRepository.deleteAllByTrainerId(trainer.getTrainerId());
 
         // 트레이너 프로필 이미지 삭제
         if (trainer.getProfileUrl() != null) {
