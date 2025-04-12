@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class ClasstimeController {
     private final ClasstimeService classtimeService;
 
-    @Operation(summary = "트레이너 - 수업 가능시간 생성")
+    @Operation(summary = "[트레이너] 본인 요일별 수업 가능시간 생성")
     @PostMapping
     @PreAuthorize("hasRole('ROLE_TRAINER')")
     public ResponseEntity<Map<String, Long>> createClasstime(
@@ -43,7 +43,7 @@ public class ClasstimeController {
             Map.of("classTimeId", classTime.getClasstimeId()));
     }
 
-    @Operation(summary = "트레이너 - 수업 가능시간 삭제")
+    @Operation(summary = "[트레이너] 본인 요일별 수업 가능시간 삭제")
     @DeleteMapping
     @PreAuthorize("hasRole('ROLE_TRAINER')")
     public ResponseEntity<Void> deleteClasstime(
@@ -55,7 +55,7 @@ public class ClasstimeController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "트레이너 - 본인 수업 가능시간 전체조회")
+    @Operation(summary = "[트레이너] 본인 요일별 수업 가능시간 전체조회")
     @GetMapping
     @PreAuthorize("hasRole('ROLE_TRAINER')")
     public ResponseEntity<ClasstimesResponse> getClasstimes(
@@ -65,7 +65,7 @@ public class ClasstimeController {
             classtimeService.getAvailableTimes(customOAuth2User.getUserId()));
     }
 
-    @Operation(summary = "멤버 - 요일별 수업 가능시간(겸 예약 가능시간) 전체조회")
+    @Operation(summary = "[일반 회원] 선택한 트레이너의 요일별 수업 시간 전체조회")
     @GetMapping("/{trainerId}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity<ClasstimesResponse> getTrainersClassTimes(
