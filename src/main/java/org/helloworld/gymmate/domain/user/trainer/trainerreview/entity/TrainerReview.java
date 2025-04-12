@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.helloworld.gymmate.common.entity.BaseEntity;
 import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.request.TrainerReviewModifyRequest;
 import org.hibernate.annotations.BatchSize;
 
 import jakarta.persistence.CascadeType;
@@ -61,5 +62,14 @@ public class TrainerReview extends BaseEntity {
     public void removeImage(TrainerReviewImage image) {
         images.remove(image);
         image.assignTrainerReview(null);
+    }
+
+    public void update(TrainerReviewModifyRequest modifyRequest) {
+        this.score = modifyRequest.score();
+        this.content = modifyRequest.content();
+    }
+
+    public void removeImageUrl(String url) {
+        this.images.removeIf(image -> image.getUrl().equals(url));
     }
 }
