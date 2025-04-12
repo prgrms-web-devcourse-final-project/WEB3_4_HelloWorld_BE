@@ -1,0 +1,24 @@
+# RDS connect 환경 설정
+spring:
+  datasource:
+    url: jdbc:mysql://${RDS_HOST}:${RDS_PORT}/${DB_NAME}?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: false
+
+logging:
+  level:
+    org.helloworld.gymmate: DEBUG

@@ -2,7 +2,6 @@ package org.helloworld.gymmate.dummy.controller;
 
 import org.helloworld.gymmate.dummy.service.DummyDataService;
 import org.helloworld.gymmate.dummy.trainer.TrainerDummyCreate;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-@Profile("prod") // prod 환경에서만 컨트롤러 활성화
+//@Profile("prod") // prod 환경에서만 컨트롤러 활성화
 @Tag(name = "더미 데이터 삽입 API", description = "더미 데이터 삽입용 api")
 @RestController
 @RequestMapping("/dummy")

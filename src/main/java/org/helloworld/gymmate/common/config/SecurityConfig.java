@@ -93,7 +93,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/dummy/**");
 
             // 개발 환경에서 추가로 무시할 경로
-            if (Arrays.asList(env.getActiveProfiles()).contains("prod")) {
+            if (Arrays.asList(env.getActiveProfiles()).contains("deploy")) {
                 web.ignoring()
                     .requestMatchers("/crawl/**")
                     .requestMatchers(PathRequest.toH2Console());
