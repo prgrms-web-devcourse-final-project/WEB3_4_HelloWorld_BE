@@ -23,6 +23,17 @@ public interface GymRepository extends JpaRepository<Gym, Long> {
     @Query("SELECT g FROM Gym g WHERE (:searchName IS NULL OR g.gymName LIKE CONCAT('%', :searchName, '%')) ORDER BY g.gymId DESC")
     Page<Gym> searchGymsByName(@Param("searchName") String searchName, Pageable pageable);
 
+    @Query("""
+            SELECT g
+            FROM Gym g
+            WHERE (:searchName IS NULL OR g.gymName LIKE CONCAT('%', :searchName, '%'))
+            AND g.gymId NOT IN (
+                SELECT pg.gym.gymId FROM PartnerGym pg
+            )
+            ORDER BY g.gymId DESC
+        """)
+    Page<Gym> searchAvailableGymsByName(@Param("searchName") String searchName, Pageable pageable);
+
     Optional<Gym> findGymByGymName(String gymName);
 
     @Query("SELECT g FROM Gym g WHERE (:isPartner IS NULL OR g.isPartner = :isPartner) ORDER BY g.avgScore DESC")
