@@ -160,7 +160,7 @@ public class MemberService {
 
     private void validateDeletable(Long memberId) {
         // 유효한 PT예약이 있을 경우
-        if (reservationRepository.existsByMemberIdAndCancelDateIsNullAndCompletedDateIsNull(memberId)) {
+        if (reservationRepository.existsReservation(memberId) == 1) {
             throw new BusinessException(ErrorCode.CANNOT_DELETE_MEMBER_VALID_RESERVATION);
         }
         // 유효한 헬스장 이용권이 있을 경우
