@@ -57,8 +57,8 @@ public class PartnerGymService {
         // gym 있는지 확인
         Gym existingGym = gymService.getExistingGym(request.gymId());
 
-        // 중복 등록 방지 : 같은 owner가 같은 gym을 등록하려는 경우
-        if (partnerGymRepository.existsByOwnerIdAndGym_GymId(ownerId, request.gymId())) {
+        // 중복 등록 방지 : owner가 제휴 헬스장을 추가로 등록하려고 하는 경우
+        if (partnerGymRepository.existsByOwnerId(ownerId)) {
             throw new BusinessException(ErrorCode.GYM_ALREADY_EXISTS);
         }
 

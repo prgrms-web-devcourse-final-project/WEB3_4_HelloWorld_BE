@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface PartnerGymRepository extends JpaRepository<PartnerGym, Long> {
 
-    boolean existsByOwnerIdAndGym_GymId(Long ownerId, Long gymId);
+    boolean existsByOwnerId(Long ownerId);
 
     @Query("""
         	SELECT DISTINCT pg FROM PartnerGym pg
