@@ -2,12 +2,9 @@ package org.helloworld.gymmate.domain.user.trainer.trainerreview.controller;
 
 import java.util.List;
 
-import org.helloworld.gymmate.common.dto.PageDto;
-import org.helloworld.gymmate.common.mapper.PageMapper;
 import org.helloworld.gymmate.common.validate.custom.ValidImageFile;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.request.TrainerReviewCreateRequest;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.request.TrainerReviewModifyRequest;
-import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.response.TrainerReviewResponse;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.service.TrainerReviewService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.HttpStatus;
@@ -16,12 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -76,16 +71,4 @@ public class TrainerReviewController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "[일반 회원] 트레이너 리뷰 조회")
-    @GetMapping("/{trainerId}")
-    public ResponseEntity<PageDto<TrainerReviewResponse>> getTrainerReview(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "3") int size,
-        @PathVariable Long trainerId
-    ) {
-        PageDto<TrainerReviewResponse> response = PageMapper.toPageDto(
-            trainerReviewService.getTrainerReviewList(page, size, trainerId));
-
-        return ResponseEntity.ok().body(response);
-    }
 }

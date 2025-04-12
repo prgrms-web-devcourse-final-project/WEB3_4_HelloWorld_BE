@@ -11,6 +11,8 @@ import org.helloworld.gymmate.domain.user.trainer.dto.TrainerProfileRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerRegisterRequest;
 import org.helloworld.gymmate.domain.user.trainer.dto.TrainerResponse;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.response.TrainerReviewResponse;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.service.TrainerReviewService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +20,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,6 +46,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TrainerController {
     private final TrainerService trainerService;
+    private final TrainerReviewService trainerReviewService;
 
     @Operation(summary = "[정보 등록 전 트레이너] 트레이너 선생님 회원가입", description = "요청한 트레이너 선생님(트레이너 직원) 자신의 정보를 최초로 등록")
     @PostMapping
@@ -111,7 +115,7 @@ public class TrainerController {
 
     @Operation(summary = "[트레이너] 사장 여부 체크", description = "요청한 사용자가 헬스장 운영자인지 아닌지 반환, 일반 회원일 경우 에러")
     @GetMapping("/check")
-	@PreAuthorize("hasRole('ROLE_TRAINER')")
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
     public ResponseEntity<TrainerCheckResponse> checkIsOwner(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User
     ) {
@@ -169,5 +173,18 @@ public class TrainerController {
         PageDto<TrainerListResponse> pageResponse = PageMapper.toPageDto(
             trainerService.getNearbyTrainers(searchOption, searchTerm, page, pageSize, customOAuth2User.getUserId()));
         return ResponseEntity.ok(pageResponse);
+    }
+
+    @Operation(summary = "[일반 회원] 트레이너 리뷰 조회")
+    @GetMapping("/{trainerId}/trainerreview")
+    public ResponseEntity<PageDto<TrainerReviewResponse>> getTrainerReview(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "3") int size,
+        @PathVariable Long trainerId
+    ) {
+        PageDto<TrainerReviewResponse> response = PageMapper.toPageDto(
+            trainerReviewService.getTrainerReviewList(page, size, trainerId));
+
+        return ResponseEntity.ok().body(response);
     }
 }

@@ -91,7 +91,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/gym")
                 .requestMatchers(HttpMethod.GET, "/dummy/**")
                 .requestMatchers(HttpMethod.POST, "/dummy/**")
-                .requestMatchers(HttpMethod.GET, "/trainerreview/{id:\\d+}");
+                .requestMatchers(HttpMethod.GET, "/trainer/{id:\\d+}/trainerreview");
 
             // 개발 환경에서 추가로 무시할 경로
             if (Arrays.asList(env.getActiveProfiles()).contains("prod")) {
