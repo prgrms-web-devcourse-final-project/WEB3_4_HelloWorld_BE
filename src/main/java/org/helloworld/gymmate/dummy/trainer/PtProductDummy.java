@@ -1,4 +1,4 @@
-package org.helloworld.gymmate.infra.domain.trainer;
+package org.helloworld.gymmate.dummy.trainer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,9 +28,9 @@ public enum PtProductDummy {
         this.ptProductFee = ptProductFee;
     }
 
-    public static PtProductDummy getRandomPtProductDummy() {
+    public static List<PtProductDummy> getRandomPtProductDummy(int count) {
         List<PtProductDummy> allPtProductDummy = new ArrayList<>(Arrays.asList(values()));
         Collections.shuffle(allPtProductDummy);
-        return allPtProductDummy.get(0);
+        return allPtProductDummy.subList(0, count);
     }
 }

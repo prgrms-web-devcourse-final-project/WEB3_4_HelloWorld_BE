@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -32,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final LoginSuccessHandler loginSuccessHandler;
@@ -81,13 +83,15 @@ public class SecurityConfig {
                     "/", "/actuator/**", "/v3/**", "/swagger-ui/**",
                     "/api/logistics", "/error"
                 )
-                .requestMatchers(HttpMethod.GET, "/ptProduct", "/ptProduct/{id:\\d+}")
+                .requestMatchers(HttpMethod.GET, "/ptProduct", "/ptProduct/{id:\\d+}", "/ptProduct/trainer/{id:\\d+}")
                 .requestMatchers(HttpMethod.GET, "/trainer/list")
                 .requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}/facility")
+                .requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}/trainer")
                 .requestMatchers(HttpMethod.GET, "/gym/{id:\\d+}")
                 .requestMatchers(HttpMethod.GET, "/gym")
                 .requestMatchers(HttpMethod.GET, "/dummy/**")
-                .requestMatchers(HttpMethod.POST, "/dummy/**");
+                .requestMatchers(HttpMethod.POST, "/dummy/**")
+                .requestMatchers(HttpMethod.GET, "/trainer/{id:\\d+}/trainerreview");
 
             // 개발 환경에서 추가로 무시할 경로
             if (Arrays.asList(env.getActiveProfiles()).contains("prod")) {

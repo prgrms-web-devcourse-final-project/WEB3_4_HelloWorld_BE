@@ -54,13 +54,13 @@ public class PartnerGymService {
         // 운영자 맞는지 확인
         validatePartnerGymOwner(ownerId);
 
-        // 중복 등록 방지
+        // gym 있는지 확인
+        Gym existingGym = gymService.getExistingGym(request.gymId());
+
+        // 중복 등록 방지 : 같은 owner가 같은 gym을 등록하려는 경우
         if (partnerGymRepository.existsByOwnerIdAndGym_GymId(ownerId, request.gymId())) {
             throw new BusinessException(ErrorCode.GYM_ALREADY_EXISTS);
         }
-
-        // gym 있는지 확인
-        Gym existingGym = gymService.getExistingGym(request.gymId());
 
         // partnerGym 저장
         PartnerGym partnerGym = createPartnerGym(ownerId, existingGym);
@@ -69,6 +69,7 @@ public class PartnerGymService {
         updatePartnerGymInfos(request.gymInfoRequest(), null, images, existingGym, partnerGym);
 
         return partnerGym.getPartnerGymId();
+
     }
 
     @Transactional

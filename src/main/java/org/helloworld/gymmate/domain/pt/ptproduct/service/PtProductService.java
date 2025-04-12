@@ -87,7 +87,7 @@ public class PtProductService {
     }
 
     @Transactional
-    private void saveProductImages(PtProduct ptProduct, List<MultipartFile> images) {
+    public void saveProductImages(PtProduct ptProduct, List<MultipartFile> images) {
         List<String> imageUrls = fileManager.uploadFiles(images, "ptProduct");
         List<PtProductImage> ptProductImages = imageUrls.stream()
             .map(url -> PtProductMapper.toEntity(url, ptProduct))

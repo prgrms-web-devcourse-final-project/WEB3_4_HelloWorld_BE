@@ -5,6 +5,7 @@ import org.helloworld.gymmate.common.mapper.PageMapper;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationByMonthResponse;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationRequest;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationResponse;
+import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationTrainerResponse;
 import org.helloworld.gymmate.domain.pt.reservation.service.ReservationService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.HttpStatus;
@@ -111,7 +112,7 @@ public class ReservationController {
     @Operation(summary = "트레이너 - 예약 목록 조회")
     @PreAuthorize("hasRole('ROLE_TRAINER')")
     @GetMapping("/trainer")
-    public ResponseEntity<PageDto<ReservationResponse>> getTrainerReservations(
+    public ResponseEntity<PageDto<ReservationTrainerResponse>> getTrainerReservations(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
         @RequestParam(defaultValue = "0") @Min(0) int page,
         @RequestParam(defaultValue = "10") @Min(1) @Max(50) int pageSize
@@ -127,15 +128,14 @@ public class ReservationController {
     }
 
     @Operation(summary = "트레이너 - 월별 예약 목록 조회")
-    @PreAuthorize("hasRole('ROLE_TRAINER')")
-    @GetMapping("/trainer/month")
+    @GetMapping("/trainer/{trainerId}/month")   // oauth대신 url로 trainerId받음
     public ResponseEntity<ReservationByMonthResponse> getTrainerReservationsByMonth(
-        @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+        @PathVariable Long trainerId,
         @RequestParam int year,
         @RequestParam int month
     ) {
         ReservationByMonthResponse reservations = reservationService.getTrainerReservationsByMonth(
-            customOAuth2User.getUserId(),
+            trainerId,
             year,
             month
         );

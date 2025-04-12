@@ -16,4 +16,6 @@ public interface BigthreeRepository extends JpaRepository<Bigthree, Long> {
 
     // 최신 날짜 기록 가져오기
     Optional<Bigthree> findTopByMemberOrderByDateDesc(Member member);
+
+    void deleteAllByMember_MemberId(Long memberId);
 }

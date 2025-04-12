@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
@@ -13,15 +16,18 @@ import org.helloworld.gymmate.domain.pt.ptproduct.service.PtProductService;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationByMonthResponse;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationRequest;
 import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationResponse;
+import org.helloworld.gymmate.domain.pt.reservation.dto.ReservationTrainerResponse;
 import org.helloworld.gymmate.domain.pt.reservation.entity.Reservation;
 import org.helloworld.gymmate.domain.pt.reservation.mapper.ReservationMapper;
 import org.helloworld.gymmate.domain.pt.reservation.repository.ReservationRepository;
+import org.helloworld.gymmate.domain.pt.student.entity.Student;
 import org.helloworld.gymmate.domain.pt.student.service.StudentService;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -117,7 +123,7 @@ public class ReservationService {
        - 리턴값 : 회원의 예약 목록
      */
     @Transactional(readOnly = true)
-    public Page<ReservationResponse> getTrainerReservations(
+    public Page<ReservationTrainerResponse> getTrainerReservations(
         Long trainerId,
         int page,
         int pageSize
@@ -128,9 +134,31 @@ public class ReservationService {
         // 페이징 요청 생성
         Pageable pageable = PageRequest.of(page, pageSize, sort);
 
-        // 페이징된 데이터 조회 및 DTO 변환
-        return reservationRepository.findByTrainerId(trainerId, pageable)
-            .map(ReservationMapper::toDto);
+        // 페이징된 데이터 조회
+        Page<Reservation> reservations = reservationRepository.findByTrainerId(trainerId, pageable);
+
+        // student 정보 조회
+        // 페이지에서 멤버아이디 추출 / 멤버아이디&트레이너아이디 조합을 가지는 수강생조회
+        List<Long> memberIds = reservations.getContent().stream()
+            .map(Reservation::getMemberId)
+            .filter(Objects::nonNull)
+            .distinct()
+            .toList();
+
+        List<Student> students = studentService.findStudents(trainerId, memberIds);
+        Map<Long, Student> studentMap = students.stream()
+            .collect(Collectors.toMap(Student::getMemberId, Function.identity()));
+
+        // Dto 변환
+        List<ReservationTrainerResponse> dtos = reservations.getContent().stream()
+            .map(reservation -> {
+                Student student = studentMap.get(reservation.getMemberId());
+                return ReservationMapper.toDto(reservation, student);
+            })
+            .toList();
+        // 페이지 변환
+        return new PageImpl<>(dtos, pageable, reservations.getTotalElements());
+
     }
 
     /*
@@ -148,6 +176,11 @@ public class ReservationService {
         Map<LocalDate, List<Integer>> reservationsByDate = new HashMap<>();
 
         for (Reservation reservation : reservations) { // 각 예약 객체별로
+
+            if (reservation.getCancelDate() != null) { // 취소날짜가 있는 경우
+                continue; // 다음 루프로 이동
+            }
+
             LocalDate reservationDate = reservation.getDate(); //예약 날짜 조회
 
             if (reservationDate.getYear() == year && reservationDate.getMonthValue() == month) {
