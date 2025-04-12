@@ -5,6 +5,7 @@ import org.helloworld.gymmate.domain.gym.machine.dto.MachineRequest;
 import org.helloworld.gymmate.domain.gym.machine.service.MachineService;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,7 +31,7 @@ public class MachineController {
     private final MachineService machineService;
 
     @Operation(summary = "운동 기구 등록", description = "헬스장 운영자 마이페이지에서 제휴 헬스장 등록 또는 수정 중 운동 기구 1개 추가")
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_TRAINER')")
     public ResponseEntity<Long> createMachine(
         @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
