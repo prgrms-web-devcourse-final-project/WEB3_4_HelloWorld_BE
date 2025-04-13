@@ -52,7 +52,7 @@ public class PartnerGymService {
     @Transactional
     public Long registerPartnerGym(GymRegisterRequest request, List<MultipartFile> images, Long ownerId) {
         // 운영자 맞는지 확인
-        validatePartnerGymOwner(ownerId);
+        Trainer owner = validatePartnerGymOwner(ownerId);
 
         // gym 있는지 확인
         Gym existingGym = gymService.getExistingGym(request.gymId());
@@ -64,6 +64,9 @@ public class PartnerGymService {
 
         // partnerGym 저장
         PartnerGym partnerGym = createPartnerGym(ownerId, existingGym);
+
+        // owner 엔티티 (trainer) 에 gym 업데이트
+        owner.updateGym(existingGym);
 
         // 전체 정보 업데이트
         updatePartnerGymInfos(request.gymInfoRequest(), null, images, existingGym, partnerGym);
@@ -123,11 +126,12 @@ public class PartnerGymService {
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_AUTHORIZED));
     }
 
-    private void validatePartnerGymOwner(Long ownerId) {
+    private Trainer validatePartnerGymOwner(Long ownerId) {
         Trainer owner = trainerService.findByUserId(ownerId);
         if (!owner.getIsOwner()) {
             throw new BusinessException(ErrorCode.GYM_REGISTRATION_FORBIDDEN);
         }
+        return owner;
     }
 
     private PartnerGym createPartnerGym(Long ownerId, Gym gym) {
