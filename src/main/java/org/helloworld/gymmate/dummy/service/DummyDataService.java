@@ -4,8 +4,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -24,21 +26,26 @@ import org.helloworld.gymmate.domain.user.enums.SocialProviderType;
 import org.helloworld.gymmate.domain.user.enums.UserType;
 import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
+import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.helloworld.gymmate.dummy.entity.GymDummyText;
 import org.helloworld.gymmate.dummy.entity.PartnerGymDummyImage;
 import org.helloworld.gymmate.dummy.entity.TrainerDummyImage;
 import org.helloworld.gymmate.dummy.entity.TrainerDummyText;
 import org.helloworld.gymmate.security.oauth.entity.Oauth;
 import org.helloworld.gymmate.security.oauth.repository.OauthRepository;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DummyDataService {
 
+    private static final int BATCH_SIZE = 500;
     private final OauthRepository oauthRepository;
     private final TrainerRepository trainerRepository;
     private final GymRepository gymRepository;
@@ -46,6 +53,8 @@ public class DummyDataService {
     private final GymProductRepository gymProductRepository;
     private final GymImageRepository gymImageRepository;
     private final int GYM_COUNT = 500;
+    private final TrainerService trainerService;
+    private final JdbcTemplate jdbcTemplate;
     // 선택된 PartnerGym 후보 Gym ID 목록 (크기 1000)
     private List<Long> selectedPartnerGymIds;
 
@@ -259,6 +268,42 @@ public class DummyDataService {
         }
     }
 
+    @Transactional
+    public void setGymForOwner() {
+
+        //partnerGym 전체 조회
+        List<PartnerGym> parnerGyms = partnerGymRepository.findAll();
+
+        // trainerId + gymId 매핑
+        Map<Long, Long> trainerIdToGymId = new HashMap<>();
+
+        for (PartnerGym partnerGym : parnerGyms) {
+            Long trainerId = partnerGym.getOwnerId();
+            Long gymId = partnerGym.getGym().getGymId();
+
+            trainerIdToGymId.put(trainerId, gymId);
+        }
+
+        // map -> 리스트 변환 ( batchUpdate는 리스트 사용 )
+        List<Map.Entry<Long, Long>> trainerGymToUpdate = new ArrayList<>(trainerIdToGymId.entrySet());
+
+        // trainer의 gymId UPDATE 쿼리:
+        String sql = "UPDATE gymmate_trainer SET gym_id = ? WHERE trainer_id = ?";
+        try {
+            jdbcTemplate.batchUpdate(sql, trainerGymToUpdate, BATCH_SIZE, (ps, TrainerGym) -> {
+                ps.setLong(1, TrainerGym.getValue()); // gym_id
+                ps.setLong(2, TrainerGym.getKey());   // trainer_id
+            });
+
+            log.debug("총 {}개의 trainer 데이터의 gym_id 업데이트!", trainerGymToUpdate.size());
+
+        } catch (Exception e) {
+
+            log.error("trainer의 gym_id 업데이트 중 오류 발생: ", e);
+        }
+
+    }
+
     // 헬퍼 메서드들
 
     private String generateRandomAlphanumeric(Random random) {
@@ -302,5 +347,23 @@ public class DummyDataService {
     private double roundDouble(double value) {
         long factor = (long)Math.pow(10, 2);
         return (double)Math.round(value * factor) / factor;
+    }
+
+    private class TrainerGymUpdateDto {
+        private final Long trainerId;
+        private final Long gymId;
+
+        public TrainerGymUpdateDto(Long trainerId, Long gymId) {
+            this.trainerId = trainerId;
+            this.gymId = gymId;
+        }
+
+        public Long getTrainerId() {
+            return trainerId;
+        }
+
+        public Long getGymId() {
+            return gymId;
+        }
     }
 }

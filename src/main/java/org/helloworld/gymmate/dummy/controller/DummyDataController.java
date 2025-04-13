@@ -41,4 +41,11 @@ public class DummyDataController {
         trainerDummyCreate.createTrainerDummy();
         return ResponseEntity.ok("트레이너 부가 정보 더미 데이터 생성 완료.");
     }
+
+    @Operation(summary = "owner의 gymId 업데이트")
+    @GetMapping("/trainer-gym")
+    public ResponseEntity<?> insertOwnerGym() {
+        dummyDataService.setGymForOwner();
+        return ResponseEntity.ok("트레이너의 gym정보 업데이트");
+    }
 }
