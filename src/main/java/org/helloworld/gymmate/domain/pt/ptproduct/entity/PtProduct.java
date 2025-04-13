@@ -3,6 +3,8 @@ package org.helloworld.gymmate.domain.pt.ptproduct.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.helloworld.gymmate.domain.pt.ptproduct.dto.PtProductModifyRequest;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,9 +50,10 @@ public class PtProduct {
 
     // ====== Business Logic ======
 
-    public void update(String info, Long ptProductFee) {
-        this.info = info;
-        this.ptProductFee = ptProductFee;
+    public void update(PtProductModifyRequest request) {
+        this.ptProductName = request.ptProductName();
+        this.info = request.info();
+        this.ptProductFee = request.ptProductFee();
     }
 
     public void removeImageByUrl(String imageUrl) {

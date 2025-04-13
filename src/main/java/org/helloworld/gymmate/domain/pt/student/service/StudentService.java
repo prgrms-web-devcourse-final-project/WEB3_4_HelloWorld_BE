@@ -27,6 +27,9 @@ public class StudentService {
     private final MemberService memberService;
 
     public Student makeStudent(Trainer trainer, Member member) {
+        if (studentRepository.findByTrainerAndMemberId(trainer, member.getMemberId()).isPresent()) {
+            return null;
+        }
         return studentRepository.save(StudentMapper.toEntity(trainer, member));
     }
 

@@ -1,8 +1,10 @@
 package org.helloworld.gymmate.domain.pt.student.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.helloworld.gymmate.domain.pt.student.entity.Student;
+import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +21,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @Query("SELECT s FROM Student s WHERE s.trainer.trainerId = :trainerId AND s.memberId IN :memberIds")
     List<Student> findAllByTrainerIdAndMemberIds(@Param("trainerId") Long trainerId,
         @Param("memberIds") List<Long> memberIds);
+
+    Optional<Student> findByTrainerAndMemberId(Trainer trainer, Long memberId);
 }
