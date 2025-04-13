@@ -1,0 +1,6 @@
+USE gymmate_mysql;
+
+UPDATE gymmate_trainer t
+JOIN partner_gym p ON t.trainer_id = p.owner_id
+SET t.gym_id = p.gym_id
+WHERE t.is_owner = TRUE AND t.gym_id IS NULL;

@@ -160,4 +160,8 @@ public class Trainer {
         this.career = request.career();
         this.field = request.field();
     }
+
+    public void updateGym(Gym gym) {
+        this.gym = gym;
+    }
 }
