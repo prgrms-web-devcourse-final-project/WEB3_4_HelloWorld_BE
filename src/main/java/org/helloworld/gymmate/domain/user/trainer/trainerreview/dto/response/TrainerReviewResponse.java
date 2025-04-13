@@ -6,6 +6,8 @@ public record TrainerReviewResponse(
     Long trainerReviewId,
     Double score,
     String content,
+    String createdAt,
+    String modifiedAt,
     List<TrainerReviewImageResponse> imageUrls
 ) {
     public record TrainerReviewImageResponse(

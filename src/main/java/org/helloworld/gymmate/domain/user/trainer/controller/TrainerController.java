@@ -175,8 +175,8 @@ public class TrainerController {
         return ResponseEntity.ok(pageResponse);
     }
 
-    @Operation(summary = "[일반 회원] 트레이너 리뷰 조회")
-    @GetMapping("/{trainerId}/trainerreview")
+    @Operation(summary = "트레이너 리뷰 조회")
+    @GetMapping("/{trainerId}/review")
     public ResponseEntity<PageDto<TrainerReviewResponse>> getTrainerReview(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "3") int size,

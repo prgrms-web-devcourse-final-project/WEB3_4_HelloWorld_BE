@@ -8,6 +8,7 @@ import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
 import org.helloworld.gymmate.domain.gym.gymreview.dto.GymReviewModifyRequest;
 import org.helloworld.gymmate.domain.gym.gymreview.dto.GymReviewRequest;
+import org.helloworld.gymmate.domain.gym.gymreview.dto.GymReviewResponse;
 import org.helloworld.gymmate.domain.gym.gymreview.entity.GymReview;
 import org.helloworld.gymmate.domain.gym.gymreview.entity.GymReviewImage;
 import org.helloworld.gymmate.domain.gym.gymreview.event.GymReviewDeleteEvent;
@@ -17,6 +18,9 @@ import org.helloworld.gymmate.domain.gym.gymticket.service.GymTicketService;
 import org.helloworld.gymmate.domain.gym.partnergym.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.partnergym.service.PartnerGymService;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,6 +65,13 @@ public class GymReviewService {
         deleteImagesIfExists(gymReview, request.deleteImageUrls()); // 삭제요청 들어온 이미지 삭제
         saveGymReviewImages(gymReview, images); // 추가요청 들어온 이미지 추가
         return gymReview.getGymReviewId();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<GymReviewResponse> getGymReviews(long gymId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<GymReview> gymReviews = gymReviewRepository.findAll(gymId, pageable);
+        return gymReviews.map(GymReviewMapper::toResponse);
     }
 
     private void deleteImagesIfExists(GymReview gymReview, List<String> deleteImageUrls) {

@@ -9,6 +9,8 @@ import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymListResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.GymSearchResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.dto.response.TrainerDetailResponse;
 import org.helloworld.gymmate.domain.gym.gyminfo.service.GymService;
+import org.helloworld.gymmate.domain.gym.gymreview.dto.GymReviewResponse;
+import org.helloworld.gymmate.domain.gym.gymreview.service.GymReviewService;
 import org.helloworld.gymmate.domain.gym.machine.dto.FacilityAndMachineResponse;
 import org.helloworld.gymmate.security.oauth.entity.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GymController {
     private final GymService gymService;
+    private final GymReviewService gymReviewService;
 
     @Operation(summary = "헬스장 전체 목록 조회 및 검색", description = "헬스장 목록을 다양한 조건(정렬, 검색, 제휴 여부, 위치 정보)에 따라 조회하며, 결과는 페이지 단위로 반환")
     @GetMapping
@@ -116,5 +119,17 @@ public class GymController {
         PageDto<GymSearchResponse> pageResponse = PageMapper.toPageDto(
             gymService.getAvailablePartnerGymSearch(searchTerm, page, pageSize));
         return ResponseEntity.ok().body(pageResponse);
+    }
+
+    @Operation(summary = "헬스장 리뷰 조회")
+    @GetMapping("/{gymId}/review")
+    public ResponseEntity<PageDto<GymReviewResponse>> getGymReviews(
+        @PathVariable long gymId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "3") int size
+    ) {
+        PageDto<GymReviewResponse> response = PageMapper.toPageDto(
+            gymReviewService.getGymReviews(gymId, page, size));
+        return ResponseEntity.ok().body(response);
     }
 }
