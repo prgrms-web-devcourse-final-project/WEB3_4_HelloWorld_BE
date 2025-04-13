@@ -68,7 +68,7 @@ public class PtProductService {
         Long trainerId) {
         PtProduct ptProduct = findProductOrThrow(productId);
         validateOwnership(ptProduct, trainerId);
-        ptProduct.update(request.info(), request.ptProductFee());
+        ptProduct.update(request);
         deleteImagesIfExists(ptProduct, request.deleteImageIds());
         if (images != null && !images.isEmpty()) {
             saveProductImages(ptProduct, images);
