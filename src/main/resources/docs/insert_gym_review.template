@@ -1,0 +1,133 @@
+DROP PROCEDURE IF EXISTS insert_dummy_gym_reviews_and_images;
+
+DELIMITER $$
+
+CREATE PROCEDURE insert_dummy_gym_reviews_and_images()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE review_counter INT;
+    DECLARE v_score DOUBLE;
+    DECLARE v_content VARCHAR(500);
+    DECLARE v_member_id BIGINT;
+    DECLARE v_created_at DATETIME;
+    DECLARE v_review_id BIGINT;
+    DECLARE rand_index INT;
+    DECLARE v_partner_gym_id BIGINT;
+
+    DECLARE cur_partner CURSOR FOR
+        SELECT partner_gym_id FROM partner_gym;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN cur_partner;
+    read_partner_loop: LOOP
+        FETCH cur_partner INTO v_partner_gym_id;
+        IF done THEN
+            LEAVE read_partner_loop;
+        END IF;
+
+        -- 각 partner_gym 당 리뷰 2개 생성
+        SET review_counter = 1;
+        WHILE review_counter <= 2 DO
+            -- 3.5 ~ 5.0 사이의 랜덤 score 생성 (소수점 첫째 자리까지)
+            SET v_score = ROUND(3.5 + (RAND() * 1.5), 1);
+
+            SET rand_index = FLOOR(1 + RAND() * 20);
+            SET v_content = ELT(rand_index,
+             '헬스장에서 제공하는 전문적인 트레이닝 프로그램이 인상적이었습니다.
+친절한 직원들의 서비스와 깨끗한 시설 덕분에 운동하기에 좋은 환경이 조성되었습니다.
+정기적으로 이용하고 싶어지는 곳입니다.',
+             '처음 방문했을 때부터 체계적으로 운영되는 시스템에 감탄했습니다.
+장비들이 최신식이라 안전하게 운동할 수 있었습니다.
+매니저분의 세심한 관리 또한 큰 만족을 주었습니다.',
+             '헬스장 내 모든 시설이 매우 깨끗하며, 관리가 잘 되고 있습니다.
+운동 계획에 맞춘 맞춤형 트레이닝 프로그램이 돋보입니다.
+친구에게도 추천하고 싶은 곳입니다.',
+             '친절한 트레이너와 다양한 운동 기구가 마음에 들었습니다.
+시설 내 분위기가 편안하여 운동에 집중할 수 있었습니다.
+지속적으로 이용할 가치가 있는 헬스장입니다.',
+             '다양한 운동 클래스와 프로그램이 마련되어 있어 매번 새로운 도전을 할 수 있습니다.
+체계적인 운동 지도와 밝은 분위기가 인상적이었습니다.
+재방문 의사가 매우 높습니다.',
+             '시설의 청결도가 높아 기분 좋게 운동을 시작할 수 있었습니다.
+트레이너 분들의 전문성이 돋보이며, 각자의 필요에 맞춘 조언을 받았습니다.
+운동 효과가 빨리 나타났습니다.',
+             '운동을 즐길 수 있는 다양한 프로그램이 준비되어 있어 매번 기대됩니다.
+시설이 넓고 쾌적해 운동에 집중할 수 있습니다.
+모든 연령대에게 추천하고 싶은 헬스장입니다.',
+             '진정한 건강한 라이프스타일을 추구하는 사람들에게 이상적인 환경을 제공합니다.
+스태프들의 환영과 도움 덕분에 편안한 분위기를 느꼈습니다.
+효과적인 운동 방법을 배울 수 있었습니다.',
+             '다양한 운동 기구와 넓은 공간 덕분에 자유롭게 운동할 수 있었습니다.
+트레이너의 체계적인 지도로 운동의 효율이 극대화되었습니다.
+매일의 운동 습관을 만들기에 좋은 곳입니다.',
+             '헬스장은 항상 밝고 깨끗하여 운동에 집중하기에 최적인 환경입니다.
+트레이너와 직원들의 친절함이 마음에 들었습니다.
+강력히 추천할 만한 헬스장입니다.',
+             '프로그램 구성과 장비가 최신식이라 운동하는 데 불편함이 없었습니다.
+매주 새로운 운동 클래스를 통해 다양한 운동 경험을 할 수 있습니다.
+리프레시되는 기분이 드는 곳입니다.',
+             '친절한 안내와 전문 트레이너 덕분에 운동 초보자도 쉽게 적응할 수 있었습니다.
+시설이 잘 갖추어져 있어 안전하게 운동할 수 있습니다.
+매우 만족스러운 경험이었습니다.',
+             '헬스장의 분위기가 매우 긍정적이며, 운동하는 즐거움을 느낄 수 있었습니다.
+혼자 운동하더라도 편안한 환경이 마련되어 있습니다.
+추천할 만한 훌륭한 공간입니다.',
+             '체계적인 트레이닝 시스템과 다양한 프로그램이 인상 깊었습니다.
+트레이너들의 신뢰감 있는 지도에 만족했습니다.
+꾸준히 이용하고 싶어지는 곳입니다.',
+             '초보자도 이해하기 쉬운 운동 프로그램과 체계적인 스케줄이 장점입니다.
+시설의 청결함과 편의시설에도 큰 만족을 느꼈습니다.
+생활 속 운동의 즐거움을 발견했습니다.',
+             '프로페셔널한 트레이너와 꼼꼼한 관리는 이곳의 큰 장점입니다.
+다양한 운동 기구들이 최신식으로 유지되고 있습니다.
+리프레시 효과가 뛰어납니다.',
+             '운동 전과 후 스트레칭 등 꼼꼼한 관리가 인상적입니다.
+많은 회원들이 헬스장의 시스템에 만족하고 있습니다.
+건강한 라이프스타일에 큰 도움을 주었습니다.',
+             '운동 프로그램의 다양성과 전문 트레이너의 노하우가 돋보입니다.
+시설 내 모든 장비가 청결하게 관리되고 있습니다.
+편안한 분위기에서 즐겁게 운동할 수 있었습니다.',
+             '모든 면에서 훌륭한 시설과 서비스를 제공하는 헬스장입니다.
+트레이너들의 관심과 체계적인 관리 덕분에 더욱 건강해졌습니다.
+매일 이용하고 싶어지는 곳입니다.',
+             '다양한 운동 클래스를 통해 새로운 운동법을 배우고 있습니다.
+프로페셔널한 서비스와 깨끗한 환경이 인상적입니다.
+정말 만족스러운 헬스장입니다.'
+            );
+
+            SET v_member_id = (SELECT member_id FROM gymmate_member ORDER BY RAND() LIMIT 1);
+            SET v_created_at = TIMESTAMPADD(SECOND, FLOOR(RAND() * 1036800), '2025-04-01 00:00:00');
+
+            INSERT INTO gym_review (score, content, member_id, partner_gym_id, created_at, modified_at)
+            VALUES (v_score, v_content, v_member_id, v_partner_gym_id, v_created_at, NULL);
+
+            SET v_review_id = LAST_INSERT_ID();
+
+            SET rand_index = FLOOR(1 + RAND() * 10);
+            INSERT INTO gym_review_image (url, gym_review_id)
+            VALUES (
+                ELT(rand_index,
+                    "https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/gymReview/20250410/1010.jpg",
+        "https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/gymReview/20250410/1111.jpg",
+        "https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/gymReview/20250410/3333.jpg",
+        "https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/gymReview/20250410/4444.jpg",
+        "https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/gymReview/20250410/5555.jpg",
+        "https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/gymReview/20250410/6666.jpg",
+        "https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/gymReview/20250410/7777.jpg",
+        "https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/gymReview/20250410/8888.jpg",
+        "https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/gymReview/20250410/9999.jpg"
+                ),
+                v_review_id
+            );
+
+            SET review_counter = review_counter + 1;
+        END WHILE;
+    END LOOP;
+
+    CLOSE cur_partner;
+END$$
+
+DELIMITER ;
+
+CALL insert_dummy_gym_reviews_and_images();
+DROP PROCEDURE IF EXISTS insert_dummy_gym_reviews_and_images;

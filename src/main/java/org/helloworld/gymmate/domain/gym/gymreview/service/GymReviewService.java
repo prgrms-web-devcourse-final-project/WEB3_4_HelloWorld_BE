@@ -17,6 +17,8 @@ import org.helloworld.gymmate.domain.gym.gymreview.repository.GymReviewRepositor
 import org.helloworld.gymmate.domain.gym.gymticket.service.GymTicketService;
 import org.helloworld.gymmate.domain.gym.partnergym.entity.PartnerGym;
 import org.helloworld.gymmate.domain.gym.partnergym.service.PartnerGymService;
+import org.helloworld.gymmate.domain.user.member.entity.Member;
+import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +37,7 @@ public class GymReviewService {
     private final GymReviewRepository gymReviewRepository;
     private final FileManager fileManager;
     private final ApplicationEventPublisher eventPublisher;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public Long createGymReview(GymReviewRequest request, List<MultipartFile> images, Long memberId) {
@@ -71,7 +74,11 @@ public class GymReviewService {
     public Page<GymReviewResponse> getGymReviews(long gymId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<GymReview> gymReviews = gymReviewRepository.findAll(gymId, pageable);
-        return gymReviews.map(GymReviewMapper::toResponse);
+        return gymReviews.map(gymReview -> {
+            Member member = memberRepository.findById(gymReview.getMemberId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+            return GymReviewMapper.toResponse(gymReview, member);
+        });
     }
 
     private void deleteImagesIfExists(GymReview gymReview, List<String> deleteImageUrls) {
