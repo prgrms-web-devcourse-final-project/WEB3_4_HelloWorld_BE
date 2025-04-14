@@ -36,7 +36,7 @@ BEGIN
         /* 2. gymmate_member 테이블 더미 데이터 생성 */
 
         -- 전화번호: '010' + 8자리 숫자 (총 11글자)
-        SET v_phone = CONCAT('010', LPAD(FLOOR(RAND() * 100000000), 8, '0'));
+        SET v_phone = CONCAT('011', LPAD(FLOOR(RAND() * 100000000), 8, '0'));
 
         -- 성별: 랜덤 선택 ('MALE' 또는 'FEMALE')
         SET v_gender = IF(RAND() < 0.5, 'MALE', 'FEMALE');

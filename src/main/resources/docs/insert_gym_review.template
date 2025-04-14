@@ -109,6 +109,7 @@ BEGIN
                 ELT(rand_index,
                     "https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/gymReview/20250410/1010.jpg",
         "https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/gymReview/20250410/1111.jpg",
+        "https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/gymReview/20250410/2222.jpg",
         "https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/gymReview/20250410/3333.jpg",
         "https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/gymReview/20250410/4444.jpg",
         "https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/gymReview/20250410/5555.jpg",
