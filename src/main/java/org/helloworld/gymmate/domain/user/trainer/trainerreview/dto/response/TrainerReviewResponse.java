@@ -8,7 +8,10 @@ public record TrainerReviewResponse(
     String content,
     String createdAt,
     String modifiedAt,
-    List<TrainerReviewImageResponse> imageUrls
+    List<TrainerReviewImageResponse> imageUrls,
+    String memberName,
+    String memberProfileUrl,
+    int memberLevel
 ) {
     public record TrainerReviewImageResponse(
         Long trainerReviewImageId,

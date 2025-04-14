@@ -2,6 +2,7 @@ package org.helloworld.gymmate.domain.user.trainer.trainerreview.mapper;
 
 import java.util.Optional;
 
+import org.helloworld.gymmate.domain.user.member.entity.Member;
 import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.request.TrainerReviewCreateRequest;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.response.TrainerReviewResponse;
@@ -25,14 +26,18 @@ public class TrainerReviewMapper {
             .build();
     }
 
-    public static TrainerReviewResponse toResponse(TrainerReview trainerReview) {
+    public static TrainerReviewResponse toResponse(TrainerReview trainerReview, Member member) {
         return new TrainerReviewResponse(
             trainerReview.getTrainerReviewId(),
             trainerReview.getScore(),
             trainerReview.getContent(),
             trainerReview.getCreatedAt().toString(),
             Optional.ofNullable(trainerReview.getModifiedAt()).map(Object::toString).orElse(null),
-            trainerReview.getImages().stream().map(TrainerReviewMapper::toImageResponse).toList());
+            trainerReview.getImages().stream().map(TrainerReviewMapper::toImageResponse).toList(),
+            member.getMemberName(),
+            member.getProfileUrl(),
+            member.getLevel()
+        );
     }
 
     public static TrainerReviewResponse.TrainerReviewImageResponse toImageResponse(TrainerReviewImage image) {
