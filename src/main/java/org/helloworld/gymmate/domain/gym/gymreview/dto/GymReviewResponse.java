@@ -8,6 +8,9 @@ public record GymReviewResponse(
     String content,
     String createdAt,
     String modifiedAt,
-    List<GymReviewImageResponse> images
+    List<GymReviewImageResponse> images,
+    String memberName,
+    String memberProfileUrl,
+    int memberLevel
 ) {
 }

@@ -1,0 +1,128 @@
+DROP PROCEDURE IF EXISTS insert_dummy_gymmate_member;
+
+DELIMITER $$
+
+CREATE PROCEDURE insert_dummy_gymmate_member()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+
+    -- oauth 관련 변수
+    DECLARE v_oauth_id BIGINT;
+    DECLARE v_provider_id VARCHAR(255);
+
+    -- gymmate_member 관련 변수
+    DECLARE v_phone VARCHAR(50);
+    DECLARE v_gender VARCHAR(10);
+    DECLARE v_first_name VARCHAR(25);
+    DECLARE v_surname VARCHAR(10);
+    DECLARE v_member_name VARCHAR(50);
+    DECLARE v_email VARCHAR(50);
+    DECLARE v_birthday VARCHAR(50);
+    DECLARE v_height INT;
+    DECLARE v_weight INT;
+    DECLARE v_recent_bench INT;
+    DECLARE v_recent_deadlift INT;
+    DECLARE v_recent_squat INT;
+    DECLARE v_level INT;
+    DECLARE total INT;
+
+    WHILE i <= 200 DO
+        /* 1. oauth 테이블 더미 데이터 생성 */
+        SET v_provider_id = UPPER(SUBSTRING(MD5(RAND()), 1, 9));
+        INSERT INTO oauth (provider_type, provider_id, user_type, created_at)
+        VALUES ('google', v_provider_id, 'MEMBER', NOW());
+        SET v_oauth_id = LAST_INSERT_ID();
+
+        /* 2. gymmate_member 테이블 더미 데이터 생성 */
+
+        -- 전화번호: '010' + 8자리 숫자 (총 11글자)
+        SET v_phone = CONCAT('010', LPAD(FLOOR(RAND() * 100000000), 8, '0'));
+
+        -- 성별: 랜덤 선택 ('MALE' 또는 'FEMALE')
+        SET v_gender = IF(RAND() < 0.5, 'MALE', 'FEMALE');
+
+        -- 성: 미리 준비한 5개의 성 중 랜덤 선택 ('김', '이', '박', '최', '정')
+        SET v_surname = ELT(FLOOR(1 + RAND() * 5), '김', '이', '박', '최', '정');
+
+        -- 이름: 성별에 따라 미리 준비한 20개의 이름 중 랜덤 선택
+        IF v_gender = 'MALE' THEN
+            SET v_first_name = ELT(FLOOR(1 + RAND() * 20),
+                '민수', '영수', '철수', '동현', '준호',
+                '지훈', '태호', '상민', '성민', '현우',
+                '준영', '도현', '재현', '민재', '영민',
+                '상현', '진우', '우진', '규민', '현수');
+        ELSE
+            SET v_first_name = ELT(FLOOR(1 + RAND() * 20),
+                '지은', '수진', '민지', '현아', '지현',
+                '은지', '혜진', '유진', '소영', '세영',
+                '연주', '예린', '민혜', '수정', '지영',
+                '하은', '예은', '다은', '서현', '유나');
+        END IF;
+        -- 성과 이름을 합쳐서 최종 member_name 생성 (공백 없이 붙임)
+        SET v_member_name = CONCAT(v_surname, v_first_name);
+
+        -- 이메일: member_name(소문자 변환)과 랜덤 숫자, 도메인을 조합
+        SET v_email = CONCAT(LOWER(v_member_name), FLOOR(RAND() * 1000), '@example.com');
+
+        -- 생년월일: 1980-01-01부터 2000-12-31 사이의 랜덤 날짜 (YYYY-MM-DD)
+        SET v_birthday = DATE_FORMAT(DATE_ADD('1980-01-01', INTERVAL FLOOR(RAND() * 7670) DAY), '%Y-%m-%d');
+
+        -- 키: 성별에 따라
+        IF v_gender = 'MALE' THEN
+            SET v_height = FLOOR(RAND() * (190 - 170 + 1)) + 170;
+        ELSE
+            SET v_height = FLOOR(RAND() * (170 - 150 + 1)) + 150;
+        END IF;
+
+        -- 몸무게: 성별에 따라
+        IF v_gender = 'MALE' THEN
+            SET v_weight = FLOOR(RAND() * (80 - 60 + 1)) + 60;
+        ELSE
+            SET v_weight = FLOOR(RAND() * (60 - 40 + 1)) + 40;
+        END IF;
+
+        -- 운동 기록: bench, deadlift, squat (각각 10단위)
+        IF v_gender = 'FEMALE' THEN
+            SET v_recent_bench = FLOOR(RAND() * 11) * 10;       -- 0~100
+            SET v_recent_deadlift = FLOOR(RAND() * 16) * 10;      -- 0~150
+            SET v_recent_squat = FLOOR(RAND() * 16) * 10;         -- 0~150
+        ELSE
+            SET v_recent_bench = FLOOR(RAND() * 21) * 10;       -- 0~200
+            SET v_recent_deadlift = FLOOR(RAND() * 31) * 10;      -- 0~300
+            SET v_recent_squat = FLOOR(RAND() * 31) * 10;         -- 0~300
+        END IF;
+
+        -- 총합에 따른 레벨 계산
+        SET total = v_recent_bench + v_recent_deadlift + v_recent_squat;
+        IF total >= 400 THEN
+            SET v_level = 4;
+        ELSEIF total >= 300 THEN
+            SET v_level = 3;
+        ELSEIF total >= 200 THEN
+            SET v_level = 2;
+        ELSEIF total >= 100 THEN
+            SET v_level = 1;
+        ELSE
+            SET v_level = 0;
+        END IF;
+
+        INSERT INTO gymmate_member (
+            phone_number, member_name, email, birthday, gender_type, height, weight,
+            address, x_field, y_field, recent_bench, recent_deadlift, recent_squat,
+            `level`, is_account_nonlocked, additional_info_completed, profile_url, cash, oauth_id
+        )
+        VALUES (
+            v_phone, v_member_name, v_email, v_birthday, v_gender, v_height, v_weight,
+            '', NULL, NULL, v_recent_bench, v_recent_deadlift, v_recent_squat,
+            v_level, TRUE, TRUE, NULL, 5000, v_oauth_id
+        );
+
+        SET i = i + 1;
+    END WHILE;
+END$$
+
+DELIMITER ;
+
+-- 프로시저 실행
+CALL insert_dummy_gymmate_member();
+DROP PROCEDURE IF EXISTS insert_dummy_gymmate_member;

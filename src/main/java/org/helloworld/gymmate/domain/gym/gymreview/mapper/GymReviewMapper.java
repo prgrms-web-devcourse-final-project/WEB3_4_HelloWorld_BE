@@ -9,6 +9,7 @@ import org.helloworld.gymmate.domain.gym.gymreview.dto.GymReviewResponse;
 import org.helloworld.gymmate.domain.gym.gymreview.entity.GymReview;
 import org.helloworld.gymmate.domain.gym.gymreview.entity.GymReviewImage;
 import org.helloworld.gymmate.domain.gym.partnergym.entity.PartnerGym;
+import org.helloworld.gymmate.domain.user.member.entity.Member;
 
 public class GymReviewMapper {
     public static GymReview toEntity(GymReviewRequest request, Long memberId, PartnerGym partnerGym) {
@@ -27,7 +28,7 @@ public class GymReviewMapper {
             .build();
     }
 
-    public static GymReviewResponse toResponse(GymReview gymReview) {
+    public static GymReviewResponse toResponse(GymReview gymReview, Member member) {
         return new GymReviewResponse(
             gymReview.getGymReviewId(),
             gymReview.getScore(),
@@ -35,7 +36,10 @@ public class GymReviewMapper {
             gymReview.getCreatedAt().toString(),
             Optional.ofNullable(gymReview.getModifiedAt()).map(Objects::toString).orElse(null),
             gymReview.getImages().stream()
-                .map(GymReviewMapper::toImageResponse).toList()
+                .map(GymReviewMapper::toImageResponse).toList(),
+            member.getMemberName(),
+            member.getProfileUrl(),
+            member.getLevel()
         );
     }
 
