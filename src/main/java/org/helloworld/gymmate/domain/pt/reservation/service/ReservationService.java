@@ -64,6 +64,7 @@ public class ReservationService {
 
         // 4) Student 정보 생성
         Member member = memberService.findByUserId(userId);
+        member.updateCash(member.getCash() - ptProduct.getPtProductFee());
         Trainer trainer = trainerService.findByUserId(ptProduct.getTrainerId());
         studentService.makeStudent(trainer, member);
         // 5) 저장 및 ID 반환
