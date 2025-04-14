@@ -36,8 +36,8 @@ public interface GymRepository extends JpaRepository<Gym, Long> {
 
     Optional<Gym> findGymByGymName(String gymName);
 
-    @Query("SELECT g FROM Gym g WHERE (:isPartner IS NULL OR g.isPartner = :isPartner) ORDER BY g.avgScore DESC")
-    Page<Gym> findAll(Boolean isPartner, Pageable pageable);
+    @Query("SELECT g FROM Gym g WHERE (:isPartner IS NULL OR g.isPartner = :isPartner) AND g.gymName LIKE CONCAT('%', :searchTerm, '%') OR g.address LIKE CONCAT('%', :searchTerm, '%') ORDER BY g.avgScore DESC")
+    Page<Gym> findAll(@Param("searchTerm") String searchTerm, Boolean isPartner, Pageable pageable);
 
     @Query("SELECT g FROM Gym g WHERE g.gymName LIKE CONCAT('%', :searchTerm, '%') AND (:isPartner IS NULL OR g.isPartner = :isPartner) ORDER BY g.avgScore DESC")
     Page<Gym> searchGymByGymName(String searchTerm, Boolean isPartner,
@@ -50,7 +50,7 @@ public interface GymRepository extends JpaRepository<Gym, Long> {
     @Query(value = """
          SELECT g
          FROM Gym g
-         WHERE (:searchOption = 'NONE' OR
+         WHERE (:searchOption = 'NONE' AND (g.gymName LIKE CONCAT('%', :searchTerm, '%') OR g.address LIKE CONCAT('%', :searchTerm, '%')) OR
                (:searchOption = 'GYM' AND g.gymName LIKE CONCAT('%', :searchTerm, '%')) OR
                (:searchOption = 'DISTRICT' AND g.address LIKE CONCAT('%', :searchTerm, '%')))
                AND (:isPartner IS NULL OR g.isPartner = :isPartner)

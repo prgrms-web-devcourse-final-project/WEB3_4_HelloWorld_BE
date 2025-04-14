@@ -92,7 +92,7 @@ public class GymService {
     public Page<GymListResponse> fetchScoreSortedGyms(GymSearchOption search, String searchTerm,
         Pageable pageable, Boolean isPartner) {
         Page<Gym> gyms = switch (search) {
-            case NONE -> gymRepository.findAll(isPartner, pageable);
+            case NONE -> gymRepository.findAll(searchTerm, isPartner, pageable);
             case GYM -> gymRepository.searchGymByGymName(searchTerm, isPartner,
                 pageable);
             case DISTRICT -> gymRepository.searchGymByAddress(searchTerm, isPartner, pageable);
@@ -114,11 +114,10 @@ public class GymService {
     @Transactional(readOnly = true)
     public Page<GymListResponse> fetchNearbyGymsUsingXY(GymSearchOption gymSearchOption,
         String searchTerm, Pageable pageable, Double x, Double y, Boolean isPartner) {
-        String searchValue = (gymSearchOption == GymSearchOption.NONE) ? "" : searchTerm;
         String boundingBoxWKT = GeometryUtil.toPolygonWKT(x, y);
         Page<Gym> gyms = gymRepository.findNearByGymWithSearchAndIsPartner(x, y,
             boundingBoxWKT, gymSearchOption.name(),
-            searchValue, isPartner, pageable);
+            searchTerm, isPartner, pageable);
 
         return fetchAndMapGyms(gyms, pageable);
     }
