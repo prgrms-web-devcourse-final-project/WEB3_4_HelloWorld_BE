@@ -50,9 +50,9 @@ public interface GymRepository extends JpaRepository<Gym, Long> {
     @Query(value = """
          SELECT g
          FROM Gym g
-         WHERE (:searchOption = 'NONE' AND (g.gymName LIKE CONCAT('%', :searchTerm, '%') OR g.address LIKE CONCAT('%', :searchTerm, '%'))) OR
+         WHERE ((:searchOption = 'NONE' AND (g.gymName LIKE CONCAT('%', :searchTerm, '%') OR g.address LIKE CONCAT('%', :searchTerm, '%'))) OR
                (:searchOption = 'GYM' AND g.gymName LIKE CONCAT('%', :searchTerm, '%')) OR
-               (:searchOption = 'DISTRICT' AND g.address LIKE CONCAT('%', :searchTerm, '%'))
+               (:searchOption = 'DISTRICT' AND g.address LIKE CONCAT('%', :searchTerm, '%')))
                AND (:isPartner IS NULL OR g.isPartner = :isPartner)
                AND within(g.location, FUNCTION('ST_GeomFromText', :boundingBox, 4326)) = true
          ORDER BY FUNCTION('ST_Distance_Sphere', FUNCTION('ST_GeomFromText', CONCAT('POINT(', :y, ' ', :x, ')'), 4326), g.location) ASC
