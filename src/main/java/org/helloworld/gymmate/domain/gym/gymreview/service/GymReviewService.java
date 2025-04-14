@@ -23,6 +23,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,7 +73,7 @@ public class GymReviewService {
 
     @Transactional(readOnly = true)
     public Page<GymReviewResponse> getGymReviews(long gymId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "gymReviewId"));
         Page<GymReview> gymReviews = gymReviewRepository.findAll(gymId, pageable);
         return gymReviews.map(gymReview -> {
             Member member = memberRepository.findById(gymReview.getMemberId())
