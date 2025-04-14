@@ -39,7 +39,7 @@ public class GymController {
     @Operation(summary = "헬스장 전체 목록 조회 및 검색", description = "헬스장 목록을 다양한 조건(정렬, 검색, 제휴 여부, 위치 정보)에 따라 조회하며, 결과는 페이지 단위로 반환")
     @GetMapping
     public ResponseEntity<PageDto<GymListResponse>> getGyms(@RequestParam(defaultValue = "score") String sortOption,
-        @RequestParam(required = false) String searchOption,
+        @RequestParam(defaultValue = "NONE") String searchOption,
         @RequestParam(defaultValue = "") String searchTerm,
         @RequestParam(defaultValue = "0") @Min(0) int page,
         @RequestParam(defaultValue = "6") @Min(1) @Max(200) int pageSize,
