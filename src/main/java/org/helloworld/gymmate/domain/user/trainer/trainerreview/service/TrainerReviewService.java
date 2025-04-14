@@ -1,12 +1,17 @@
 package org.helloworld.gymmate.domain.user.trainer.trainerreview.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.helloworld.gymmate.common.exception.BusinessException;
 import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.common.s3.FileManager;
 import org.helloworld.gymmate.domain.pt.reservation.repository.ReservationRepository;
+import org.helloworld.gymmate.domain.user.member.entity.Member;
+import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
 import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.request.TrainerReviewCreateRequest;
@@ -35,6 +40,7 @@ public class TrainerReviewService {
     private final FileManager fileManager;
     private final ReservationRepository reservationRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public Long createTrainerReview(TrainerReviewCreateRequest reviewCreateRequest, List<MultipartFile> images,
@@ -74,9 +80,18 @@ public class TrainerReviewService {
         Page<TrainerReview> reviewList = trainerReviewRepository.findAllByTrainer_TrainerId(pageable,
             trainerId);
 
-        return reviewList.map(
-            TrainerReviewMapper::toResponse
-        );
+        List<Long> memberIds = reviewList.stream()
+            .map(TrainerReview::getMemberId)
+            .distinct()
+            .toList();
+
+        Map<Long, Member> memberMap = memberRepository.findAllById(memberIds).stream()
+            .collect(Collectors.toMap(Member::getMemberId, Function.identity()));
+
+        return reviewList.map(review -> {
+            Member member = memberMap.get(review.getMemberId());
+            return TrainerReviewMapper.toResponse(review, member);
+        });
     }
 
     @Transactional

@@ -9,7 +9,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum SocialProviderType {
     KAKAO("kakao"),
-    GOOGLE("google");
+    GOOGLE("google"),
+    NAVER("naver");
 
     private final String providerName;
 
