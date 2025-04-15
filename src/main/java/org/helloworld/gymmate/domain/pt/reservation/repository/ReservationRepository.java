@@ -25,7 +25,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
         WHERE r.trainer_id = :trainerId
           AND r.member_id = :memberId
           AND r.cancel_date IS NULL
-          AND DATE_ADD(r.date, INTERVAL r.time HOUR) <= CURRENT_TIMESTAMP
+          AND DATE_ADD(CAST(r.date AS DATETIME), INTERVAL r.time HOUR) <= CONVERT_TZ(CURRENT_TIMESTAMP, 'UTC', 'Asia/Seoul')
         LIMIT 1
         """, nativeQuery = true)
     Optional<Reservation> find(@Param("memberId") Long memberId, @Param("trainerId") Long trainerId);
@@ -36,7 +36,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             SELECT 1 FROM reservation r
             WHERE r.member_id = :memberId
               AND r.cancel_date IS NULL
-              AND DATE_ADD(r.date, INTERVAL r.time HOUR) > CURRENT_TIMESTAMP
+              AND DATE_ADD(CAST(r.date AS DATETIME), INTERVAL r.time HOUR) > CONVERT_TZ(CURRENT_TIMESTAMP, 'UTC', 'Asia/Seoul')
           ), 1, 0)
         """, nativeQuery = true)
     Long existsReservation(@Param("memberId") Long memberId);
