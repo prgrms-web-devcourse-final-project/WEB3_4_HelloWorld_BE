@@ -69,7 +69,9 @@ public class GymReviewService {
         checkPermission(gymReview, memberId); // 작성자 확인
         gymReview.update(request);
         deleteImagesIfExists(gymReview, request.deleteImageUrls()); // 삭제요청 들어온 이미지 삭제
-        saveGymReviewImages(gymReview, images); // 추가요청 들어온 이미지 추가
+        if (images != null && !images.isEmpty()) {
+            saveGymReviewImages(gymReview, images);
+        }
         eventPublisher.publishEvent(new GymScoreUpdateEvent(gymReview.getPartnerGym().getPartnerGymId()));
         return gymReview.getGymReviewId();
     }
