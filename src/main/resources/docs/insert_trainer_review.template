@@ -1,0 +1,92 @@
+DROP PROCEDURE IF EXISTS insert_dummy_trainer_reviews_and_images;
+
+DELIMITER $$
+
+CREATE PROCEDURE insert_dummy_trainer_reviews_and_images()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE review_counter INT;
+    DECLARE v_score INT;
+    DECLARE v_content VARCHAR(500);
+    DECLARE v_member_id BIGINT;
+    DECLARE v_trainer_id BIGINT;
+    DECLARE v_created_at DATETIME;
+    DECLARE v_review_id BIGINT;
+    DECLARE rand_index INT;
+
+    DECLARE cur_trainer CURSOR FOR
+        SELECT trainer_id FROM gymmate_trainer;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN cur_trainer;
+    trainer_loop: LOOP
+        FETCH cur_trainer INTO v_trainer_id;
+        IF done THEN
+            LEAVE trainer_loop;
+        END IF;
+
+        SET review_counter = 1;
+        WHILE review_counter <= 2 DO
+            SET v_score = FLOOR(RAND() * 3) + 3;
+
+            SET rand_index = FLOOR(1 + RAND() * 20);
+            SET v_content = ELT(rand_index,
+                '친절한 PT와 체계적인 트레이닝 덕분에 운동 효과가 매우 좋았습니다.',
+                '전문적인 지도와 꼼꼼한 관리로 몸 상태가 눈에 띄게 좋아졌습니다.',
+                'PT 수업 덕분에 운동에 대한 동기 부여가 많이 되었습니다.',
+                '긍정적인 에너지와 전문성이 돋보이는 트레이너였습니다.',
+                '개인 맞춤 운동 프로그램으로 꾸준한 발전을 경험했습니다.',
+                '세심한 지도와 친절한 상담이 인상적이었습니다.',
+                '체계적인 트레이닝이 운동 습관 형성에 큰 도움이 되었습니다.',
+                '전문 트레이너 덕분에 자신감이 많이 생겼습니다.',
+                '운동 기술 향상에 실질적인 도움이 되는 PT였습니다.',
+                '효과적인 운동 루틴으로 몸매 관리에 성공했습니다.',
+                '매 수업마다 동기 부여가 되는 훌륭한 경험이었습니다.',
+                '체계적인 트레이닝 플랜과 열정적인 지도에 만족했습니다.',
+                '트레이너의 전문 지식이 운동 효과에 큰 영향을 미쳤습니다.',
+                '편안한 분위기에서 진행되는 PT 수업이 매우 좋았습니다.',
+                '운동 목표를 달성하는데 큰 도움이 되는 프로그램입니다.',
+                '꾸준한 관리와 트레이닝으로 체력이 크게 향상되었습니다.',
+                '진지한 상담과 전문적인 지도가 인상적이었습니다.',
+                '트레이너 덕분에 운동에 대한 신뢰감이 높아졌습니다.',
+                '효과적인 운동 방법과 꾸준한 피드백이 좋았습니다.',
+                '개개인에 맞춘 섬세한 운동 지도가 인상적입니다.'
+            );
+
+            SET v_member_id = (SELECT member_id FROM gymmate_member ORDER BY RAND() LIMIT 1);
+            SET v_created_at = NOW();
+
+            INSERT INTO trainer_review(score, content, member_id, trainer_id, created_at, modified_at)
+            VALUES (v_score, v_content, v_member_id, v_trainer_id, v_created_at, NULL);
+
+            SET v_review_id = LAST_INSERT_ID();
+
+            SET rand_index = FLOOR(1 + RAND() * 10);
+            INSERT INTO trainer_review_image(url, trainer_review_id)
+            VALUES (
+                ELT(rand_index,
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/9090.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/7878.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/6767.jpeg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/5656.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/4545.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/3434.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/2323.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/1212.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/110110.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/100100.jpg'
+                ),
+                v_review_id
+            );
+
+            SET review_counter = review_counter + 1;
+        END WHILE;
+    END LOOP;
+
+    CLOSE cur_trainer;
+END$$
+
+DELIMITER ;
+
+CALL insert_dummy_trainer_reviews_and_images();
+DROP PROCEDURE IF EXISTS insert_dummy_trainer_reviews_and_images;
