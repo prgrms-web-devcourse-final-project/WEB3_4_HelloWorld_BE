@@ -1,12 +1,13 @@
 package org.helloworld.gymmate.domain.user.trainer.trainerreview.event;
 
+import org.helloworld.gymmate.common.exception.BusinessException;
+import org.helloworld.gymmate.common.exception.ErrorCode;
 import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.repository.TrainerRepository;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.repository.TrainerReviewRepository;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -22,7 +23,7 @@ public class TrainerScoreEventListener {
 
         Double avgScore = trainerReviewRepository.findAverageScoreByTrainerId(trainerId);
         Trainer trainer = trainerRepository.findById(trainerId)
-            .orElseThrow(() -> new EntityNotFoundException("Trainer not found"));
+            .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         trainer.updateScore(avgScore);
     }

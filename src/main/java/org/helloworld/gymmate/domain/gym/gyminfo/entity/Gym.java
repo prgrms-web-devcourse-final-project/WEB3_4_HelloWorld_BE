@@ -112,5 +112,9 @@ public class Gym {
     public void updatePartner(Boolean isPartner) {
         this.isPartner = isPartner;
     }
+
+    public void updateScore(double score) {
+        this.avgScore = score;
+    }
 }
 

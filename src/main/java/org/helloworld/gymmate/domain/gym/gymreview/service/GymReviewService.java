@@ -12,6 +12,7 @@ import org.helloworld.gymmate.domain.gym.gymreview.dto.GymReviewResponse;
 import org.helloworld.gymmate.domain.gym.gymreview.entity.GymReview;
 import org.helloworld.gymmate.domain.gym.gymreview.entity.GymReviewImage;
 import org.helloworld.gymmate.domain.gym.gymreview.event.GymReviewDeleteEvent;
+import org.helloworld.gymmate.domain.gym.gymreview.event.GymScoreUpdateEvent;
 import org.helloworld.gymmate.domain.gym.gymreview.mapper.GymReviewMapper;
 import org.helloworld.gymmate.domain.gym.gymreview.repository.GymReviewRepository;
 import org.helloworld.gymmate.domain.gym.gymticket.service.GymTicketService;
@@ -49,6 +50,7 @@ public class GymReviewService {
         if (images != null && !images.isEmpty()) {
             saveGymReviewImages(gymReview, images);
         }
+        eventPublisher.publishEvent(new GymScoreUpdateEvent(partnerGym.getPartnerGymId()));
         return gymReview.getGymReviewId();
     }
 
@@ -68,6 +70,7 @@ public class GymReviewService {
         gymReview.update(request);
         deleteImagesIfExists(gymReview, request.deleteImageUrls()); // 삭제요청 들어온 이미지 삭제
         saveGymReviewImages(gymReview, images); // 추가요청 들어온 이미지 추가
+        eventPublisher.publishEvent(new GymScoreUpdateEvent(gymReview.getPartnerGym().getPartnerGymId()));
         return gymReview.getGymReviewId();
     }
 
