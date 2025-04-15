@@ -1,0 +1,92 @@
+DROP PROCEDURE IF EXISTS insert_dummy_trainer_reviews_and_images;
+
+DELIMITER $$
+
+CREATE PROCEDURE insert_dummy_trainer_reviews_and_images()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE review_counter INT;
+    DECLARE v_score INT;
+    DECLARE v_content VARCHAR(500);
+    DECLARE v_member_id BIGINT;
+    DECLARE v_trainer_id BIGINT;
+    DECLARE v_created_at DATETIME;
+    DECLARE v_review_id BIGINT;
+    DECLARE rand_index INT;
+
+    DECLARE cur_trainer CURSOR FOR
+        SELECT trainer_id FROM gymmate_trainer;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN cur_trainer;
+    trainer_loop: LOOP
+        FETCH cur_trainer INTO v_trainer_id;
+        IF done THEN
+            LEAVE trainer_loop;
+        END IF;
+
+        SET review_counter = 1;
+        WHILE review_counter <= 2 DO
+            SET v_score = FLOOR(RAND() * 3) + 3;
+
+            SET rand_index = FLOOR(1 + RAND() * 20);
+            SET v_content = ELT(rand_index,
+                '헬스장이 깨끗하고 트레이너님이 친절해요',
+                '전문적인 지도와 꼼꼼한 관리로 몸 상태가 눈에 띄게 좋아졌어요.',
+                'PT 수업 덕분에 운동이 좋아졌어요!',
+                '여자친구가 저를 보는 눈빛이 달라졌어요',
+                '몸은 좋아졌는데 왜 여친은 안생길까요...',
+                '한 달만에 3kg 빠졌어요!!',
+                '여름만 되면 하루에 번호 다섯번씩 따여요 진짜임',
+                '전문 트레이너 덕분에 자신감이 많이 생겼어요!',
+                '여기 다니고 몸 좋아져서 여친 생겼어요',
+                '10kg 감량 성공했어요 bb',
+                '친구가 PT 어디서 받냐고 자꾸 물어봐요',
+                '체계적인 트레이닝 플랜과 열정적인 지도에 만족했어요',
+                '완전 전문적이에요!!',
+                '편안한 분위기에서 진행되는 PT 수업이 매우 좋았습니다.',
+                '올해 운동 목표를 달성 완료!!',
+                '저 체력 진짜 안좋았는데 세 달 받고 이제 체력왕 됐어요',
+                '진지한 상담과 전문적인 지도가 인상적이었습니다.',
+                '트레이너님 덕분에 운동을 즐기는 사람이 되었어요!',
+                '매주 운동 시간이 기다려져요ㅎㅎㅎ',
+                '개개인 맞춤으로 알려주셔서 정말 좋았습니다'
+            );
+
+            SET v_member_id = (SELECT member_id FROM gymmate_member ORDER BY RAND() LIMIT 1);
+            SET v_created_at = NOW();
+
+            INSERT INTO trainer_review(score, content, member_id, trainer_id, created_at, modified_at)
+            VALUES (v_score, v_content, v_member_id, v_trainer_id, v_created_at, NULL);
+
+            SET v_review_id = LAST_INSERT_ID();
+
+            SET rand_index = FLOOR(1 + RAND() * 10);
+            INSERT INTO trainer_review_image(url, trainer_review_id)
+            VALUES (
+                ELT(rand_index,
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/9090.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/7878.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/6767.jpeg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/5656.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/4545.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/3434.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/2323.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/1212.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/110110.jpg',
+                    'https://devcouse4-team12-bucket.s3.ap-northeast-2.amazonaws.com/trainerReview/20250410/100100.jpg'
+                ),
+                v_review_id
+            );
+
+            SET review_counter = review_counter + 1;
+        END WHILE;
+    END LOOP;
+
+    CLOSE cur_trainer;
+END$$
+
+DELIMITER ;
+
+CALL insert_dummy_trainer_reviews_and_images();
+DROP PROCEDURE IF EXISTS insert_dummy_trainer_reviews_and_images;
