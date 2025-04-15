@@ -23,6 +23,7 @@ import org.helloworld.gymmate.domain.pt.reservation.repository.ReservationReposi
 import org.helloworld.gymmate.domain.pt.student.entity.Student;
 import org.helloworld.gymmate.domain.pt.student.service.StudentService;
 import org.helloworld.gymmate.domain.user.member.entity.Member;
+import org.helloworld.gymmate.domain.user.member.repository.MemberRepository;
 import org.helloworld.gymmate.domain.user.member.service.MemberService;
 import org.helloworld.gymmate.domain.user.trainer.entity.Trainer;
 import org.helloworld.gymmate.domain.user.trainer.service.TrainerService;
@@ -45,6 +46,7 @@ public class ReservationService {
     private final StudentService studentService;
     private final MemberService memberService;
     private final TrainerService trainerService;
+    private final MemberRepository memberRepository;
 
     /*
      예약 생성 로직
@@ -57,13 +59,15 @@ public class ReservationService {
         // 1) PT 상품 조회
         PtProduct ptProduct = ptProductService.findProductOrThrow(ptProductId);
 
-        // 2) classTime에 존재하는지 확인 -> 프론트에서 예약가능한 시간만 보여주므로, 일단 생략
-
+        // 2) 예약 가능 여부 확인 (금액 확인)
+        Member member = memberService.findByUserId(userId);
+        if (member.getCash() < ptProduct.getPtProductFee()) {
+            throw new BusinessException(ErrorCode.INSUFFICIENT_CASH);
+        }
         // 3) 예약 엔티티 생성
         Reservation reservation = ReservationMapper.toEntity(ptProduct, request, userId);
 
         // 4) Student 정보 생성
-        Member member = memberService.findByUserId(userId);
         member.updateCash(member.getCash() - ptProduct.getPtProductFee());
         Trainer trainer = trainerService.findByUserId(ptProduct.getTrainerId());
         studentService.makeStudent(trainer, member);
