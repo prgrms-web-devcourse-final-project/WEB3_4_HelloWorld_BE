@@ -20,6 +20,7 @@ import org.helloworld.gymmate.domain.user.trainer.trainerreview.dto.response.Tra
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.entity.TrainerReview;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.entity.TrainerReviewImage;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.event.TrainerReviewDeleteEvent;
+import org.helloworld.gymmate.domain.user.trainer.trainerreview.event.TrainerScoreUpdateEvent;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.mapper.TrainerReviewMapper;
 import org.helloworld.gymmate.domain.user.trainer.trainerreview.repository.TrainerReviewRepository;
 import org.springframework.context.ApplicationEventPublisher;
@@ -56,7 +57,7 @@ public class TrainerReviewService {
         if (images != null && !images.isEmpty()) {
             saveTrainerReviewImages(review, images);
         }
-
+        eventPublisher.publishEvent(new TrainerScoreUpdateEvent(trainer.getTrainerId()));
         return review.getTrainerReviewId();
     }
 
@@ -71,7 +72,7 @@ public class TrainerReviewService {
             saveTrainerReviewImages(trainerReview, images);
         }
         trainerReviewRepository.save(trainerReview);
-
+        eventPublisher.publishEvent(new TrainerScoreUpdateEvent(trainerReview.getTrainer().getTrainerId()));
         return trainerReview.getTrainerReviewId();
     }
 
