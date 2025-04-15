@@ -5,6 +5,9 @@ client:
   url: https://web-3-4-hello-world-fe.vercel.app
 
 spring:
+  jackson:
+    time-zone: Asia/Seoul
+
   datasource:
     url: jdbc:mysql://${RDS_HOST}:${RDS_PORT}/${DB_NAME}?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
     username: ${MYSQL_USERNAME}
