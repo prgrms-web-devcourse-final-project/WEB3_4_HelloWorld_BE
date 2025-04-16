@@ -36,6 +36,7 @@ public record TrainersPtProductsResponse(
     }
 
     public record Gym(
+        long gymId,
         String gymName,
         String gymAddress,
         Double gymX,

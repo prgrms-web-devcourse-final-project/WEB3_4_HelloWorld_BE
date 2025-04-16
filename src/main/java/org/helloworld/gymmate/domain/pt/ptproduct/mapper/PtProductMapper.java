@@ -104,6 +104,7 @@ public class PtProductMapper {
         );
 
         TrainersPtProductsResponse.Gym gymDto = new TrainersPtProductsResponse.Gym(
+            gym.getGymId(),
             gym.getGymName(),
             gym.getAddress(),
             gym.getLocation().getX(),

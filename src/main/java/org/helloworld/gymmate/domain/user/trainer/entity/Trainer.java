@@ -164,4 +164,8 @@ public class Trainer {
     public void updateGym(Gym gym) {
         this.gym = gym;
     }
+
+    public void updateScore(double score) {
+        this.score = score;
+    }
 }
